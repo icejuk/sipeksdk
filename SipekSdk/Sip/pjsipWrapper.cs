@@ -27,7 +27,7 @@ using System.Net.Sockets;
 using System.Text;
 using Sipek.Common;
 
-namespace Sipek.Sip.PjsipWrapper
+namespace Sipek.Sip
 {
 
   /// <summary>

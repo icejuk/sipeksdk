@@ -17,8 +17,8 @@ namespace Sipek.Common
    
   /// <summary>
   /// Non-call oriented VoIP interface. 
-  /// Handles events invoked by VoIP stack.
-  /// Methods called by user side.
+  /// It define events invoked by VoIP stack.
+  /// API consists of methods invoked by user.
   /// </summary>
   public abstract class IVoipProxy
   {
@@ -113,7 +113,7 @@ namespace Sipek.Common
   }
 
   /// <summary>
-  /// 
+  /// Call oriented interface. Offers basic session control API.
   /// </summary>
   public interface ICallProxyInterface
   {
