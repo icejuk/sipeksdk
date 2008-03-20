@@ -35,7 +35,6 @@
   <ItemGroup>
     <Compile Include="Common\AbstractFactory.cs" />
     <Compile Include="Common\AbstractWrapper.cs" />
-    <Compile Include="Common\CallInterface.cs" />
     <Compile Include="Common\CallControl\callManager.cs" />
     <Compile Include="Common\CallControl\callStateMachine.cs" />
     <Compile Include="Common\CallControl\callStates.cs" />
