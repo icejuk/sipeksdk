@@ -45,6 +45,7 @@ namespace Sipek.Common
     string DomainName { get; set;}
     int Port { get; set;}
     int RegState { get; set;}
+    bool ImsEnabled { get; set;}
 
   }
 
@@ -107,6 +108,12 @@ namespace Sipek.Common
       public int RegState
       {
         get { return 0; }
+        set { }
+      }
+
+      public bool ImsEnabled
+      {
+        get { return false; }
         set { }
       }
     }
