@@ -45,7 +45,7 @@
     <Compile Include="Common\MediaInterface.cs" />
     <Compile Include="Common\TimerInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Sip\PjsipWrapper\callProxy.cs" />
+    <Compile Include="Sip\pjsipWrapper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
