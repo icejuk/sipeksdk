@@ -298,7 +298,7 @@ namespace Sipek.Sip
     [DllImport("pjsipDll.dll")]
     private static extern int dll_shutdown();
     [DllImport("pjsipDll.dll")]
-    private static extern int dll_registerAccount(string uri, string reguri, string domain, string username, string password);
+    private static extern int dll_registerAccount(string uri, string reguri, string domain, string username, string password, bool ims);
     [DllImport("pjsipDll.dll")]
     private static extern int dll_addBuddy(string uri, bool subscribe);
     [DllImport("pjsipDll.dll")]
@@ -430,10 +430,10 @@ namespace Sipek.Sip
     {
       if (!IsInitialized) return -1;
 
-      // 
+      // unregister accounts
       dll_removeAccounts();
 
-      // 
+      // iterate all accounts
       for (int i = 0; i < Config.NumOfAccounts; i++)
       {
         IAccount acc = Config.getAccount(i);
@@ -449,15 +449,19 @@ namespace Sipek.Sip
 
           string displayName = acc.DisplayName; 
           // Publish do not work if display name in uri 
-          string uri = displayName + "<sip:" + acc.Id + "@" + acc.HostName + ">";
-          //string uri = "sip:" + Manager.getId(i) + "@" + Manager.getAddress(i) + "";
-          string reguri = "sip:" + acc.HostName; // +":" + CCallManager.getInstance().SipProxyPort;
+          //string uri = displayName + "<sip:" + acc.Id + "@" + acc.HostName + ">";
+          string uri = "sip:" + acc.UserName;
+          if (!acc.UserName.Contains("@"))
+          {
+            uri += "@" + acc.HostName;
+          }
+          string reguri = "sip:" + acc.HostName; 
 
           string domain = acc.DomainName;
           string username = acc.UserName;
           string password = acc.Password;
 
-          dll_registerAccount(uri, reguri, domain, username, password);
+          dll_registerAccount(uri, reguri, domain, username, password, acc.ImsEnabled);
 
           // todo:::check if accId corresponds to account index!!!
         }
