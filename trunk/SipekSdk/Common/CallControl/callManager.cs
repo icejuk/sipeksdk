@@ -29,20 +29,18 @@
  * The SIPek's simple software design enables efficient development, easy upgrading and 
  * user menus customizations.
  * 
+ * Visit SipekSDK page at http://voipengine.googlepages.com/
+ * 
  * Visit SIPek's home page at http://sipekphone.googlepages.com/ 
+ * 
  *
- * \section install_sec Installation
- *
- * \subsection step1 Step 1: 
- *  
- * etc...
  */
 
 
 /*! \namespace CallControl
-    \brief Module CallControl is a general Call Automaton engine.
+    \brief Module CallControl is a general Call Automaton engine controller. 
 
-    A more detailed namespace description.
+    Call control...
 */
 
 using System.Collections;

@@ -34,6 +34,16 @@ namespace Sipek.Common
     CN_HOLDCONFIRM
   }
 
+  /// <summary>
+  /// Dtmf modes
+  /// </summary>
+  public enum EDtmfMode : int
+  {
+    DM_Outband,
+    DM_Inband,
+    DM_Transparent
+  }
+
   #endregion
 
 }

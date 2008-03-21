@@ -22,7 +22,9 @@ using Sipek.Common;
 
 namespace Sipek.Common.CallControl
 {
-
+  /// <summary>
+  /// Call control timer types
+  /// </summary>
   public enum ETimerType
   {
     ENOREPLY,
@@ -30,9 +32,9 @@ namespace Sipek.Common.CallControl
   }
 
   /// <summary>
-  /// CStateMachine class is a telephony data container for one call. It maintains call state, 
-  /// communicates with signaling via proxy and informs GUI about signaling events.
-  /// A Finite State Machine is implemented upon State design pattern!
+  /// CStateMachine class is a telephony data container for signle call. It maintains call state, 
+  /// communicates with signaling via proxy and informs about events from signaling.
+  /// A Finite State Machine is implemented in State design pattern!
   /// </summary>
   public class CStateMachine
   {
@@ -60,13 +62,18 @@ namespace Sipek.Common.CallControl
     #endregion Variables
 
     #region Properties
-
+    /// <summary>
+    /// A reference to CCallManager instance
+    /// </summary>
     public CCallManager Manager
     {
       get { return _manager; }
     }
 
     private int _session = -1;
+    /// <summary>
+    /// Call/Session identification
+    /// </summary>
     public int Session
     {
       get { return _session; }
@@ -79,21 +86,28 @@ namespace Sipek.Common.CallControl
     }
 
     ////////////////////////////////////////////////////////////////////////////////
-    /// Proxies
+  
     private ICallProxyInterface _sigProxy;
+    /// <summary>
+    /// Signaling proxy instance (seperately created for each call)
+    /// </summary>
     public ICallProxyInterface SigProxy
     {
       get { return _sigProxy; } 
     }
 
+    /// <summary>
+    /// Media proxy instance getter for handling tones
+    /// </summary>
     public IMediaProxyInterface MediaProxy
     {
       get { return _manager.Factory.getMediaProxy(); }
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
-
     private string _callingNumber = "";
+    /// <summary>
+    /// Calling number property
+    /// </summary>
     public string CallingNo
     {
       get { return _callingNumber; }
@@ -101,6 +115,9 @@ namespace Sipek.Common.CallControl
     }
 
     private string _callingName = "";
+    /// <summary>
+    /// Calling name property
+    /// </summary>
     public string CallingName
     {
       get { return _callingName; }
@@ -108,29 +125,44 @@ namespace Sipek.Common.CallControl
     }
 
     private bool _incoming = false;
+    /// <summary>
+    /// Incoming call flag
+    /// </summary>
     public bool Incoming
     {
       get { return _incoming; }
       set { _incoming = value; }
     }
+    /// <summary>
+    /// Call type property for Call log
+    /// </summary>
     public ECallType Type
     {
       get { return _callType; }
       set { _callType = value; }
     }
 
+    /// <summary>
+    /// Timestamp of a call
+    /// </summary>
     public System.DateTime Time
     {
       set { _timestamp = value; }
       get { return _timestamp; }
     }
 
+    /// <summary>
+    /// Duration of a call
+    /// </summary>
     public System.TimeSpan Duration
     {
       set { _duration = value; }
       get { return _duration; }
     }
 
+    /// <summary>
+    /// ???
+    /// </summary>
     public System.TimeSpan RuntimeDuration
     {
       get {
@@ -143,6 +175,9 @@ namespace Sipek.Common.CallControl
     }
     
     private bool _isHeld = false;
+    /// <summary>
+    /// Is call held by other side
+    /// </summary>
     public bool IsHeld
     {
       get { return _isHeld; }
@@ -150,6 +185,9 @@ namespace Sipek.Common.CallControl
     }
 
     private bool _is3Pty = false;
+    /// <summary>
+    /// Is this call 3pty (==2 active sessions)
+    /// </summary>
     public bool Is3Pty
     {
       get { return _is3Pty; }
@@ -157,6 +195,9 @@ namespace Sipek.Common.CallControl
     }
 
     private bool _counting = false; // if duration counter is started
+    /// <summary>
+    /// ???
+    /// </summary>
     public bool Counting
     {
       get { return _counting; }
@@ -164,6 +205,9 @@ namespace Sipek.Common.CallControl
     }
 
     private bool _holdRequested = false;
+    /// <summary>
+    /// Has been call hold requested
+    /// </summary>
     public bool HoldRequested
     {
       get { return _holdRequested; }
@@ -171,17 +215,26 @@ namespace Sipek.Common.CallControl
     }
 
     private bool _retrieveRequested = false;
+    /// <summary>
+    /// Has been call retrieve requested
+    /// </summary>
     public bool RetrieveRequested
     {
       get { return _retrieveRequested; }
       set { _retrieveRequested = value; }
     }
-    /////////////////////////////////////////////////////////////////////////
+    
+    /// <summary>
+    /// Data access instance
+    /// </summary>
     public IConfiguratorInterface Config
     {
       get { return _manager.Factory.getConfigurator();  }
     }
 
+    /// <summary>
+    /// Call log instance
+    /// </summary>
     protected ICallLogInterface CallLoger
     {
       get { return _manager.Factory.getCallLogger();  }
@@ -190,7 +243,11 @@ namespace Sipek.Common.CallControl
     #endregion
 
     #region Constructor
-
+    /// <summary>
+    /// Call/Session constructor. Initializes call states, creates signaling proxy, initialize time,
+    /// initialize timers.
+    /// </summary>
+    /// <param name="manager">reference to call manager</param>
     public CStateMachine(CCallManager manager)
     {
       // store manager reference...
@@ -230,7 +287,6 @@ namespace Sipek.Common.CallControl
     #endregion Constructor
 
 
-    #region Methods
 
     void _noreplyTimer_Elapsed(object sender, EventArgs e)
     {
@@ -242,21 +298,39 @@ namespace Sipek.Common.CallControl
       this.getState().releasedTimerExpired(this.Session);
     }
 
+    #region Public Methods
+
+    /// <summary>
+    /// Call state getter
+    /// </summary>
+    /// <returns>State instance</returns>
     public CAbstractState getState()
     {
       return _state;
     }
 
+    /// <summary>
+    /// State identification getter
+    /// </summary>
+    /// <returns>State id</returns>
     public EStateId getStateId()
     {
       return _state.StateId;
     }
 
+    /// <summary>
+    /// State name getter
+    /// </summary>
+    /// <returns>State name</returns>
     public string getStateName()
     {
       return _state.Name;
     }
 
+    /// <summary>
+    /// Change state
+    /// </summary>
+    /// <param name="state">instance of state to change to</param>
     public void changeState(CAbstractState state)
     {
       _state.onExit();
@@ -264,7 +338,10 @@ namespace Sipek.Common.CallControl
       _state.onEntry();
     }
 
-
+    /// <summary>
+    /// Change state by state id
+    /// </summary>
+    /// <param name="stateId">state id</param>
     public void changeState(EStateId stateId)
     {
       switch (stateId) 
@@ -280,8 +357,14 @@ namespace Sipek.Common.CallControl
       if (null != _manager) _manager.updateGui();
     }
 
+    /// <summary>
+    /// Destroy call. Calculate call duraton time, edit call log, destroy session.
+    /// </summary>
     public void destroy()
     {
+      // stop tones
+      MediaProxy.stopTone();
+      // Calculate timing
       if (true == Counting)
       {
         Duration = System.DateTime.Now.Subtract(Time);
@@ -302,6 +385,10 @@ namespace Sipek.Common.CallControl
 
     ///////////////////////////////////////////////////////////////////////////////////
     // Timers
+    /// <summary>
+    /// Start timer by timer type
+    /// </summary>
+    /// <param name="ttype">timer type</param>
     public void startTimer(ETimerType ttype)
     {
       switch (ttype)
@@ -315,6 +402,10 @@ namespace Sipek.Common.CallControl
       }
     }
 
+    /// <summary>
+    /// Stop timer by timer type
+    /// </summary>
+    /// <param name="ttype">timer type</param>
     public void stopTimer(ETimerType ttype)
     {
       switch (ttype)
@@ -328,6 +419,9 @@ namespace Sipek.Common.CallControl
       }
     }
 
+    /// <summary>
+    /// Stop all timer...
+    /// </summary>
     public void stopAllTimers()
     {
       _noreplyTimer.Stop();
@@ -339,4 +433,4 @@ namespace Sipek.Common.CallControl
     #endregion Methods
   }
 
-} // namespace Sipek
+} // namespace Common.CallControl

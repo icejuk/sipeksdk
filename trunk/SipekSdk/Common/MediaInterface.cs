@@ -4,6 +4,10 @@ using System.Text;
 
 namespace Sipek.Common
 {
+
+  /// <summary>
+  /// Tone modes
+  /// </summary>
   public enum ETones : int
   {
     EToneDial = 0,
@@ -13,13 +17,21 @@ namespace Sipek.Common
   }
 
   /// <summary>
-  /// 
+  /// Media proxy interface for playing tones (todo recording)
   /// </summary>
   public interface IMediaProxyInterface
   {
-
+    /// <summary>
+    /// Play give tone 
+    /// </summary>
+    /// <param name="toneId">tone identification</param>
+    /// <returns></returns>
     int playTone(ETones toneId);
 
+    /// <summary>
+    /// Stop tone
+    /// </summary>
+    /// <returns></returns>
     int stopTone();
   }
 

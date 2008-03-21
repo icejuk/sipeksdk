@@ -15,6 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  */
+
 using Sipek.Common;
 
 
@@ -22,7 +23,7 @@ namespace Sipek.Common.CallControl
 {
   #region Enums
   /// <summary>
-  /// 
+  /// Call state Ids
   /// </summary>
   public enum EStateId  : int 
   {
@@ -35,18 +36,12 @@ namespace Sipek.Common.CallControl
     HOLDING = 0x40
   }
 
-  public enum EDtmfMode : int
-  {
-    DM_Outband,
-    DM_Inband,
-    DM_Transparent
-  }
   #endregion
 
   #region AbstractState
   /// <summary>
-  /// CAbstractState implements interface ICallProxyInterface. 
-  /// The interface is used for sending requests to call server
+  /// CAbstractState implements ICallProxyInterface interface. 
+  /// The interface is used for sending requests to call server.
   /// It's a base for all call states used by CStateMachine. 
   /// </summary>
   public abstract class CAbstractState : ICallProxyInterface
@@ -54,29 +49,40 @@ namespace Sipek.Common.CallControl
 
     #region Properties
     private EStateId _stateId = EStateId.IDLE;
-
+    /// <summary>
+    /// State identification property
+    /// </summary>
     public EStateId StateId 
     {
       get { return _stateId;  }
       set { _stateId = value; }
     }
-
+    /// <summary>
+    /// State name property
+    /// </summary>
     public string Name
     {
       get {
         return StateId.ToString(); 
       }
     }
-
+    /// <summary>
+    /// Signaling proxy instance for communication with VoIP stack
+    /// </summary>
     public ICallProxyInterface CallProxy
     {
       get { return _smref.SigProxy; }
     }
+    /// <summary>
+    /// Media proxy instance for handling tones
+    /// </summary>
     public IMediaProxyInterface MediaProxy
     {
       get { return _smref.MediaProxy; }
     }
-
+    /// <summary>
+    /// Call/Session identification
+    /// </summary>
     public int SessionId    
     {
       get { return _smref.Session; }
@@ -92,7 +98,10 @@ namespace Sipek.Common.CallControl
     #endregion Variables
 
     #region Constructor
-
+    /// <summary>
+    /// Abstract state construction.
+    /// </summary>
+    /// <param name="sm">reference to call state machine</param>
     public CAbstractState(CStateMachine sm)
     {
       _smref = sm;
@@ -100,12 +109,32 @@ namespace Sipek.Common.CallControl
 
     #endregion Constructor
 
-    #region Methods
+    #region Abstract Methods
 
+    /// <summary>
+    /// State entry method
+    /// </summary>
     public abstract void onEntry();
-    
+    /// <summary>
+    /// State exit method
+    /// </summary>
     public abstract void onExit();
 
+    /// <summary>
+    /// Reply timer 
+    /// </summary>
+    /// <param name="sessionId"></param>
+    /// <returns></returns>
+    public virtual bool noReplyTimerExpired(int sessionId) { return false; }
+    /// <summary>
+    /// Released timer
+    /// </summary>
+    /// <param name="sessionId"></param>
+    /// <returns></returns>
+    public virtual bool releasedTimerExpired(int sessionId) { return false; }
+    #endregion
+
+    #region Inherited methods
 
     public virtual int makeCall(string dialedNo, int accountId)
     {
@@ -145,35 +174,20 @@ namespace Sipek.Common.CallControl
     {
       return true;
     }
-    public bool threePtyCall(int partnersession)
+    public virtual bool threePtyCall(int partnersession)
     {
       return true;
     }
-/*    public bool serviceRequest(EServiceCodes code, int session)
-    {
-      CallProxy.serviceRequest(code, session);
-      return true;
-    }
- */ 
-    public bool serviceRequest(int code, string dest)
+
+    public virtual bool serviceRequest(int code, string dest)
     {
       CallProxy.serviceRequest(code, dest);
       return true;
     }
 
-    public bool dialDtmf(string digits, int mode)
+    public virtual bool dialDtmf(string digits, int mode)
     {
       CallProxy.dialDtmf(digits, mode);
-      return true;
-    }
-
-    public virtual bool noReplyTimerExpired(int sessionId)
-    {
-      return true;
-    }
-
-    public virtual bool releasedTimerExpired(int sessionId)
-    {
       return true;
     }
 
@@ -207,7 +221,7 @@ namespace Sipek.Common.CallControl
 
   #region IdleState
   /// <summary>
-  /// CIdleState
+  /// State Idle indicates the call is inactive
   /// </summary>
   public class CIdleState : CAbstractState
   {
@@ -244,7 +258,7 @@ namespace Sipek.Common.CallControl
 
   #region ConnectingState
   /// <summary>
-  /// 
+  /// Connecting states indicates outgoing call has been initiated and waiting for a response.
   /// </summary>
   public class CConnectingState : CAbstractState
   {
@@ -292,7 +306,7 @@ namespace Sipek.Common.CallControl
 
   #region AlertingState
   /// <summary>
-  /// 
+  /// Alerting state indicates other side accepts the call. Play ring back tone.
   /// </summary>
   public class CAlertingState : CAbstractState
   {
@@ -334,7 +348,7 @@ namespace Sipek.Common.CallControl
 
   #region ActiveState
   /// <summary>
-  /// CActiveState
+  /// Active state indicates converstation. 
   /// </summary>
   public class CActiveState : CAbstractState
   {
@@ -398,7 +412,7 @@ namespace Sipek.Common.CallControl
 
   #region ReleasedState
   /// <summary>
-  /// CReleasedState
+  /// Released State indicates call has been released and waiting for destruction.
   /// </summary>
   public class CReleasedState : CAbstractState
   {
@@ -436,7 +450,7 @@ namespace Sipek.Common.CallControl
 
   #region IncomingState
   /// <summary>
-  /// CIncomingState
+  /// Incoming state indicates incoming call. Check CFx and DND features. Start ringer. 
   /// </summary>
   public class CIncomingState : CAbstractState
   {
@@ -523,7 +537,7 @@ namespace Sipek.Common.CallControl
 
   #region HoldingState
   /// <summary>
-  /// CHoldingState
+  /// Holding state indicates call is hodling.
   /// </summary>
   public class CHoldingState : CAbstractState
   {
