@@ -4,6 +4,7 @@ using System.Text;
 
 namespace Sipek.Common
 {
+  ///
   // event methods prototypes
   public delegate void DCallStateChanged(int callId, int callState, string info);
   public delegate void DCallIncoming(int callId, string number, string info);
@@ -16,9 +17,8 @@ namespace Sipek.Common
 
    
   /// <summary>
-  /// Non-call oriented VoIP interface. 
-  /// It define events invoked by VoIP stack.
-  /// API consists of methods invoked by user.
+  /// Non-call oriented VoIP interface defines events invoked by VoIP stack and 
+  /// API consisting methods invoked by user.
   /// </summary>
   public abstract class IVoipProxy
   {
@@ -28,49 +28,67 @@ namespace Sipek.Common
     /// Events exposed to user layers. A protected virtual method added because 
     /// derived classes cannot invoke events directly.
     /// </summary>
+    
 
+    /// <summary>
+    /// CallStateChanged event trigger by VoIP stack when call state changed
+    /// </summary>
     public event DCallStateChanged CallStateChanged;
     protected void BaseCallStateChanged(int callId, int callState, string info)
     {
       if (null != CallStateChanged) CallStateChanged(callId, callState, info);
     }
-
+    /// <summary>
+    /// CallIncoming event triggered by VoIP stack when new incoming call arrived
+    /// </summary>
     public event DCallIncoming CallIncoming;
     protected void BaseIncomingCall(int callId, string number, string info)
     {
       if (null != CallIncoming) CallIncoming(callId, number, info);
     }
-
+    /// <summary>
+    /// CallNotification event trigger by VoIP stack when call notification arrived
+    /// </summary>
     public event DCallNotification CallNotification;
     protected void BaseCallNotification(int callId, ECallNotification notifFlag, string text)
     {
       if (null != CallNotification) CallNotification(callId, notifFlag, text);
     }
-
+    /// <summary>
+    /// AccountStateChanged event trigger by VoIP stack when registration state changed
+    /// </summary>
     public event DAccountStateChanged AccountStateChanged;
     protected void BaseAccountStateChanged(int accountId, int accState)
     {
       if (null != AccountStateChanged) AccountStateChanged(accountId, accState);
     }
-
+    /// <summary>
+    /// MessageReceived event trigger by VoIP stack when instant message arrived
+    /// </summary>
     public event DMessageReceived MessageReceived;
     protected void BaseMessageReceived(string from, string text)
     {
       if (null != MessageReceived) MessageReceived(from, text);
     }
-
+    /// <summary>
+    /// BUddyStatusChanged event trigger by VoIP stack when buddy status changed
+    /// </summary>
     public event DBuddyStatusChanged BuddyStatusChanged;
     protected void BaseBuddyStatusChanged(int buddyId, int status, string text)
     {
       if (null != BuddyStatusChanged) BuddyStatusChanged(buddyId, status, text);
     }
-
+    /// <summary>
+    /// DtmfDigitReceived event trigger by VoIP stack when DTMF is detected 
+    /// </summary>
     public event DDtmfDigitReceived DtmfDigitReceived;
     protected void BaseDtmfDigitReceived(int callId, int digit)
     {
       if (null != DtmfDigitReceived) DtmfDigitReceived(callId, digit);
     }
-
+    /// <summary>
+    /// MessageWaitingIndication event trigger by VoIP stack when MWI indication arrived 
+    /// </summary>
     public event DMessageWaitingNotification MessageWaitingIndication;
     protected void BaseMessageWaitingIndication(int mwi, string text)
     {
@@ -80,7 +98,9 @@ namespace Sipek.Common
     #endregion events
 
     #region Properties
-
+    /// <summary>
+    /// Flag indicating stack initialization status
+    /// </summary>
     public abstract bool IsInitialized
     {
       get;
@@ -89,24 +109,72 @@ namespace Sipek.Common
     #endregion 
 
     #region Public methods
-
+    /// <summary>
+    /// Initialize VoIP stack
+    /// </summary>
+    /// <returns></returns>
     public abstract int initialize();
+
+    /// <summary>
+    /// Shutdown VoIP stack
+    /// </summary>
+    /// <returns></returns>
     public abstract int shutdown();
 
+    /// <summary>
+    /// Register all configured accounts
+    /// </summary>
+    /// <returns></returns>
     public abstract int registerAccounts();
 
+    /// <summary>
+    /// Add buddy to buddy list and start subscribe presence
+    /// </summary>
+    /// <param name="ident">buddy identification</param>
+    /// <returns></returns>
     public abstract int addBuddy(string ident);
 
+    /// <summary>
+    /// Delete buddy with given identification
+    /// </summary>
+    /// <param name="buddyId">buddy identification</param>
+    /// <returns></returns>
     public abstract int delBuddy(int buddyId);
 
+    /// <summary>
+    /// Send Instant Message
+    /// </summary>
+    /// <param name="dest">Destination part of URI</param>
+    /// <param name="message">Message Content</param>
+    /// <returns></returns>
     public abstract int sendMessage(string dest, string message);
 
+    /// <summary>
+    /// Set device status for default account 
+    /// </summary>
+    /// <param name="accId">Account id</param>
+    /// <param name="presence_state">Presence state - User Status</param>
+    /// <returns></returns>
     public abstract int setStatus(int accId, EUserStatus presence_state);
 
+    /// <summary>
+    /// Set codec priority
+    /// </summary>
+    /// <param name="item">Codec Name</param>
+    /// <param name="p">priority</param>
     public abstract void setCodecPrioroty(string item, int p);
 
+    /// <summary>
+    /// Get number of codecs in list
+    /// </summary>
+    /// <returns>Number of codecs</returns>
     public abstract int getNoOfCodecs();
 
+    /// <summary>
+    /// Get codec by index
+    /// </summary>
+    /// <param name="i">codec index</param>
+    /// <returns>Codec Name</returns>
     public abstract string getCodec(int i);
     
     #endregion
@@ -118,33 +186,87 @@ namespace Sipek.Common
   public interface ICallProxyInterface
   {
     #region Properties
+    /// <summary>
+    /// Call/Session identification. All public methods refers to this identification
+    /// </summary>
     int SessionId
     { get; set; }
     #endregion
 
     #region Public Methods
-
+    /// <summary>
+    /// Make call request
+    /// </summary>
+    /// <param name="dialedNo">Calling Number</param>
+    /// <param name="accountId">Account Id</param>
+    /// <returns>Session Identification</returns>
     int makeCall(string dialedNo, int accountId);
 
+    /// <summary>
+    /// End call
+    /// </summary>
+    /// <returns></returns>
     bool endCall();
 
+    /// <summary>
+    /// Report that device is alerted
+    /// </summary>
+    /// <returns></returns>
     bool alerted();
 
+    /// <summary>
+    /// Report that call is accepted/answered
+    /// </summary>
+    /// <returns></returns>
     bool acceptCall();
 
+    /// <summary>
+    /// Request call hold
+    /// </summary>
+    /// <returns></returns>
     bool holdCall();
 
+    /// <summary>
+    /// Request retrieve call
+    /// </summary>
+    /// <returns></returns>
     bool retrieveCall();
 
+    /// <summary>
+    /// Tranfer call to a given number
+    /// </summary>
+    /// <param name="number">Number to transfer call to</param>
+    /// <returns></returns>
     bool xferCall(string number);
 
+    /// <summary>
+    /// Transfer call to partner session
+    /// </summary>
+    /// <param name="partnersession">Session to transfer call to</param>
+    /// <returns></returns>
     bool xferCallSession(int partnersession);
 
+    /// <summary>
+    /// Request three party conference
+    /// </summary>
+    /// <param name="partnersession">Partner session for conference with</param>
+    /// <returns></returns>
     bool threePtyCall(int partnersession);
 
-    //bool serviceRequest(EServiceCodes code, int session);
+    /// <summary>
+    /// Request service (TODO)
+    /// </summary>
+    /// <param name="code"></param>
+    /// <param name="dest"></param>
+    /// <returns></returns>
     bool serviceRequest(int code, string dest);
 
+    /// <summary>
+    /// Dial digit by DTMF
+    /// </summary>
+    /// <param name="digits">digit string</param>
+    /// <param name="mode">digit mode (TODO)</param>
+    /// <returns></returns>
     bool dialDtmf(string digits, int mode);
 
     #endregion

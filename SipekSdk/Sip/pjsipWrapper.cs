@@ -166,7 +166,7 @@ namespace Sipek.Sip
     /// <returns></returns>
     public bool xferCall(string number)
     {
-      string uri = "sip:" + number + "@" + Config.getAccount().HostName;
+      string uri = "sip:" + number + "@" + Config.getAccount(Config.DefaultAccountIndex).HostName;
       dll_xferCall(SessionId, uri);
       return true;
     }
@@ -204,7 +204,7 @@ namespace Sipek.Sip
     /// <returns></returns>
     public bool serviceRequest(int code, string dest)
     {
-      string destUri = "<sip:" + dest + "@" + Config.getAccount().HostName + ">";
+      string destUri = "<sip:" + dest + "@" + Config.getAccount(Config.DefaultAccountIndex).HostName + ">";
       dll_serviceReq(SessionId, (int)code, destUri);
       return true;
     }
@@ -472,7 +472,7 @@ namespace Sipek.Sip
     // Buddy list handling
     public override int addBuddy(string ident)
     {
-      string uri = "sip:" + ident + "@" + Config.getAccount().HostName;
+      string uri = "sip:" + ident + "@" + Config.getAccount(Config.DefaultAccountIndex).HostName;
       return dll_addBuddy(uri, true);
     }
 
@@ -483,7 +483,7 @@ namespace Sipek.Sip
 
     public override int sendMessage(string dest, string message)
     {
-      string uri = "sip:" + dest + "@" + Config.getAccount().HostName;
+      string uri = "sip:" + dest + "@" + Config.getAccount(Config.DefaultAccountIndex).HostName;
       return dll_sendMessage(Config.DefaultAccountIndex, uri, message);
     }
 
