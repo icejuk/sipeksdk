@@ -85,6 +85,11 @@ namespace Sipek.Common.CallControl
       get { return Factory.getConfigurator(); }
     }
 
+    /// <summary>
+    /// Call indexer 
+    /// </summary>
+    /// <param name="index">a sessionId</param>
+    /// <returns>an instance of call state with provided sessionId</returns>
     public CStateMachine this[int index]
     {
       get
@@ -94,6 +99,9 @@ namespace Sipek.Common.CallControl
       }
     }
 
+    /// <summary>
+    /// Retrieve a list of all calls (state machines)
+    /// </summary>
     public Dictionary<int, CStateMachine> CallList
     {
       get { return _calls; }
@@ -139,9 +147,15 @@ namespace Sipek.Common.CallControl
 
     #region Events
 
-    public delegate void DCallStateRefresh();  // define callback type 
+    public delegate void DCallStateRefresh(int sessionId);  // define callback type 
+    /// <summary>
+    /// Notify about call state changed in automaton with given sessionId
+    /// </summary>
     public event DCallStateRefresh CallStateRefresh;
 
+    /// <summary>
+    /// Action definitions for pending events.
+    /// </summary>
     enum EPendingActions : int
     {
       EUserAnswer,
@@ -150,7 +164,8 @@ namespace Sipek.Common.CallControl
     };
 
     /// <summary>
-    /// 
+    /// Internal mechanism to execute 2 stage actions. Some user events requires 
+    /// two request to VoIP side. Depending on result the second action is executed.
     /// </summary>
     class PendingAction
     {
@@ -199,20 +214,20 @@ namespace Sipek.Common.CallControl
     /// <summary>
     /// Inform GUI to be refreshed 
     /// </summary>
-    public void updateGui()
+    public void updateGui(int sessionId)
     {
-      if (null != CallStateRefresh) CallStateRefresh();
+      if (null != CallStateRefresh) CallStateRefresh(sessionId);
     }
 
     #endregion Events
 
     #region Public methods
 
-    ///////////////////////////////////////////////////////////////////
-    /// Common routines
-    
-    ////
-    public int initialize()
+    /// <summary>
+    /// Initialize telephony and VoIP stack. On success register accounts.
+    /// </summary>
+    /// <returns>initialiation status</returns>
+    public int Initialize()
     {
       int status = 0;
       ///
@@ -239,19 +254,19 @@ namespace Sipek.Common.CallControl
     }
 
     /// <summary>
-    /// Shutdown telephony
+    /// Shutdown telephony and VoIP stack
     /// </summary>
     public void Shutdown()
     {
       this.CallList.Clear();
       Factory.getCommonProxy().shutdown();
+      _initialized = false;
+      this.CallStateRefresh = null;
     }
 
-    /////////////////////////////////////////////////////////////////////////////////////////
-    // Call handling routines
 
     /// <summary>
-    /// Handler for outgoing calls (accountId is not known).
+    /// Create outgoing call using default accountId. 
     /// </summary>
     /// <param name="number">Number to call</param>
     public CStateMachine createOutboundCall(string number)
@@ -261,7 +276,7 @@ namespace Sipek.Common.CallControl
     }
 
     /// <summary>
-    /// Handler for outgoing calls (sessionId is not known yet).
+    /// Create outgoing call from a given account.
     /// </summary>
     /// <param name="number">Number to call</param>
     /// <param name="accountId">Specified account Id </param>
@@ -302,30 +317,6 @@ namespace Sipek.Common.CallControl
       }
       return null;
     }
-    
-    /// <summary>
-    /// Handler for incoming calls (sessionId is known).
-    /// Check for forwardings or DND
-    /// </summary>
-    /// <param name="sessionId"></param>
-    /// <param name="number"></param>
-    /// <returns>call instance</returns>
-    public CStateMachine createSession(int sessionId, string number)
-    {
-      CStateMachine call = new CStateMachine(this);
-
-      if (null == call) return null; 
-
-      // save session parameters
-      call.Session = sessionId;
-      // add call to call table
-      _calls.Add(sessionId, call);
-      
-      // notify GUI
-      updateGui();
-
-      return call;
-    }
 
     /// <summary>
     /// Destroy call 
@@ -334,8 +325,8 @@ namespace Sipek.Common.CallControl
     public void destroySession(int session)
     {
       _calls.Remove(session);
-
-      updateGui();
+      // Warning: this call no longer exists
+      updateGui(session);
     }
 
     /// <summary>
@@ -410,8 +401,6 @@ namespace Sipek.Common.CallControl
       return list;
     }
 
-    ///////////////////////////////////////////////////////////////////////////////
-    // User handling routines
 
     /// <summary>
     /// User triggers a call release for a given session
@@ -530,6 +519,7 @@ namespace Sipek.Common.CallControl
     #endregion  // public methods
 
     #region Private Methods
+
     ////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>
     /// 
@@ -571,15 +561,24 @@ namespace Sipek.Common.CallControl
     }
 
     /// <summary>
-    /// 
+    /// Create session for incoming call.
     /// </summary>
-    /// <param name="callId"></param>
-    /// <param name="number"></param>
-    /// <param name="info"></param>
-    private void OnIncomingCall(int callId, string number, string info)
+    /// <param name="sessionId">session identification</param>
+    /// <param name="number">number from calling party</param>
+    /// <param name="info">additional info of calling party</param>
+    private void OnIncomingCall(int sessionId, string number, string info)
     {
-      CStateMachine sm = createSession(callId, number);
-      sm.getState().incomingCall(number, info);
+      CStateMachine call = new CStateMachine(this);
+
+      if (null == call) return;
+
+      // save session parameters
+      call.Session = sessionId;
+      // add call to call table
+      _calls.Add(sessionId, call);
+
+      // inform automaton for incoming call
+      call.getState().incomingCall(number, info);
     }
 
     private void OnCallNotification(int callId, ECallNotification notFlag, string text)
