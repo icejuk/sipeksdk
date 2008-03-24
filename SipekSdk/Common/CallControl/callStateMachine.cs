@@ -354,7 +354,7 @@ namespace Sipek.Common.CallControl
         case EStateId.INCOMING: changeState(_stateIncoming); break;
         case EStateId.HOLDING: changeState(_stateHolding); break;
       }
-      if (null != _manager) _manager.updateGui();
+      if (null != _manager) _manager.updateGui(this.Session);
     }
 
     /// <summary>
