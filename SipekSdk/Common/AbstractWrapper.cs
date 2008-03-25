@@ -71,7 +71,7 @@ namespace Sipek.Common
       if (null != MessageReceived) MessageReceived(from, text);
     }
     /// <summary>
-    /// BUddyStatusChanged event trigger by VoIP stack when buddy status changed
+    /// BuddyStatusChanged event trigger by VoIP stack when buddy status changed
     /// </summary>
     public event DBuddyStatusChanged BuddyStatusChanged;
     protected void BaseBuddyStatusChanged(int buddyId, int status, string text)
@@ -119,7 +119,18 @@ namespace Sipek.Common
     /// Shutdown VoIP stack
     /// </summary>
     /// <returns></returns>
-    public abstract int shutdown();
+    public virtual int shutdown()
+    {
+      AccountStateChanged = null;
+      MessageReceived = null;
+      BuddyStatusChanged = null;
+      DtmfDigitReceived = null;
+      MessageWaitingIndication = null;
+      CallNotification = null;
+      CallIncoming = null;
+      CallStateChanged = null;
+      return 1;
+    }
 
     /// <summary>
     /// Register all configured accounts

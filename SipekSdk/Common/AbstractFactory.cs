@@ -68,7 +68,7 @@ namespace Sipek.Common
     IConfiguratorInterface _config = new NullConfigurator();
     IVoipProxy _common = new NullVoipProxy();
     IMediaProxyInterface _media = new NullMediaProxy();
-    ICallLogInterface _logger = new CNullCallLog();
+    ICallLogInterface _logger = new NullCallLogger();
 
     #region AbstractFactory members
     // factory methods

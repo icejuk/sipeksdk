@@ -122,7 +122,7 @@ namespace Sipek.Common
 
   #region Null Pattern
 
-  public class CNullCallLog : ICallLogInterface
+  public class NullCallLogger : ICallLogInterface
   {
     public void addCall(ECallType type, string number, string name, System.DateTime time, System.TimeSpan duration) { }
 
