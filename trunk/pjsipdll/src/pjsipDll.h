@@ -41,7 +41,6 @@ typedef int __stdcall fptr_mwi(int mwi, char* info);
 extern "C" PJSIPDLL_DLL_API int onRegStateCallback(fptr_regstate cb);	  // register registration notifier
 extern "C" PJSIPDLL_DLL_API int onCallStateCallback(fptr_callstate cb); // register call notifier
 extern "C" PJSIPDLL_DLL_API int onCallIncoming(fptr_callincoming cb); // register incoming call notifier
-extern "C" PJSIPDLL_DLL_API int getConfigDataCallback(fptr_getconfigdata cb); // get config data
 extern "C" PJSIPDLL_DLL_API int onCallHoldConfirmCallback(fptr_callholdconf cb); // register call notifier
 //extern "C" PJSIPDLL_DLL_API int onCallRetrieveConfirm(fptr_callretrieveconf cb); // register call notifier
 extern "C" PJSIPDLL_DLL_API int onMessageReceivedCallback(fptr_msgrec cb); // register call notifier
@@ -57,7 +56,7 @@ extern "C" PJSIPDLL_DLL_API int dll_getNumOfCodecs();
 extern "C" PJSIPDLL_DLL_API char* dll_getCodec(int index);
 extern "C" PJSIPDLL_DLL_API int dll_setCodecPriority(char* name, int index);
 // pjsip call API
-extern "C" PJSIPDLL_DLL_API int dll_registerAccount(char* uri, char* reguri, char* name, char* username, char* password);
+extern "C" PJSIPDLL_DLL_API int dll_registerAccount(char* uri, char* reguri, char* name, char* username, char* password, bool ims);
 extern "C" PJSIPDLL_DLL_API int dll_makeCall(int accountId, char* uri); 
 extern "C" PJSIPDLL_DLL_API int dll_releaseCall(int callId); 
 extern "C" PJSIPDLL_DLL_API int dll_answerCall(int callId, int code);
