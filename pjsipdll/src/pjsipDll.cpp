@@ -19,11 +19,8 @@
 * 
 */
 
-#include "pjsipDll.h"
+#include "pjsipDll.h" 
 #include <pjsua-lib/pjsua.h>
-#include <string>
-
-using namespace std;
 
 #define THIS_FILE	"pjsipDll.cpp"
 #define NO_LIMIT	(int)0x7FFFFFFF
@@ -538,7 +535,7 @@ PJSIPDLL_DLL_API int dll_init(int listenPort)
 	//////////////////////////////////////////////////////////////////////////
 
 #ifdef STEREO_DEMO
-	stereo_demo();
+	stereo_demo(); 
 #endif
 
 	/* Initialize calls data */
@@ -558,6 +555,10 @@ PJSIPDLL_DLL_API int dll_init(int listenPort)
 			&transport_id);
 		if (status != PJ_SUCCESS)
 			goto on_error;		
+
+		/* Add local account */
+		pjsua_acc_add_local(transport_id, PJ_TRUE, &aid);
+		//pjsua_acc_set_online_status(current_acc, PJ_TRUE);
 	}
 
 	/* Add TCP transport unless it's disabled */
@@ -569,7 +570,7 @@ PJSIPDLL_DLL_API int dll_init(int listenPort)
 			goto on_error;
 
 		/* Add local account */
-		//pjsua_acc_add_local(transport_id, PJ_TRUE, NULL);
+		pjsua_acc_add_local(transport_id, PJ_TRUE, NULL);
 		//pjsua_acc_set_online_status(current_acc, PJ_TRUE);
 	}
 
@@ -659,28 +660,36 @@ pj_status_t status;
 }
 
 //////////////////////////////////////////////////////////////////////////
-int dll_registerAccount(char* uri, char* reguri, char* domain, char* username, char* password)
+int dll_registerAccount(char* uri, char* reguri, char* domain, char* username, char* password, bool ims)
 {
-pjsua_acc_config thisAccountsCfg; 
+pjsua_acc_config accConfig; 
 
-	pjsua_acc_config_default(&thisAccountsCfg);
+	pjsua_acc_config_default(&accConfig);
 
-	//4.) set parameters 
-	thisAccountsCfg.id = pj_str(uri);
-	thisAccountsCfg.reg_timeout = 3600;
-	thisAccountsCfg.reg_uri = pj_str(reguri);
-	thisAccountsCfg.publish_enabled = PJ_TRUE; // enable publish
+	// set parameters 
+	accConfig.id = pj_str(uri);
+	accConfig.reg_timeout = 3600;
+	accConfig.reg_uri = pj_str(reguri);
+	accConfig.publish_enabled = PJ_TRUE; // enable publish
 
 	// AUTHENTICATION
-	thisAccountsCfg.cred_count = 1;
-	thisAccountsCfg.cred_info[0].username = pj_str(username);
-	thisAccountsCfg.cred_info[0].realm = pj_str(domain);
-	thisAccountsCfg.cred_info[0].scheme = pj_str("digest");
-	thisAccountsCfg.cred_info[0].data_type = PJSIP_CRED_DATA_PLAIN_PASSWD;
-	thisAccountsCfg.cred_info[0].data = pj_str(password);
+	accConfig.cred_count = 1;
+	accConfig.cred_info[0].username = pj_str(username);
+	accConfig.cred_info[0].realm = pj_str(domain);
+	accConfig.cred_info[0].scheme = pj_str("digest");
+	accConfig.cred_info[0].data_type = PJSIP_CRED_DATA_PLAIN_PASSWD | PJSIP_CRED_DATA_EXT_AKA;
+	accConfig.cred_info[0].data = pj_str(password);
+
+	// IMS specifics
+	if (ims == true)
+	{
+		// AKA extended info
+    accConfig.cred_info[0].ext.aka.k = pj_str(password);
+    accConfig.cred_info[0].ext.aka.cb = &pjsip_auth_create_aka_response;
+	}
 
 	pjsua_acc_id pjAccId= -1;
-	int status = pjsua_acc_add(&thisAccountsCfg, PJ_TRUE, &pjAccId);
+	int status = pjsua_acc_add(&accConfig, PJ_TRUE, &pjAccId);
 
 	return pjAccId;
 }
@@ -693,7 +702,7 @@ pjsua_acc_id ids[16];
 
 	pjsua_enum_accs( &ids[0], &count);
 
-	for (int i=0; i<count; i++)
+	for (unsigned int i=0; i<count; i++)
 	{
 		status |= pjsua_acc_del(ids[i]);
 	}
@@ -921,22 +930,26 @@ int dll_sendInfo(int callid, char* content)
 pj_status_t status;
 pjsua_msg_data msg_data;
 
-	string temp = "Signal="; 
-	temp += content;
-
 	msg_data.content_type = pj_str("application/dtmf-relay");
-	msg_data.msg_body = pj_str((char*)temp.c_str());
-		
-	status = pjsua_call_send_request(callid, &pj_str("INFO"), &msg_data);
+	pj_str_t output; 
 
-	return status;
+	output.ptr = (char*)pj_pool_alloc(app_config.pool, 128);
+
+	pj_strcat2(&output,	"Signal=");
+	pj_strcat(&output,	&pj_str(content));
+	
+	msg_data.msg_body = output;
+
+	// Send INFO request	
+	status = pjsua_call_send_request(callid, &pj_str("INFO"), &msg_data);
+	return status;	
 }	
 
 //////////////////////////////////////////////////////////////////////////////
 int dll_getNumOfCodecs()
 {
 pjsua_codec_info c[32];
-unsigned i, count = PJ_ARRAY_SIZE(c);
+unsigned count = PJ_ARRAY_SIZE(c);
 
 	pjsua_enum_codecs(c, &count);
 
@@ -946,7 +959,7 @@ unsigned i, count = PJ_ARRAY_SIZE(c);
 char* dll_getCodec(int index)
 {
 pjsua_codec_info c[32];
-unsigned i, count = PJ_ARRAY_SIZE(c);
+unsigned count = PJ_ARRAY_SIZE(c);
 
 	pjsua_enum_codecs(c, &count);
 	
