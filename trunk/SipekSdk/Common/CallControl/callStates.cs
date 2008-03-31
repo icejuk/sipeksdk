@@ -141,6 +141,11 @@ namespace Sipek.Common.CallControl
       return -1;
     }
 
+    public virtual int makeCallByUri(string uri)
+    {
+      return -1;
+    }
+
     public virtual bool endCall()
     {
       return true;

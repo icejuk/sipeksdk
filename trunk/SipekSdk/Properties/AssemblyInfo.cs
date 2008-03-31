@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("SipekSdk")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("IskraTEL")]
+[assembly: AssemblyCompany("sasacoh")]
 [assembly: AssemblyProduct("SipekSdk")]
-[assembly: AssemblyCopyright("Copyright © IskraTEL 2008")]
+[assembly: AssemblyCopyright("Copyright © sasacoh 2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

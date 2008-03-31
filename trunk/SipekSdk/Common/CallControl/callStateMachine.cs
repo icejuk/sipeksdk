@@ -101,7 +101,7 @@ namespace Sipek.Common.CallControl
     /// </summary>
     public IMediaProxyInterface MediaProxy
     {
-      get { return _manager.Factory.getMediaProxy(); }
+      get { return _manager.Factory.MediaProxy; }
     }
 
     private string _callingNumber = "";
@@ -229,7 +229,7 @@ namespace Sipek.Common.CallControl
     /// </summary>
     public IConfiguratorInterface Config
     {
-      get { return _manager.Factory.getConfigurator();  }
+      get { return _manager.Factory.Configurator;  }
     }
 
     /// <summary>
@@ -237,7 +237,7 @@ namespace Sipek.Common.CallControl
     /// </summary>
     protected ICallLogInterface CallLoger
     {
-      get { return _manager.Factory.getCallLogger();  }
+      get { return _manager.Factory.CallLogger;  }
     }
 
     #endregion
@@ -254,7 +254,7 @@ namespace Sipek.Common.CallControl
       _manager = manager;
 
       // create call proxy
-      _sigProxy = _manager.Factory.createCallProxy();
+      _sigProxy = _manager.Factory.CommonProxy.createCallProxy();
 
       // initialize call states
       _stateIdle = new CIdleState(this);

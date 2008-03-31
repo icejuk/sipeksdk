@@ -29,34 +29,43 @@ namespace Sipek.Common
     ITimer createTimer();
 
     /// <summary>
-    /// Factory creator. Creates new instance of call proxy. 
-    /// </summary>
-    /// <returns>ICallProxyInterface instance</returns>
-    ICallProxyInterface createCallProxy();
-
-    /// <summary>
     /// Factory getter. Returns IMediaProxyInterface reference
     /// </summary>
     /// <returns>IMediaProxyInterface reference</returns>
-    IMediaProxyInterface getMediaProxy();
+    IMediaProxyInterface MediaProxy
+    {
+      get;
+      set;
+    }
 
     /// <summary>
     /// Factory getter. Returns reference to call log instance.
     /// </summary>
     /// <returns>ICallLogInterface instance</returns>
-    ICallLogInterface getCallLogger();
+    ICallLogInterface CallLogger
+    {
+      get;
+      set;
+    }
 
     /// <summary>
     /// Factory getter. Returns reference to Configurator instance.
     /// </summary>
     /// <returns>IConfiguratorInterface reference</returns>
-    IConfiguratorInterface getConfigurator();
+    IConfiguratorInterface Configurator
+    {
+      get;
+      set;
+    }
 
     /// <summary>
-    /// Factory getter. Returns an instance of VoIP proxy interface
+    /// 
     /// </summary>
-    /// <returns>IVoipProxy instance</returns>
-    IVoipProxy getCommonProxy();
+    IVoipProxy CommonProxy
+    {
+      get;
+      set;
+    }
   }
 
   #region Null Pattern
@@ -77,32 +86,31 @@ namespace Sipek.Common
       return new NullTimer();
     }
 
-    //TODO
-    public ICallProxyInterface createCallProxy()
+    public IVoipProxy CommonProxy
     {
-      return new NullCallProxy();
+      get { return _common; }
+      set { }
     }
 
-    public IVoipProxy getCommonProxy()
+    public IConfiguratorInterface Configurator
     {
-      return _common;
-    }
-
-    public IConfiguratorInterface getConfigurator()
-    {
-      return _config;
+      get { return _config; }
+      set {}
     }
 
     // Implement getters
-    public IMediaProxyInterface getMediaProxy()
+    public IMediaProxyInterface MediaProxy
     {
-      return _media;
+      get { return _media; }
+      set { }
     }
 
-    public ICallLogInterface getCallLogger()
+    public ICallLogInterface CallLogger
     {
-      return _logger;
+      get { return _logger; }
+      set { }
     }
+
     #endregion
   }
 

@@ -248,7 +248,7 @@ namespace Sipek.Common
     }
     public int DefaultAccountIndex
     {
-      get { return 0; }
+      get { return 1; }
       set { }
     }
 

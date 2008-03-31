@@ -82,7 +82,7 @@ namespace Sipek.Common.CallControl
 
     public IConfiguratorInterface Config
     {
-      get { return Factory.getConfigurator(); }
+      get { return Factory.Configurator; }
     }
 
     /// <summary>
@@ -234,20 +234,20 @@ namespace Sipek.Common.CallControl
       if (!isInitialized)
       {
         // register to signaling proxy interface
-        Factory.getCommonProxy().CallStateChanged += OnCallStateChanged;
-        Factory.getCommonProxy().CallIncoming += OnIncomingCall;
-        Factory.getCommonProxy().CallNotification += OnCallNotification;
+        Factory.CommonProxy.CallStateChanged += OnCallStateChanged;
+        Factory.CommonProxy.CallIncoming += OnIncomingCall;
+        Factory.CommonProxy.CallNotification += OnCallNotification;
 
         // Initialize call table
         _calls = new Dictionary<int, CStateMachine>(); 
         
         // initialize voip proxy
-        status = Factory.getCommonProxy().initialize();
+        status = Factory.CommonProxy.initialize();
         if (status != 0) return status;
       }
 
       // (re)register 
-      Factory.getCommonProxy().registerAccounts(); 
+      Factory.CommonProxy.registerAccounts(); 
 
       _initialized = true;
       return status;
@@ -259,7 +259,7 @@ namespace Sipek.Common.CallControl
     public void Shutdown()
     {
       this.CallList.Clear();
-      Factory.getCommonProxy().shutdown();
+      Factory.CommonProxy.shutdown();
       _initialized = false;
       this.CallStateRefresh = null;
     }
