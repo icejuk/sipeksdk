@@ -62,11 +62,11 @@ namespace Sipek.Sip
     #endregion
 
     #region Properties
-    private AbstractFactory _factory = new NullFactory();
+    private IConfiguratorInterface _config = new NullConfigurator();
 
     public IConfiguratorInterface Config
     {
-      get { return _factory.getConfigurator(); }
+      get { return _config; }
     }
 
     private int _sessionId;
@@ -79,9 +79,9 @@ namespace Sipek.Sip
 
     #region Constructor
 
-    public CSipCallProxy(AbstractFactory factory)
+    public CSipCallProxy(IConfiguratorInterface config)
     {
-      _factory = factory;
+      _config = config;
     }
 
     #endregion Constructor
@@ -96,10 +96,19 @@ namespace Sipek.Sip
     /// <returns>SessionId chosen by pjsip stack</returns>
     public int makeCall(string dialedNo, int accountId)
     {
-      if (!_factory.getCommonProxy().IsInitialized) return -1;
-
       string uri = "sip:" + dialedNo + "@" + Config.getAccount(accountId).HostName;
       SessionId = dll_makeCall(accountId, uri);
+      return SessionId;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="uri"></param>
+    /// <returns></returns>
+    public int makeCallByUri(string uri)
+    {
+      SessionId = dll_makeCall(1, uri);
       return SessionId;
     }
 
@@ -231,7 +240,6 @@ namespace Sipek.Sip
     }
 
     #endregion Methods
-
   }
 
   /// <summary>
@@ -260,17 +268,6 @@ namespace Sipek.Sip
     #endregion
 
     #region Properties
-
-    private AbstractFactory _factory = new NullFactory();
-    public AbstractFactory Factory
-    {
-      set { _factory = value; }
-    }
-
-    private IConfiguratorInterface Config
-    {
-      get { return _factory.getConfigurator(); }
-    }
 
     private bool _initialized = false;
     public override bool IsInitialized
@@ -310,7 +307,7 @@ namespace Sipek.Sip
     [DllImport("pjsipDll.dll")]
     private static extern int dll_removeAccounts();
     [DllImport("pjsipDll.dll")]
-    private static extern StringBuilder dll_getCodec(int index);
+    private static extern IntPtr dll_getCodec(int index);
     [DllImport("pjsipDll.dll")]
     private static extern int dll_getNumOfCodecs();
     [DllImport("pjsipDll.dll")]
@@ -494,10 +491,7 @@ namespace Sipek.Sip
 
     public override string getCodec(int index)
     {
-      StringBuilder buf = dll_getCodec(index);
-      if (null == buf) return "";
-
-      return buf.ToString();
+      return Marshal.PtrToStringAnsi(dll_getCodec(index));
     }
 
     public override int getNoOfCodecs()
@@ -514,6 +508,11 @@ namespace Sipek.Sip
       if (!IsInitialized) return;
 
       dll_setCodecPriority(codecname, priority);
+    }
+
+    public override ICallProxyInterface createCallProxy()
+    {
+      return new CSipCallProxy(Config);
     }
 
     #endregion Methods

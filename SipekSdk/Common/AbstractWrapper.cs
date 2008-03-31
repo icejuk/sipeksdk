@@ -98,6 +98,14 @@ namespace Sipek.Common
     #endregion events
 
     #region Properties
+    
+    private IConfiguratorInterface _config = new NullConfigurator();
+    public IConfiguratorInterface Config
+    {
+      set { _config = value; }
+      get { return _config; }
+    }
+
     /// <summary>
     /// Flag indicating stack initialization status
     /// </summary>
@@ -187,7 +195,13 @@ namespace Sipek.Common
     /// <param name="i">codec index</param>
     /// <returns>Codec Name</returns>
     public abstract string getCodec(int i);
-    
+
+    /// <summary>
+    /// Creates an instance of call proxy 
+    /// </summary>
+    /// <returns></returns>
+    public abstract ICallProxyInterface createCallProxy();
+
     #endregion
   }
 
@@ -212,6 +226,13 @@ namespace Sipek.Common
     /// <param name="accountId">Account Id</param>
     /// <returns>Session Identification</returns>
     int makeCall(string dialedNo, int accountId);
+
+    /// <summary>
+    /// Make outgoing call by Sip URI, e.g. sip:1234@sipek.sipserver.com
+    /// </summary>
+    /// <param name="uri">destination URI</param>
+    /// <returns>Session Identification</returns>
+    int makeCallByUri(string uri);
 
     /// <summary>
     /// End call
@@ -298,6 +319,11 @@ namespace Sipek.Common
       return 1;
     }
 
+    public int makeCallByUri(string uri)
+    {
+      return 1;
+    }
+
     public bool endCall()
     {
       return false;
@@ -347,10 +373,6 @@ namespace Sipek.Common
     {
       return false;
     }
-
-    #endregion
-
-    #region ICallProxyInterface Members
 
     public int SessionId
     {
@@ -411,8 +433,6 @@ namespace Sipek.Common
 
     public override string getCodec(int i) { return ""; }
 
-    #endregion
-
     public override bool IsInitialized
     {
       get
@@ -424,7 +444,14 @@ namespace Sipek.Common
         throw new Exception("The method or operation is not implemented.");
       }
     }
+
+    public override ICallProxyInterface createCallProxy()
+    {
+      throw new Exception("The method or operation is not implemented.");
+    }
+    #endregion
+
   }
-  #endregion
+  #endregion  Null Pattern
 
 }
