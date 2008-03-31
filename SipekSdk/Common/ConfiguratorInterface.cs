@@ -109,10 +109,6 @@ namespace Sipek.Common
     /// </summary>
     string DomainName { get; set;}
     /// <summary>
-    /// Account registrar port
-    /// </summary>
-    int Port { get; set;}
-    /// <summary>
     /// Account current state (temporary data)
     /// </summary>
     int RegState { get; set;}

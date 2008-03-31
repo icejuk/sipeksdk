@@ -667,6 +667,7 @@ pjsua_acc_config accConfig;
 	pjsua_acc_config_default(&accConfig);
 
 	// set parameters 
+	accConfig.auth_pref.initial_auth = PJ_FALSE; // disable initial auth (IMS) by defualt 
 	accConfig.id = pj_str(uri);
 	accConfig.reg_timeout = 3600;
 	accConfig.reg_uri = pj_str(reguri);
@@ -676,13 +677,16 @@ pjsua_acc_config accConfig;
 	accConfig.cred_count = 1;
 	accConfig.cred_info[0].username = pj_str(username);
 	accConfig.cred_info[0].realm = pj_str(domain);
-	accConfig.cred_info[0].scheme = pj_str("digest");
-	accConfig.cred_info[0].data_type = PJSIP_CRED_DATA_PLAIN_PASSWD | PJSIP_CRED_DATA_EXT_AKA;
+	accConfig.cred_info[0].scheme = pj_str("Digest");
+	accConfig.cred_info[0].data_type = PJSIP_CRED_DATA_PLAIN_PASSWD;
 	accConfig.cred_info[0].data = pj_str(password);
 
 	// IMS specifics
 	if (ims == true)
 	{
+		/* Activate IMS settings */
+	  accConfig.auth_pref.initial_auth = PJ_TRUE;
+		accConfig.cred_info[0].data_type |= PJSIP_CRED_DATA_EXT_AKA;
 		// AKA extended info
     accConfig.cred_info[0].ext.aka.k = pj_str(password);
     accConfig.cred_info[0].ext.aka.cb = &pjsip_auth_create_aka_response;
