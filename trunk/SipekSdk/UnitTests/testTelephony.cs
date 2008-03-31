@@ -61,6 +61,11 @@ namespace UnitTest
         throw new Exception("The method or operation is not implemented.");
       }
     }
+
+    public int makeCallByUri(string uri)
+    {
+      throw new Exception("The method or operation is not implemented.");
+    }
   }
 
   public class MockCommonProxy : IVoipProxy
@@ -131,9 +136,12 @@ namespace UnitTest
     {
       BaseIncomingCall(sessionId, number, info);
     }
+
+    public override ICallProxyInterface createCallProxy()
+    {
+      throw new Exception("The method or operation is not implemented.");
+    }
     #endregion
-
-
   }
 
   public class MockMediaProxy : IMediaProxyInterface
@@ -192,6 +200,54 @@ namespace UnitTest
     public IMediaProxyInterface getMediaProxy()
     {
       return _mediaproxy;
+    }
+
+    public IMediaProxyInterface MediaProxy
+    {
+      get
+      {
+        throw new Exception("The method or operation is not implemented.");
+      }
+      set
+      {
+        throw new Exception("The method or operation is not implemented.");
+      }
+    }
+
+    public ICallLogInterface CallLogger
+    {
+      get
+      {
+        throw new Exception("The method or operation is not implemented.");
+      }
+      set
+      {
+        throw new Exception("The method or operation is not implemented.");
+      }
+    }
+
+    public IConfiguratorInterface Configurator
+    {
+      get
+      {
+        throw new Exception("The method or operation is not implemented.");
+      }
+      set
+      {
+        throw new Exception("The method or operation is not implemented.");
+      }
+    }
+
+    IVoipProxy AbstractFactory.CommonProxy
+    {
+      get
+      {
+        throw new Exception("The method or operation is not implemented.");
+      }
+      set
+      {
+        throw new Exception("The method or operation is not implemented.");
+      }
     }
 
     #endregion
