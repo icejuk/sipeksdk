@@ -660,7 +660,7 @@ pj_status_t status;
 }
 
 //////////////////////////////////////////////////////////////////////////
-int dll_registerAccount(char* uri, char* reguri, char* domain, char* username, char* password, bool ims)
+int dll_registerAccount(char* uri, char* reguri, char* domain, char* username, char* password, bool ims, char* proxy)
 {
 pjsua_acc_config accConfig; 
 
@@ -672,6 +672,17 @@ pjsua_acc_config accConfig;
 	accConfig.reg_timeout = 3600;
 	accConfig.reg_uri = pj_str(reguri);
 	accConfig.publish_enabled = PJ_TRUE; // enable publish
+	pj_str_t tmpproxy = pj_str(proxy);
+	if (tmpproxy.slen > 0)
+	{
+		if (pjsua_verify_sip_url(proxy) != 0) {
+			PJ_LOG(1,(THIS_FILE, "Error: invalid SIP URL '%s' in proxy argument", proxy));
+			return PJ_EINVAL;
+		}
+		accConfig.proxy_cnt = 1;
+		pj_strcat2(&tmpproxy, ";lr");
+		accConfig.proxy[0] = tmpproxy;
+	}
 
 	// AUTHENTICATION
 	accConfig.cred_count = 1;
@@ -960,23 +971,22 @@ unsigned count = PJ_ARRAY_SIZE(c);
 	return count;
 }
 
-char* dll_getCodec(int index)
+int dll_getCodec(int index, char* codec)
 {
 pjsua_codec_info c[32];
 unsigned count = PJ_ARRAY_SIZE(c);
 
 	pjsua_enum_codecs(c, &count);
 	
-	if (index >= count) return "";
+	if (index >= count) return -1;
 
 	PJ_LOG(3,(THIS_FILE,"Codec %s: %d", (int)c[index].codec_id.ptr, c[index].codec_id.slen ));
 	// is this memleak?
-	char* codecId = new char[256];
-	memset(codecId, 0, 256);
-	
-	strncpy(codecId , c[index].codec_id.ptr, c[index].codec_id.slen);
+	if (c[index].codec_id.slen >= 256) return -1;
 
-	return codecId;
+	strncpy(codec , c[index].codec_id.ptr, c[index].codec_id.slen);
+
+	return 1;
 }	
 
 int dll_setCodecPriority(char* name, int prio)
