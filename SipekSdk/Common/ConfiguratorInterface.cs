@@ -116,7 +116,10 @@ namespace Sipek.Common
     /// Account IMS features enable flag
     /// </summary>
     bool ImsEnabled { get; set;}
-
+    /// <summary>
+    /// Account Proxy Address (optional)
+    /// </summary>
+    string ProxyAddress { get; set;}
   }
 
   #region Null Pattern
@@ -184,6 +187,11 @@ namespace Sipek.Common
       public bool ImsEnabled
       {
         get { return false; }
+        set { }
+      }
+      public string ProxyAddress
+      {
+        get { return ""; }
         set { }
       }
     }
