@@ -295,7 +295,7 @@ namespace Sipek.Sip
     [DllImport("pjsipDll.dll")]
     private static extern int dll_shutdown();
     [DllImport("pjsipDll.dll")]
-    private static extern int dll_registerAccount(string uri, string reguri, string domain, string username, string password, bool ims);
+    private static extern int dll_registerAccount(string uri, string reguri, string domain, string username, string password, bool ims, string proxy);
     [DllImport("pjsipDll.dll")]
     private static extern int dll_addBuddy(string uri, bool subscribe);
     [DllImport("pjsipDll.dll")]
@@ -307,11 +307,11 @@ namespace Sipek.Sip
     [DllImport("pjsipDll.dll")]
     private static extern int dll_removeAccounts();
     [DllImport("pjsipDll.dll")]
-    private static extern IntPtr dll_getCodec(int index);
+    private static extern int dll_getCodec(int index, StringBuilder codec);
     [DllImport("pjsipDll.dll")]
     private static extern int dll_getNumOfCodecs();
     [DllImport("pjsipDll.dll")]
-    private static extern int dll_setCodecPriority(String name, int prio);
+    private static extern int dll_setCodecPriority(string name, int prio);
 
     // Callback function registration declarations 
     // passing delegate to unmanaged code (.dll)
@@ -458,7 +458,13 @@ namespace Sipek.Sip
           string username = acc.UserName;
           string password = acc.Password;
 
-          dll_registerAccount(uri, reguri, domain, username, password, acc.ImsEnabled);
+          string proxy = "";
+          if (acc.ProxyAddress.Length > 0)
+          {
+            proxy = "sip:"+acc.ProxyAddress;
+          }
+          
+          dll_registerAccount(uri, reguri, domain, username, password, acc.ImsEnabled, proxy);
 
           // todo:::check if accId corresponds to account index!!!
         }
@@ -491,7 +497,9 @@ namespace Sipek.Sip
 
     public override string getCodec(int index)
     {
-      return Marshal.PtrToStringAnsi(dll_getCodec(index));
+      StringBuilder codec = new StringBuilder(256);
+      dll_getCodec(index, codec);
+      return (codec.ToString());
     }
 
     public override int getNoOfCodecs()
