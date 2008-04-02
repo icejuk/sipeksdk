@@ -89,26 +89,26 @@ namespace Sipek.Common
     public IVoipProxy CommonProxy
     {
       get { return _common; }
-      set { }
+      set { _common = value;  }
     }
 
     public IConfiguratorInterface Configurator
     {
       get { return _config; }
-      set {}
+      set { _config = value; }
     }
 
     // Implement getters
     public IMediaProxyInterface MediaProxy
     {
       get { return _media; }
-      set { }
+      set { _media = value; }
     }
 
     public ICallLogInterface CallLogger
     {
       get { return _logger; }
-      set { }
+      set { _logger = value; }
     }
 
     #endregion
