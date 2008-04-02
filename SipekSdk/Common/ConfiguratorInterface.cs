@@ -258,7 +258,7 @@ namespace Sipek.Common
 
     public int NumOfAccounts
     {
-      get { return 1; }
+      get { return 0; }
       set { }
     }
 
@@ -272,15 +272,10 @@ namespace Sipek.Common
 
     public List<string> CodecList { get { return null; } set { } }
 
-    #endregion
-
-
-    #region IConfiguratorInterface Members
-
 
     public IAccount getAccount()
     {
-      throw new Exception("The method or operation is not implemented.");
+      return new NullAccount();
     }
 
     #endregion

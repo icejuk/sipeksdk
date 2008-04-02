@@ -228,13 +228,6 @@ namespace Sipek.Common
     int makeCall(string dialedNo, int accountId);
 
     /// <summary>
-    /// Make outgoing call by Sip URI, e.g. sip:1234@sipek.sipserver.com
-    /// </summary>
-    /// <param name="uri">destination URI</param>
-    /// <returns>Session Identification</returns>
-    int makeCallByUri(string uri);
-
-    /// <summary>
     /// End call
     /// </summary>
     /// <returns></returns>
@@ -437,17 +430,17 @@ namespace Sipek.Common
     {
       get
       {
-        throw new Exception("The method or operation is not implemented.");
+        return false;
       }
       set
       {
-        throw new Exception("The method or operation is not implemented.");
+        ;
       }
     }
 
     public override ICallProxyInterface createCallProxy()
     {
-      throw new Exception("The method or operation is not implemented.");
+      return new NullCallProxy();
     }
     #endregion
 
