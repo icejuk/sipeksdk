@@ -89,26 +89,29 @@ namespace Sipek.Sip
     #region Methods
 
     /// <summary>
-    /// Method makeCall creates call session
+    /// Method makeCall creates call session. Checks the 1st parameter 
+    /// format is SIP URI, if not build one.  
     /// </summary>
     /// <param name="dialedNo"></param>
     /// <param name="accountId"></param>
     /// <returns>SessionId chosen by pjsip stack</returns>
     public int makeCall(string dialedNo, int accountId)
     {
-      string uri = "sip:" + dialedNo + "@" + Config.getAccount(accountId).HostName;
-      SessionId = dll_makeCall(accountId, uri);
-      return SessionId;
-    }
+      string sipuri = "";
 
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="uri"></param>
-    /// <returns></returns>
-    public int makeCallByUri(string uri)
-    {
-      SessionId = dll_makeCall(1, uri);
+      // check if call by URI
+      if (dialedNo.Contains("sip:"))
+      {
+        // do nothing...
+        sipuri = dialedNo;
+      }
+      else
+      {
+        // prepare URI
+        sipuri = "sip:" + dialedNo + "@" + Config.getAccount(accountId).HostName;
+      }
+      // Store session identification for further requests
+      SessionId = dll_makeCall(accountId, sipuri);
       return SessionId;
     }
 
@@ -426,6 +429,8 @@ namespace Sipek.Sip
     public override int registerAccounts()
     {
       if (!IsInitialized) return -1;
+
+      if (Config.NumOfAccounts <= 0) return 0;
 
       // unregister accounts
       dll_removeAccounts();
