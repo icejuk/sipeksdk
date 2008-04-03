@@ -979,25 +979,35 @@ unsigned count = PJ_ARRAY_SIZE(c);
 	pjsua_enum_codecs(c, &count);
 	
 	if (index >= count) return -1;
-
-	PJ_LOG(3,(THIS_FILE,"Codec %s: %d", (int)c[index].codec_id.ptr, c[index].codec_id.slen ));
-	// is this memleak?
+	
 	if (c[index].codec_id.slen >= 256) return -1;
 
 	strncpy(codec , c[index].codec_id.ptr, c[index].codec_id.slen);
+	codec[c[index].codec_id.slen] = 0;
+
+	//PJ_LOG(3,(THIS_FILE,"Codec %s, prio %d", codec, c[index].priority ));
 
 	return 1;
 }	
 
 int dll_setCodecPriority(char* name, int prio)
 {
-	if (prio >= 0)
+pj_str_t id;
+pj_status_t status;
+
+	if (prio > 0)
 	{
-		pjsua_codec_set_priority(&pj_str(name), (pj_uint8_t)(PJMEDIA_CODEC_PRIO_NORMAL + prio + 9));
+		status = pjsua_codec_set_priority(pj_cstr(&id, name), (pj_uint8_t)(PJMEDIA_CODEC_PRIO_NORMAL));
 	}
 	else
 	{
-		pjsua_codec_set_priority(&pj_str(name), (pj_uint8_t)(PJMEDIA_CODEC_PRIO_DISABLED));
+		status = pjsua_codec_set_priority(pj_cstr(&id, name), (pj_uint8_t)(PJMEDIA_CODEC_PRIO_DISABLED));
 	}
+	PJ_LOG(3,(THIS_FILE,"Setting codec (%s) prio: %d", name, prio));
+
+  
+	if (status != PJ_SUCCESS)
+			PJ_LOG(3, (THIS_FILE, "Error setting codec (%s) priority %d", name, prio));
+
 	return 1;
 }
