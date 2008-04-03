@@ -181,7 +181,7 @@ namespace Sipek.Common
     /// </summary>
     /// <param name="item">Codec Name</param>
     /// <param name="p">priority</param>
-    public abstract void setCodecPrioroty(string item, int p);
+    public abstract void setCodecPriority(string item, int p);
 
     /// <summary>
     /// Get number of codecs in list
@@ -419,7 +419,7 @@ namespace Sipek.Common
       return 1;
     }
 
-    public override void setCodecPrioroty(string item, int p)
+    public override void setCodecPriority(string item, int p)
     {
     }
     public override int getNoOfCodecs() { return 0; }

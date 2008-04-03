@@ -106,7 +106,7 @@ namespace UnitTest
       return 1;
     }
 
-    public override void setCodecPrioroty(string item, int p)
+    public override void setCodecPriority(string item, int p)
     {
       throw new Exception("The method or operation is not implemented.");
     }
