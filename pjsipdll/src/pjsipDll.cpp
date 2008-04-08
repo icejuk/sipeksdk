@@ -660,14 +660,13 @@ pj_status_t status;
 }
 
 //////////////////////////////////////////////////////////////////////////
-int dll_registerAccount(char* uri, char* reguri, char* domain, char* username, char* password, bool ims, char* proxy)
+int dll_registerAccount(char* uri, char* reguri, char* domain, char* username, char* password, char* proxy)
 {
 pjsua_acc_config accConfig; 
 
 	pjsua_acc_config_default(&accConfig);
 
 	// set parameters 
-	accConfig.auth_pref.initial_auth = PJ_FALSE; // disable initial auth (IMS) by defualt 
 	accConfig.id = pj_str(uri);
 	accConfig.reg_timeout = 3600;
 	accConfig.reg_uri = pj_str(reguri);
@@ -691,17 +690,6 @@ pjsua_acc_config accConfig;
 	accConfig.cred_info[0].scheme = pj_str("Digest");
 	accConfig.cred_info[0].data_type = PJSIP_CRED_DATA_PLAIN_PASSWD;
 	accConfig.cred_info[0].data = pj_str(password);
-
-	// IMS specifics
-	if (ims == true)
-	{
-		/* Activate IMS settings */
-	  accConfig.auth_pref.initial_auth = PJ_TRUE;
-		accConfig.cred_info[0].data_type |= PJSIP_CRED_DATA_EXT_AKA;
-		// AKA extended info
-    accConfig.cred_info[0].ext.aka.k = pj_str(password);
-    accConfig.cred_info[0].ext.aka.cb = &pjsip_auth_create_aka_response;
-	}
 
 	pjsua_acc_id pjAccId= -1;
 	int status = pjsua_acc_add(&accConfig, PJ_TRUE, &pjAccId);
@@ -877,7 +865,7 @@ pjsua_buddy_config buddy_cfg;
   status = pjsua_buddy_add(&buddy_cfg, &buddyId);
   
   // enable presence monitoring...
-  if (status >= 0)
+  if ((status == PJ_SUCCESS)&&(subscribe == true))  
   {
     status = pjsua_buddy_subscribe_pres(buddyId, PJ_TRUE);
   }

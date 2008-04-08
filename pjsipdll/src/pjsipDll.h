@@ -57,7 +57,7 @@ extern "C" PJSIPDLL_DLL_API int dll_getCodec(int index, char* codec);
 extern "C" PJSIPDLL_DLL_API int dll_setCodecPriority(char* name, int index);
 // pjsip call API
 extern "C" PJSIPDLL_DLL_API int dll_registerAccount(char* uri, char* reguri, char* name, char* username, 
-																										char* password, bool ims, char* proxy);
+																										char* password, char* proxy);
 extern "C" PJSIPDLL_DLL_API int dll_makeCall(int accountId, char* uri); 
 extern "C" PJSIPDLL_DLL_API int dll_releaseCall(int callId); 
 extern "C" PJSIPDLL_DLL_API int dll_answerCall(int callId, int code);
