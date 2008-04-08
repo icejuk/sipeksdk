@@ -113,10 +113,6 @@ namespace Sipek.Common
     /// </summary>
     int RegState { get; set;}
     /// <summary>
-    /// Account IMS features enable flag
-    /// </summary>
-    bool ImsEnabled { get; set;}
-    /// <summary>
     /// Account Proxy Address (optional)
     /// </summary>
     string ProxyAddress { get; set;}
