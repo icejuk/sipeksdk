@@ -63,7 +63,7 @@ namespace Sipek.Common.CallControl
 
     private static CCallManager _instance = null;
 
-    private Dictionary<int, CStateMachine> _calls;  //!< Call table
+    private Dictionary<int, IStateMachine> _calls;  //!< Call table
 
     private AbstractFactory _factory = new NullFactory();
 
@@ -90,11 +90,11 @@ namespace Sipek.Common.CallControl
     /// </summary>
     /// <param name="index">a sessionId</param>
     /// <returns>an instance of call state with provided sessionId</returns>
-    public CStateMachine this[int index]
+    public IStateMachine this[int index]
     {
       get
       {
-        if (!_calls.ContainsKey(index)) return null;
+        if (!_calls.ContainsKey(index)) return new NullStateMachine();
         return _calls[index];
       }
     }
@@ -102,7 +102,7 @@ namespace Sipek.Common.CallControl
     /// <summary>
     /// Retrieve a list of all calls (state machines)
     /// </summary>
-    public Dictionary<int, CStateMachine> CallList
+    public Dictionary<int, IStateMachine> CallList
     {
       get { return _calls; }
     }
@@ -216,6 +216,9 @@ namespace Sipek.Common.CallControl
     /// </summary>
     public void updateGui(int sessionId)
     {
+      // check if call is in table
+      if (!_calls.ContainsKey(sessionId)) return;
+
       if (null != CallStateRefresh) CallStateRefresh(sessionId);
     }
 
@@ -239,7 +242,7 @@ namespace Sipek.Common.CallControl
         Factory.CommonProxy.CallNotification += OnCallNotification;
 
         // Initialize call table
-        _calls = new Dictionary<int, CStateMachine>(); 
+        _calls = new Dictionary<int, IStateMachine>(); 
         
         // initialize voip proxy
         status = Factory.CommonProxy.initialize();
@@ -269,7 +272,7 @@ namespace Sipek.Common.CallControl
     /// Create outgoing call using default accountId. 
     /// </summary>
     /// <param name="number">Number to call</param>
-    public CStateMachine createOutboundCall(string number)
+    public IStateMachine createOutboundCall(string number)
     {
       int accId = Config.DefaultAccountIndex;
       return this.createOutboundCall(number, accId);
@@ -280,26 +283,26 @@ namespace Sipek.Common.CallControl
     /// </summary>
     /// <param name="number">Number to call</param>
     /// <param name="accountId">Specified account Id </param>
-    public CStateMachine createOutboundCall(string number, int accountId)
+    public IStateMachine createOutboundCall(string number, int accountId)
     {
       // check if current call automatons allow session creation.
       if (this.getNoCallsInStates((int)(EStateId.CONNECTING | EStateId.ALERTING)) > 0)
       {
         // new call not allowed!
-        return null;
+        return new NullStateMachine();
       }
       // if at least 1 connected try to put it on hold
       if (this.getNoCallsInState(EStateId.ACTIVE) == 0)
       {
         // create state machine
         // TODO check max calls!!!!
-        CStateMachine call = new CStateMachine(this);
+        IStateMachine call = Factory.createStateMachine(this);
 
         // make call request (stack provides new sessionId)
-        int newsession = call.getState().makeCall(number, accountId);
+        int newsession = call.State.makeCall(number, accountId);
         if (newsession == -1)
         {
-          return null;
+          return new NullStateMachine();
         }
         // update call table
         // TODO catch argument exception (same key)!!!!
@@ -312,10 +315,10 @@ namespace Sipek.Common.CallControl
         // put connected call on hold
         // TODO pending action
         _pendingAction = new PendingAction(EPendingActions.ECreateSession, number, accountId);
-        CStateMachine call = getCallInState(EStateId.ACTIVE); 
-        call.getState().holdCall();
+        IStateMachine call = getCallInState(EStateId.ACTIVE); 
+        call.State.holdCall();
       }
-      return null;
+      return new NullStateMachine();
     }
 
     /// <summary>
@@ -334,9 +337,9 @@ namespace Sipek.Common.CallControl
     /// </summary>
     /// <param name="session"></param>
     /// <returns></returns>
-    public CStateMachine getCall(int session)
+    public IStateMachine getCall(int session)
     {
-      if ((_calls.Count == 0) || (!_calls.ContainsKey(session))) return null;
+      if ((_calls.Count == 0) || (!_calls.ContainsKey(session))) return new NullStateMachine();
       return _calls[session];
     }
 
@@ -346,22 +349,22 @@ namespace Sipek.Common.CallControl
     /// <param name="session"></param>
     /// <param name="stateId"></param>
     /// <returns></returns>
-    public CStateMachine getCallInState(EStateId stateId)
+    public IStateMachine getCallInState(EStateId stateId)
     {
-      if (_calls.Count == 0)  return null;
-      foreach (KeyValuePair<int, CStateMachine> call in _calls)
+      if (_calls.Count == 0) return new NullStateMachine();
+      foreach (KeyValuePair<int, IStateMachine> call in _calls)
       {
-        if (call.Value.getStateId() == stateId) return call.Value;
+        if (call.Value.State.Id == stateId) return call.Value;
       }
-      return null;
+      return new NullStateMachine();
     }
 
     public int getNoCallsInState(EStateId stateId)
     {
       int cnt = 0;
-      foreach (KeyValuePair<int, CStateMachine> kvp in _calls)
+      foreach (KeyValuePair<int, IStateMachine> kvp in _calls)
       {
-        if (stateId == kvp.Value.getStateId())
+        if (stateId == kvp.Value.State.Id)
         {
           cnt++;
         }
@@ -372,9 +375,9 @@ namespace Sipek.Common.CallControl
     private int getNoCallsInStates(int states)
     {
       int cnt = 0;
-      foreach (KeyValuePair<int, CStateMachine> kvp in _calls)
+      foreach (KeyValuePair<int, IStateMachine> kvp in _calls)
       {
-        if ((states & (int)kvp.Value.getStateId()) == (int)kvp.Value.getStateId())
+        if ((states & (int)kvp.Value.State.Id) == (int)kvp.Value.State.Id)
         {
           cnt++;
         }
@@ -387,13 +390,13 @@ namespace Sipek.Common.CallControl
     /// </summary>
     /// <param name="stateId">state machine state</param>
     /// <returns>List of state machines</returns>
-    public ICollection<CStateMachine> enumCallsInState(EStateId stateId)
+    public ICollection<IStateMachine> enumCallsInState(EStateId stateId)
     {
-      List<CStateMachine> list = new List<CStateMachine>();
+      List<IStateMachine> list = new List<IStateMachine>();
 
-      foreach (KeyValuePair<int, CStateMachine> kvp in _calls)
+      foreach (KeyValuePair<int, IStateMachine> kvp in _calls)
       {
-        if (stateId == kvp.Value.getStateId())
+        if (stateId == kvp.Value.State.Id)
         {
           list.Add(kvp.Value);
         }
@@ -408,7 +411,7 @@ namespace Sipek.Common.CallControl
     /// <param name="session">session identification</param>
     public void onUserRelease(int session)
     {
-      this[session].getState().endCall();
+      this[session].State.endCall();
     }
 
     /// <summary>
@@ -418,20 +421,20 @@ namespace Sipek.Common.CallControl
     /// <param name="session">session identification</param>
     public void onUserAnswer(int session)
     {
-      List<CStateMachine> list = (List<CStateMachine>)this.enumCallsInState(EStateId.ACTIVE);
+      List<IStateMachine> list = (List<IStateMachine>)this.enumCallsInState(EStateId.ACTIVE);
       // should not be more than 1 call active
       if (list.Count > 0)
       {
         // put it on hold
-        CStateMachine sm = list[0];
-        if (null != sm) sm.getState().holdCall();
+        IStateMachine sm = list[0];
+        if (!sm.IsNull) sm.State.holdCall();
 
         // set ANSWER event pending for HoldConfirm
         // TODO
         _pendingAction = new PendingAction(EPendingActions.EUserAnswer, session);
         return;
       }
-      this[session].getState().acceptCall();
+      this[session].State.acceptCall();
     }
 
     /// <summary>
@@ -441,27 +444,27 @@ namespace Sipek.Common.CallControl
     public void onUserHoldRetrieve(int session)
     {
       // check Hold or Retrieve
-      CAbstractState state = this[session].getState();
-      if (state.StateId == EStateId.ACTIVE)
+      IAbstractState state = this[session].State;
+      if (state.Id == EStateId.ACTIVE)
       {
-        this.getCall(session).getState().holdCall();
+        this.getCall(session).State.holdCall();
       }
-      else if (state.StateId == EStateId.HOLDING)
+      else if (state.Id == EStateId.HOLDING)
       {
         // execute retrieve
         // check if any ACTIVE calls
         if (this.getNoCallsInState(EStateId.ACTIVE) > 0)
         {
           // get 1st and put it on hold
-          CStateMachine sm = ((List<CStateMachine>)enumCallsInState(EStateId.ACTIVE))[0];
-          if (null != sm) sm.getState().holdCall();
+          IStateMachine sm = ((List<IStateMachine>)enumCallsInState(EStateId.ACTIVE))[0];
+          if (!sm.IsNull) sm.State.holdCall();
 
           // set Retrieve event pending for HoldConfirm
           _pendingAction = new PendingAction(EPendingActions.EUserHold, session);
           return;
         }
 
-        this[session].getState().retrieveCall();
+        this[session].State.retrieveCall();
       }
       else
       {
@@ -476,7 +479,7 @@ namespace Sipek.Common.CallControl
     /// <param name="number">number to transfer</param>
     public void onUserTransfer(int session, string number)
     {
-      this[session].getState().xferCall(number);
+      this[session].State.xferCall(number);
     }
 
     /// <summary>
@@ -487,7 +490,7 @@ namespace Sipek.Common.CallControl
     /// <param name="mode"></param>
     public void onUserDialDigit(int session, string digits, int mode)
     {
-      this[session].getState().dialDtmf(digits, 0);
+      this[session].State.dialDtmf(digits, 0);
     }
 
     /// <summary>
@@ -500,8 +503,8 @@ namespace Sipek.Common.CallControl
       // 1st if current call is held -> search if any active -> execute retrieve
       if ((getNoCallsInState(EStateId.ACTIVE) == 1)&&(getNoCallsInState(EStateId.HOLDING) >= 1))
       {
-        CStateMachine call = getCallInState(EStateId.HOLDING);
-        call.getState().retrieveCall();
+        IStateMachine call = getCallInState(EStateId.HOLDING);
+        call.State.retrieveCall();
         // set conference flag
         return;
       }
@@ -537,8 +540,8 @@ namespace Sipek.Common.CallControl
       //    PJSIP_INV_STATE_DISCONNECTED,   /**< Session is terminated.		    */
       //if (callState == 2) return 0;
 
-      CStateMachine sm = getCall(callId);
-      if (sm == null) return;
+      IStateMachine sm = getCall(callId);
+      if (sm.IsNull) return;
 
       switch (callState)
       {
@@ -549,13 +552,13 @@ namespace Sipek.Common.CallControl
           //sm.getState().incomingCall("4444");
           break;
         case 3:
-          sm.getState().onAlerting();
+          sm.State.onAlerting();
           break;
         case 4:
-          sm.getState().onConnect();
+          sm.State.onConnect();
           break;
         case 6:
-          sm.getState().onReleased();
+          sm.State.onReleased();
           break;
       }
     }
@@ -568,9 +571,9 @@ namespace Sipek.Common.CallControl
     /// <param name="info">additional info of calling party</param>
     private void OnIncomingCall(int sessionId, string number, string info)
     {
-      CStateMachine call = new CStateMachine(this);
+      IStateMachine call = Factory.createStateMachine(this);
 
-      if (null == call) return;
+      if (call.IsNull) return;
 
       // save session parameters
       call.Session = sessionId;
@@ -578,15 +581,15 @@ namespace Sipek.Common.CallControl
       _calls.Add(sessionId, call);
 
       // inform automaton for incoming call
-      call.getState().incomingCall(number, info);
+      call.State.incomingCall(number, info);
     }
 
     private void OnCallNotification(int callId, ECallNotification notFlag, string text)
     {
       if (notFlag == ECallNotification.CN_HOLDCONFIRM)
       {
-        CStateMachine sm = this.getCall(callId);
-        if (sm != null) sm.getState().onHoldConfirm();
+        IStateMachine sm = this.getCall(callId);
+        if (!sm.IsNull) sm.State.onHoldConfirm();
       }
     }
 
