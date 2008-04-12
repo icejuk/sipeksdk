@@ -298,7 +298,7 @@ namespace Sipek.Sip
     [DllImport("pjsipDll.dll")]
     private static extern int dll_shutdown();
     [DllImport("pjsipDll.dll")]
-    private static extern int dll_registerAccount(string uri, string reguri, string domain, string username, string password, string proxy);
+    private static extern int dll_registerAccount(string uri, string reguri, string domain, string username, string password, string proxy, bool isdefault);
     [DllImport("pjsipDll.dll")]
     private static extern int dll_addBuddy(string uri, bool subscribe);
     [DllImport("pjsipDll.dll")]
@@ -453,7 +453,7 @@ namespace Sipek.Sip
             proxy = "sip:"+acc.ProxyAddress;
           }
           
-          dll_registerAccount(uri, reguri, domain, username, password, proxy);
+          dll_registerAccount(uri, reguri, domain, username, password, proxy, (i == Config.DefaultAccountIndex ? true : false));
 
           // todo:::check if accId corresponds to account index!!!
         }

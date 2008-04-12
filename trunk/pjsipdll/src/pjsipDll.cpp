@@ -660,7 +660,7 @@ pj_status_t status;
 }
 
 //////////////////////////////////////////////////////////////////////////
-int dll_registerAccount(char* uri, char* reguri, char* domain, char* username, char* password, char* proxy)
+int dll_registerAccount(char* uri, char* reguri, char* domain, char* username, char* password, char* proxy, bool isdefault)
 {
 pjsua_acc_config accConfig; 
 
@@ -692,7 +692,7 @@ pjsua_acc_config accConfig;
 	accConfig.cred_info[0].data = pj_str(password);
 
 	pjsua_acc_id pjAccId= -1;
-	int status = pjsua_acc_add(&accConfig, PJ_TRUE, &pjAccId);
+	int status = pjsua_acc_add(&accConfig, isdefault == true ? PJ_TRUE : PJ_FALSE, &pjAccId);
 
 	return pjAccId;
 }
