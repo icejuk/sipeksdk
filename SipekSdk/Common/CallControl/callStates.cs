@@ -21,214 +21,17 @@ using Sipek.Common;
 
 namespace Sipek.Common.CallControl
 {
-  #region Enums
-  /// <summary>
-  /// Call state Ids
-  /// </summary>
-  public enum EStateId  : int 
-  {
-    IDLE = 0x1,
-    CONNECTING = 0x2,
-    ALERTING = 0x4, 
-    ACTIVE = 0x8,
-    RELEASED = 0x10,
-    INCOMING = 0x20,
-    HOLDING = 0x40
-  }
-
-  #endregion
-
-  #region AbstractState
-  /// <summary>
-  /// CAbstractState implements ICallProxyInterface interface. 
-  /// The interface is used for sending requests to call server.
-  /// It's a base for all call states used by CStateMachine. 
-  /// </summary>
-  public abstract class CAbstractState : ICallProxyInterface
-  {
-
-    #region Properties
-    private EStateId _stateId = EStateId.IDLE;
-    /// <summary>
-    /// State identification property
-    /// </summary>
-    public EStateId StateId 
-    {
-      get { return _stateId;  }
-      set { _stateId = value; }
-    }
-    /// <summary>
-    /// State name property
-    /// </summary>
-    public string Name
-    {
-      get {
-        return StateId.ToString(); 
-      }
-    }
-    /// <summary>
-    /// Signaling proxy instance for communication with VoIP stack
-    /// </summary>
-    public ICallProxyInterface CallProxy
-    {
-      get { return _smref.SigProxy; }
-    }
-    /// <summary>
-    /// Media proxy instance for handling tones
-    /// </summary>
-    public IMediaProxyInterface MediaProxy
-    {
-      get { return _smref.MediaProxy; }
-    }
-    /// <summary>
-    /// Call/Session identification
-    /// </summary>
-    public int SessionId    
-    {
-      get { return _smref.Session; }
-      set { }
-    }
-
-    #endregion
-
-    #region Variables
-
-    protected CStateMachine _smref;
-
-    #endregion Variables
-
-    #region Constructor
-    /// <summary>
-    /// Abstract state construction.
-    /// </summary>
-    /// <param name="sm">reference to call state machine</param>
-    public CAbstractState(CStateMachine sm)
-    {
-      _smref = sm;
-    }
-
-    #endregion Constructor
-
-    #region Abstract Methods
-
-    /// <summary>
-    /// State entry method
-    /// </summary>
-    public abstract void onEntry();
-    /// <summary>
-    /// State exit method
-    /// </summary>
-    public abstract void onExit();
-
-    /// <summary>
-    /// Reply timer 
-    /// </summary>
-    /// <param name="sessionId"></param>
-    /// <returns></returns>
-    public virtual bool noReplyTimerExpired(int sessionId) { return false; }
-    /// <summary>
-    /// Released timer
-    /// </summary>
-    /// <param name="sessionId"></param>
-    /// <returns></returns>
-    public virtual bool releasedTimerExpired(int sessionId) { return false; }
-    #endregion
-
-    #region Inherited methods
-
-    public virtual int makeCall(string dialedNo, int accountId)
-    {
-      return -1;
-    }
-
-    public virtual bool endCall()
-    {
-      return true;
-    }
-
-    public virtual bool acceptCall()
-    {
-      return true;
-    }
-
-
-    public virtual bool alerted()
-    {
-      return true;
-    }
-
-    public virtual bool holdCall()
-    {
-      return true;
-    }
-
-    public virtual bool retrieveCall()
-    {
-      return true;
-    }
-    public virtual bool xferCall(string number)
-    {
-      return true;
-    }
-    public virtual bool xferCallSession(int partnersession)
-    {
-      return true;
-    }
-    public virtual bool threePtyCall(int partnersession)
-    {
-      return true;
-    }
-
-    public virtual bool serviceRequest(int code, string dest)
-    {
-      CallProxy.serviceRequest(code, dest);
-      return true;
-    }
-
-    public virtual bool dialDtmf(string digits, int mode)
-    {
-      CallProxy.dialDtmf(digits, mode);
-      return true;
-    }
-
-    #endregion Methods
-
-    #region Callbacks
-
-    public virtual void incomingCall(string callingNo, string display)
-    { 
-    }
-
-    public virtual void onAlerting()
-    {
-    }
-
-    public virtual void onConnect()
-    {
-    }
-    
-    public virtual void onReleased()
-    { 
-    }
-    
-    public virtual void onHoldConfirm()
-    {
-    }
-    #endregion Callbacks
-  }
-  #endregion
-
 
   #region IdleState
   /// <summary>
   /// State Idle indicates the call is inactive
   /// </summary>
-  public class CIdleState : CAbstractState
+  public class CIdleState : IAbstractState
   {
-    public CIdleState(CStateMachine sm) 
+    public CIdleState(IStateMachine sm) 
       : base(sm)
     {
-      StateId = EStateId.IDLE;
+      Id = EStateId.IDLE;
     }
 
     public override void onEntry()
@@ -239,16 +42,24 @@ namespace Sipek.Common.CallControl
     {
     }
 
+    /// <summary>
+    /// Make call to a given number and accountId. Assign sessionId to call state machine got from VoIP part.
+    /// </summary>
+    /// <param name="dialedNo"></param>
+    /// <param name="accountId"></param>
+    /// <returns></returns>
     public override int makeCall(string dialedNo, int accountId)
     {
-      _smref.CallingNo = dialedNo;
+      _smref.CallingNumber = dialedNo;
+      // make call and save sessionId
+      _smref.Session = CallProxy.makeCall(dialedNo, accountId);
       _smref.changeState(EStateId.CONNECTING);
-      return CallProxy.makeCall(dialedNo, accountId);
+      return _smref.Session;
     }
 
     public override void incomingCall(string callingNo, string display)
     {
-      _smref.CallingNo = callingNo;
+      _smref.CallingNumber = callingNo;
       _smref.CallingName = display;
       _smref.changeState(EStateId.INCOMING);
     }
@@ -260,12 +71,12 @@ namespace Sipek.Common.CallControl
   /// <summary>
   /// Connecting states indicates outgoing call has been initiated and waiting for a response.
   /// </summary>
-  public class CConnectingState : CAbstractState
+  public class CConnectingState : IAbstractState
   {
     public CConnectingState(CStateMachine sm) 
       : base(sm)
     {
-      StateId = EStateId.CONNECTING;
+      Id = EStateId.CONNECTING;
     }
 
     public override void onEntry()
@@ -308,12 +119,12 @@ namespace Sipek.Common.CallControl
   /// <summary>
   /// Alerting state indicates other side accepts the call. Play ring back tone.
   /// </summary>
-  public class CAlertingState : CAbstractState
+  public class CAlertingState : IAbstractState
   {
     public CAlertingState(CStateMachine sm)
       : base(sm)
     {
-      StateId = EStateId.ALERTING;
+      Id = EStateId.ALERTING;
     }
 
     public override void onEntry()
@@ -350,12 +161,12 @@ namespace Sipek.Common.CallControl
   /// <summary>
   /// Active state indicates converstation. 
   /// </summary>
-  public class CActiveState : CAbstractState
+  public class CActiveState : IAbstractState
   {
     public CActiveState(CStateMachine sm) 
       : base(sm)
     {
-      StateId = EStateId.ACTIVE;
+      Id = EStateId.ACTIVE;
     }
 
     public override void onEntry()
@@ -398,11 +209,14 @@ namespace Sipek.Common.CallControl
       {
         _smref.changeState(EStateId.HOLDING);
         // activate pending action if any
-        _smref.Manager.activatePendingAction();
+        _smref.activatePendingAction();
       }
       _smref.HoldRequested = false;
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public override void onReleased()
     {
       _smref.changeState(EStateId.RELEASED);
@@ -414,12 +228,12 @@ namespace Sipek.Common.CallControl
   /// <summary>
   /// Released State indicates call has been released and waiting for destruction.
   /// </summary>
-  public class CReleasedState : CAbstractState
+  public class CReleasedState : IAbstractState
   {
     public CReleasedState(CStateMachine sm)
       : base(sm)
     {
-      StateId = EStateId.RELEASED;
+      Id = EStateId.RELEASED;
     }
 
     public override void onEntry()
@@ -452,12 +266,12 @@ namespace Sipek.Common.CallControl
   /// <summary>
   /// Incoming state indicates incoming call. Check CFx and DND features. Start ringer. 
   /// </summary>
-  public class CIncomingState : CAbstractState
+  public class CIncomingState : IAbstractState
   {
     public CIncomingState(CStateMachine sm)
       : base(sm)
     {
-      StateId = EStateId.INCOMING;
+      Id = EStateId.INCOMING;
     }
 
     public override void onEntry()
@@ -539,12 +353,12 @@ namespace Sipek.Common.CallControl
   /// <summary>
   /// Holding state indicates call is hodling.
   /// </summary>
-  public class CHoldingState : CAbstractState
+  public class CHoldingState : IAbstractState
   {
     public CHoldingState(CStateMachine sm)
       : base(sm)
     {
-      StateId = EStateId.HOLDING;
+      Id = EStateId.HOLDING;
     }
 
     public override void onEntry()

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+using Sipek.Common.CallControl;
 
 
 /*! \namespace Common
@@ -27,6 +28,12 @@ namespace Sipek.Common
     /// </summary>
     /// <returns>ITimer instance</returns>
     ITimer createTimer();
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    IStateMachine createStateMachine(CCallManager mng);
 
     /// <summary>
     /// Factory getter. Returns IMediaProxyInterface reference
@@ -84,6 +91,10 @@ namespace Sipek.Common
     public ITimer createTimer()
     {
       return new NullTimer();
+    }
+    public IStateMachine createStateMachine(CCallManager mng)
+    {
+      return new CStateMachine(mng);
     }
 
     public IVoipProxy CommonProxy

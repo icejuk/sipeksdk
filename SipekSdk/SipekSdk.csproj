@@ -41,6 +41,8 @@
     <Compile Include="Common\CallLogInterface.cs" />
     <Compile Include="Common\ConfiguratorInterface.cs" />
     <Compile Include="Common\Enums.cs" />
+    <Compile Include="Common\IAbstractState.cs" />
+    <Compile Include="Common\IStateMachine.cs" />
     <Compile Include="Common\MediaInterface.cs" />
     <Compile Include="Common\TimerInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
