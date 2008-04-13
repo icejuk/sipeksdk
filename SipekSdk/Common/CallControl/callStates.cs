@@ -52,8 +52,8 @@ namespace Sipek.Common.CallControl
     {
       _smref.CallingNumber = dialedNo;
       // make call and save sessionId
-      _smref.Session = CallProxy.makeCall(dialedNo, accountId);
       _smref.changeState(EStateId.CONNECTING);
+      _smref.Session = CallProxy.makeCall(dialedNo, accountId);
       return _smref.Session;
     }
 

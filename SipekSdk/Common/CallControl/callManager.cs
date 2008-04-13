@@ -216,8 +216,8 @@ namespace Sipek.Common.CallControl
     /// </summary>
     public void updateGui(int sessionId)
     {
-      // check if call is in table
-      if (!_calls.ContainsKey(sessionId)) return;
+      // check if call is in table (doesn't work in connecting state - session not inserted in call table)
+      //if (!_calls.ContainsKey(sessionId)) return;
 
       if (null != CallStateRefresh) CallStateRefresh(sessionId);
     }
