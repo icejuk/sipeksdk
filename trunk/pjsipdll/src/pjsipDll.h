@@ -25,6 +25,17 @@
 	#define PJSIPDLL_DLL_API __declspec(dllimport)
 #endif
 
+// Structure containing pjsip configuration parameters
+struct SipConfigStruct
+{
+	int listenPort;
+	bool useTLS;
+	bool noUDP;
+	bool noTCP;
+	bool imsEnabled;
+	char* stunAddress;
+};
+
 // calback function definitions
 typedef int __stdcall fptr_regstate(int, int);				// on registration state changed
 typedef int __stdcall fptr_callstate(int, int);	// on call state changed
@@ -49,7 +60,7 @@ extern "C" PJSIPDLL_DLL_API int onDtmfDigitCallback(fptr_dtmfdigit cb); // regis
 extern "C" PJSIPDLL_DLL_API int onMessageWaitingCallback(fptr_mwi cb); // register MWI notifier
 
 // pjsip common API
-extern "C" PJSIPDLL_DLL_API int dll_init(int listenPort);
+extern "C" PJSIPDLL_DLL_API int dll_init(SipConfigStruct* config);
 extern "C" PJSIPDLL_DLL_API int dll_shutdown(); 
 extern "C" PJSIPDLL_DLL_API int dll_main(void);
 extern "C" PJSIPDLL_DLL_API int dll_getNumOfCodecs();

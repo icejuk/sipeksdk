@@ -147,11 +147,11 @@ namespace Sipek.Common
     public abstract int registerAccounts();
 
     /// <summary>
-    /// Add buddy to buddy list and start subscribe presence
+    /// Add buddy to buddy list and subscribe presence
     /// </summary>
     /// <param name="ident">buddy identification</param>
     /// <returns></returns>
-    public abstract int addBuddy(string ident);
+    public abstract int addBuddy(string ident, bool presence);
 
     /// <summary>
     /// Delete buddy with given identification
@@ -399,7 +399,7 @@ namespace Sipek.Common
       return 1;
     }
 
-    public override int addBuddy(string ident)
+    public override int addBuddy(string ident, bool presence)
     {
       return 1;
     }
