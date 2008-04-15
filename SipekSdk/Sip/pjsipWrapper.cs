@@ -30,6 +30,27 @@ using Sipek.Common;
 namespace Sipek.Sip
 {
 
+  #region Config Structure
+
+  [StructLayout(LayoutKind.Sequential)]
+  public class SipConfigStruct
+  {
+    public int listenPort = 5060;
+    [MarshalAs(UnmanagedType.I1)]   // warning:::Marshal managed bool type to unmanaged (C) bool !!!!
+    public bool useTLS = false;
+    [MarshalAs(UnmanagedType.I1)]
+    public bool noUDP = false;
+    [MarshalAs(UnmanagedType.I1)]
+    public bool noTCP = true;
+    [MarshalAs(UnmanagedType.I1)]
+    public bool imsEnabled = false;
+
+    public string stunServer = "";
+  }
+  
+  #endregion
+
+
   /// <summary>
   /// Implementation of call proxy. Each call (session) contains an instance of a call proxy. 
   /// SipCallProxy passes requests further to pjsip stack 
@@ -281,18 +302,9 @@ namespace Sipek.Sip
     #endregion
 
     #region Wrapper functions
-    // callback delegates
-    delegate int OnRegStateChanged(int accountId, int regState);
-    delegate int OnCallStateChanged(int callId, int stateId);
-    delegate int OnCallIncoming(int callId, StringBuilder number);
-    delegate int OnCallHoldConfirm(int callId);
-    delegate int OnMessageReceivedCallback(StringBuilder from, StringBuilder message);
-    delegate int OnBuddyStatusChangedCallback(int buddyId, int status, StringBuilder statusText);
-    delegate int OnDtmfDigitCallback(int callId, int digit);
-    delegate int OnMessageWaitingCallback(int mwi, StringBuilder info);
-
+    
     [DllImport("pjsipDll.dll")]
-    private static extern int dll_init(int listenPort);
+    private static extern int dll_init(SipConfigStruct config);
     [DllImport("pjsipDll.dll")]
     private static extern int dll_main();
     [DllImport("pjsipDll.dll")]
@@ -317,6 +329,15 @@ namespace Sipek.Sip
     private static extern int dll_setCodecPriority(string name, int prio);
 
     // Callback function registration declarations 
+    // callback delegates
+    delegate int OnRegStateChanged(int accountId, int regState);
+    delegate int OnCallStateChanged(int callId, int stateId);
+    delegate int OnCallIncoming(int callId, StringBuilder number);
+    delegate int OnCallHoldConfirm(int callId);
+    delegate int OnMessageReceivedCallback(StringBuilder from, StringBuilder message);
+    delegate int OnBuddyStatusChangedCallback(int buddyId, int status, StringBuilder statusText);
+    delegate int OnDtmfDigitCallback(int callId, int digit);
+    delegate int OnMessageWaitingCallback(int mwi, StringBuilder info);
     // passing delegate to unmanaged code (.dll)
     [DllImport("pjsipDll.dll")]
     private static extern int onCallStateCallback(OnCallStateChanged cb);
@@ -338,6 +359,9 @@ namespace Sipek.Sip
     #endregion Wrapper functions
 
     #region Variables
+    // config structure (used for special configuration options)
+    public SipConfigStruct SipConfigMore = new SipConfigStruct();
+
     // Static declaration because of CallbackonCollectedDelegate exception!
     static OnCallStateChanged csDel = new OnCallStateChanged(onCallStateChanged);
     static OnRegStateChanged rsDel = new OnRegStateChanged(onRegStateChanged);
@@ -360,8 +384,14 @@ namespace Sipek.Sip
     {
       int status = -1;
 
-      int port = Config.SIPPort;
-      status = dll_init(port);
+      // prepare configuration struct
+      // read data from Config interface. If null read all values directly from SipConfigMore
+      if (!Config.IsNull)
+      {
+        SipConfigMore.listenPort = Config.SIPPort;
+      }
+
+      status = dll_init(SipConfigMore);
 
       if (status != 0) return status;
 
@@ -461,29 +491,56 @@ namespace Sipek.Sip
       return 1;
     }
 
-    // Buddy list handling
-    public override int addBuddy(string ident)
+    /// <summary>
+    /// Add new entry in a buddy list and subscribe presence
+    /// </summary>
+    /// <param name="ident">Buddy address (without hostname part</param>
+    /// <param name="presence">subscribe presence flag</param>
+    /// <returns></returns>
+    public override int addBuddy(string ident, bool presence)
     {
       string uri = "sip:" + ident + "@" + Config.getAccount(Config.DefaultAccountIndex).HostName;
-      return dll_addBuddy(uri, true);
+      return dll_addBuddy(uri, presence);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="buddyId"></param>
+    /// <returns></returns>
     public override int delBuddy(int buddyId)
     {
       return dll_removeBuddy(buddyId);
     }
 
+    /// <summary>
+    /// Send an instance message
+    /// </summary>
+    /// <param name="dest"></param>
+    /// <param name="message"></param>
+    /// <returns></returns>
     public override int sendMessage(string dest, string message)
     {
       string uri = "sip:" + dest + "@" + Config.getAccount(Config.DefaultAccountIndex).HostName;
       return dll_sendMessage(Config.DefaultAccountIndex, uri, message);
     }
 
+    /// <summary>
+    /// Set presence status
+    /// </summary>
+    /// <param name="accId"></param>
+    /// <param name="status"></param>
+    /// <returns></returns>
     public override int setStatus(int accId, EUserStatus status)
     {
       return dll_setStatus(accId, (int)status);
     }
 
+    /// <summary>
+    /// Get codec by index
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
     public override string getCodec(int index)
     {
       StringBuilder codec = new StringBuilder(256);
@@ -491,6 +548,10 @@ namespace Sipek.Sip
       return (codec.ToString());
     }
 
+    /// <summary>
+    /// Get number of all codecs
+    /// </summary>
+    /// <returns></returns>
     public override int getNoOfCodecs()
     {
       if (!IsInitialized) return 0;
@@ -499,7 +560,11 @@ namespace Sipek.Sip
       return no;
     }
 
-
+    /// <summary>
+    /// Set codec priority
+    /// </summary>
+    /// <param name="codecname"></param>
+    /// <param name="priority"></param>
     public override void setCodecPriority(string codecname, int priority)
     {
       if (!IsInitialized) return;
@@ -507,6 +572,10 @@ namespace Sipek.Sip
       dll_setCodecPriority(codecname, priority);
     }
 
+    /// <summary>
+    /// Call proxy factory method
+    /// </summary>
+    /// <returns></returns>
     public override ICallProxyInterface createCallProxy()
     {
       return new CSipCallProxy(Config);

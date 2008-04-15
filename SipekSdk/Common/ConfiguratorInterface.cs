@@ -58,6 +58,7 @@ namespace Sipek.Common
     /// </summary>
     List<string> CodecList { get; set; }
 
+    bool IsNull { get; }
 
     #region Public Methods
     /// <summary>
@@ -193,6 +194,8 @@ namespace Sipek.Common
     }
 
     #region IConfiguratorInterface Members
+
+    public bool IsNull { get { return true; } }
 
     public bool CFUFlag
     {
