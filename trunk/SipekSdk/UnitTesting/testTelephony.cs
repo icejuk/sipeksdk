@@ -89,7 +89,7 @@ namespace UnitTest
     }
 
 
-    public override int addBuddy(string ident)
+    public override int addBuddy(string ident, bool presence)
     {
       return 1;
     }
