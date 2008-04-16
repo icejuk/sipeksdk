@@ -14,54 +14,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+ * 
+ * @see http://sipekphone.googlepages.com/pjsipwrapper
+ * @see http://voipengine.googlepages.com/
+ * 
  */
 
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Runtime.InteropServices;
 
-namespace Sipek.Common
+namespace Sipek.Sip
 {
+  #region Config Structure
 
-  #region Enums
-
-  public enum EUserStatus : int
+  [StructLayout(LayoutKind.Sequential)]
+  public class SipConfigStruct
   {
-    AVAILABLE,
-    BUSY,
-    OTP,
-    IDLE,
-    AWAY,
-    BRB,
-    OFFLINE,
-    OPT_MAX
-  }
+    public int listenPort = 5060;
+    [MarshalAs(UnmanagedType.I1)]   // warning:::Marshal managed bool type to unmanaged (C) bool !!!!
+    public bool useTLS = false;
+    [MarshalAs(UnmanagedType.I1)]
+    public bool noUDP = false;
+    [MarshalAs(UnmanagedType.I1)]
+    public bool noTCP = true;
+    [MarshalAs(UnmanagedType.I1)]
+    public bool imsEnabled = false;
 
-  public enum EServiceCodes : int
-  {
-    SC_CD,
-    SC_CFU,
-    SC_CFNR,
-    SC_DND,
-    SC_3PTY
-  }
-
-
-  public enum ECallNotification : int
-  {
-    CN_HOLDCONFIRM
-  }
-
-  /// <summary>
-  /// Dtmf modes
-  /// </summary>
-  public enum EDtmfMode : int
-  {
-    DM_Outband,
-    DM_Inband,
-    DM_Transparent
+    public string stunServer = "";
+    [MarshalAs(UnmanagedType.I1)]
+    public bool secAgreement = false; // rfc 3329
   }
 
   #endregion
-
 }

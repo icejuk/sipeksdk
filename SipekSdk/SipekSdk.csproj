@@ -7,7 +7,7 @@
     <ProjectGuid>{2B1C372E-097F-4268-B1EA-2B918BEBD94B}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SipekSdk</RootNamespace>
+    <RootNamespace>Sipek</RootNamespace>
     <AssemblyName>SipekSdk</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -54,7 +54,9 @@
     <Compile Include="Common\MediaInterface.cs" />
     <Compile Include="Common\TimerInterface.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Sip\pjsipCallWrapper.cs" />
     <Compile Include="Sip\pjsipWrapper.cs" />
+    <Compile Include="Sip\pjsipConfig.cs" />
     <Compile Include="UnitTesting\testBuddyList.cs" />
     <Compile Include="UnitTesting\testTelephony.cs" />
   </ItemGroup>
