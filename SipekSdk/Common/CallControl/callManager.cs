@@ -51,6 +51,9 @@ using Sipek.Common;
 namespace Sipek.Common.CallControl
 {
 
+  public delegate void DCallStateRefresh(int sessionId);
+  public delegate void DIncomingCallNotification(int sessionId, string number, string info);  
+
   //////////////////////////////////////////////////////////////////////////
   /// <summary>
   /// CCallManager
@@ -80,9 +83,32 @@ namespace Sipek.Common.CallControl
       set { _factory = value; }
     }
 
+    private IMediaProxyInterface _media = new NullMediaProxy();
+    public IMediaProxyInterface MediaProxy
+    {
+      get { return _media; }
+      set { _media = value; }
+    }
+
+    private ICallLogInterface _callLog = new NullCallLogger();
+    public ICallLogInterface CallLogger
+    {
+      get { return _callLog; }
+      set { _callLog = value; }
+    }
+
+    private IVoipProxy _stack = new NullVoipProxy();
+    public IVoipProxy StackProxy
+    {
+      get { return _stack; }
+      set { _stack = value; }
+    }
+
+    private IConfiguratorInterface _config = new NullConfigurator();
     public IConfiguratorInterface Config
     {
-      get { return Factory.Configurator; }
+      get { return _config; }
+      set { _config = value; }
     }
 
     /// <summary>
@@ -121,7 +147,7 @@ namespace Sipek.Common.CallControl
     }
 
     private bool _initialized = false;
-    public bool isInitialized
+    public bool IsInitialized
     {
       get { return _initialized; }
     }
@@ -134,24 +160,26 @@ namespace Sipek.Common.CallControl
     /// CCallManager Singleton
     /// </summary>
     /// <returns></returns>
-    public static CCallManager getInstance()
-    { 
-      if (_instance == null)
+    public static CCallManager Instance
+    {
+      get
       {
-        _instance = new CCallManager();
+        if (_instance == null) _instance = new CCallManager();
+        return _instance;
       }
-      return _instance;
     }
 
     #endregion Constructor
 
     #region Events
 
-    public delegate void DCallStateRefresh(int sessionId);  // define callback type 
     /// <summary>
     /// Notify about call state changed in automaton with given sessionId
     /// </summary>
     public event DCallStateRefresh CallStateRefresh;
+
+    public event DIncomingCallNotification IncomingCallNotification;
+
 
     /// <summary>
     /// Action definitions for pending events.
@@ -196,13 +224,13 @@ namespace Sipek.Common.CallControl
         switch (_actionType)
         {
           case EPendingActions.EUserAnswer:
-            CCallManager.getInstance().onUserAnswer(_sessionId);
+            CCallManager.Instance.onUserAnswer(_sessionId);
             break;
           case EPendingActions.ECreateSession:
-            CCallManager.getInstance().createOutboundCall(_number, _accountId);
+            CCallManager.Instance.createOutboundCall(_number, _accountId);
         	  break;
           case EPendingActions.EUserHold:
-            CCallManager.getInstance().onUserHoldRetrieve(_sessionId);
+            CCallManager.Instance.onUserHoldRetrieve(_sessionId);
             break;
         }
       }
@@ -226,32 +254,37 @@ namespace Sipek.Common.CallControl
 
     #region Public methods
 
+    public int Initialize()
+    {
+      return this.Initialize(_stack);
+    }
+
     /// <summary>
     /// Initialize telephony and VoIP stack. On success register accounts.
     /// </summary>
     /// <returns>initialiation status</returns>
-    public int Initialize()
+    public int Initialize(IVoipProxy proxy)
     {
+      _stack = proxy;
+
       int status = 0;
       ///
-      if (!isInitialized)
+      if (!IsInitialized)
       {
-        // register to signaling proxy interface
-        Factory.CommonProxy.CallStateChanged += OnCallStateChanged;
-        Factory.CommonProxy.CallIncoming += OnIncomingCall;
-        Factory.CommonProxy.CallNotification += OnCallNotification;
+        //// register to signaling proxy interface
+        ICallProxyInterface.CallStateChanged += OnCallStateChanged;
+        ICallProxyInterface.CallIncoming += OnIncomingCall;
+        ICallProxyInterface.CallNotification += OnCallNotification;
 
         // Initialize call table
         _calls = new Dictionary<int, IStateMachine>(); 
         
         // initialize voip proxy
-        status = Factory.CommonProxy.initialize();
+        status = StackProxy.initialize();
         if (status != 0) return status;
       }
 
       // (re)register 
-      Factory.CommonProxy.registerAccounts(); 
-
       _initialized = true;
       return status;
     }
@@ -262,10 +295,19 @@ namespace Sipek.Common.CallControl
     public void Shutdown()
     {
       this.CallList.Clear();
-      Factory.CommonProxy.shutdown();
+      StackProxy.shutdown();
       _initialized = false;
-      this.CallStateRefresh = null;
+      
+      CallStateRefresh = null;
+      IncomingCallNotification = null;
+
+      ICallProxyInterface.CallStateChanged -= OnCallStateChanged;
+      ICallProxyInterface.CallIncoming -= OnIncomingCall;
+      ICallProxyInterface.CallNotification -= OnCallNotification;
     }
+
+
+    static System.Threading.Mutex mutex = new System.Threading.Mutex();
 
 
     /// <summary>
@@ -285,6 +327,8 @@ namespace Sipek.Common.CallControl
     /// <param name="accountId">Specified account Id </param>
     public IStateMachine createOutboundCall(string number, int accountId)
     {
+      if (!IsInitialized) return new NullStateMachine(); 
+
       // check if current call automatons allow session creation.
       if (this.getNoCallsInStates((int)(EStateId.CONNECTING | EStateId.ALERTING)) > 0)
       {
@@ -308,6 +352,7 @@ namespace Sipek.Common.CallControl
         // TODO catch argument exception (same key)!!!!
         call.Session = newsession;
         _calls.Add(newsession, call);
+
         return call;
       }
       else // we have at least one ACTIVE call
@@ -529,36 +574,37 @@ namespace Sipek.Common.CallControl
     /// </summary>
     /// <param name="callId"></param>
     /// <param name="callState"></param>
-    private void OnCallStateChanged(int callId, int callState, string info)
+    private void OnCallStateChanged(int callId, ESessionState callState, string info)
     {
-      //    PJSIP_INV_STATE_NULL,	    /**< Before INVITE is sent or received  */
-      //    PJSIP_INV_STATE_CALLING,	    /**< After INVITE is sent		    */
-      //    PJSIP_INV_STATE_INCOMING,	    /**< After INVITE is received.	    */
-      //    PJSIP_INV_STATE_EARLY,	    /**< After response with To tag.	    */
-      //    PJSIP_INV_STATE_CONNECTING,	    /**< After 2xx is sent/received.	    */
-      //    PJSIP_INV_STATE_CONFIRMED,	    /**< After ACK is sent/received.	    */
-      //    PJSIP_INV_STATE_DISCONNECTED,   /**< Session is terminated.		    */
-      //if (callState == 2) return 0;
+      if (callState == ESessionState.SESSION_STATE_INCOMING)
+      {
+        IStateMachine incall = Factory.createStateMachine(this);
+        if (incall.IsNull) return;
 
-      IStateMachine sm = getCall(callId);
-      if (sm.IsNull) return;
+        // save session parameters
+        incall.Session = callId;
+        // add call to call table
+        _calls.Add(callId, incall);
+
+        return;
+      }
+
+      IStateMachine call = getCall(callId);
+      if (call.IsNull) return;
 
       switch (callState)
       {
-        case 1:
+        case ESessionState.SESSION_STATE_CALLING:
           //sm.getState().onCalling();
           break;
-        case 2:
-          //sm.getState().incomingCall("4444");
+        case ESessionState.SESSION_STATE_EARLY:
+          call.State.onAlerting();
           break;
-        case 3:
-          sm.State.onAlerting();
+        case ESessionState.SESSION_STATE_CONNECTING:
+          call.State.onConnect();
           break;
-        case 4:
-          sm.State.onConnect();
-          break;
-        case 6:
-          sm.State.onReleased();
+        case ESessionState.SESSION_STATE_DISCONNECTED:
+          call.State.onReleased();
           break;
       }
     }
@@ -571,17 +617,15 @@ namespace Sipek.Common.CallControl
     /// <param name="info">additional info of calling party</param>
     private void OnIncomingCall(int sessionId, string number, string info)
     {
-      IStateMachine call = Factory.createStateMachine(this);
+      IStateMachine call = getCall(sessionId);
 
       if (call.IsNull) return;
 
-      // save session parameters
-      call.Session = sessionId;
-      // add call to call table
-      _calls.Add(sessionId, call);
-
       // inform automaton for incoming call
       call.State.incomingCall(number, info);
+
+      // call callback 
+      if (IncomingCallNotification != null) IncomingCallNotification(sessionId, number, info);
     }
 
     private void OnCallNotification(int callId, ECallNotification notFlag, string text)

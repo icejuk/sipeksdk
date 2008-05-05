@@ -28,12 +28,19 @@ using System.Runtime.InteropServices;
 
 namespace Sipek.Sip
 {
-  #region Sip Call Proxy
+
+  // callback delegates
+  delegate int OnCallStateChanged(int callId, ESessionState stateId);
+  delegate int OnCallIncoming(int callId, StringBuilder number);
+  delegate int OnCallHoldConfirm(int callId);
+
   /// <summary>
-  /// Implementation of call proxy. Each call (session) contains an instance of a call proxy. 
-  /// SipCallProxy passes requests further to pjsip stack 
+  /// Implementation of ICallProxyInterface interface use by call state machine. 
+  /// Each call (session) contains an instance of a call proxy. 
+  /// Current session is identified by SessionId property.
+  /// pjsipCallProxy communicates with pjsip stack using API functions and callbacks.
   /// </summary>
-  public class CSipCallProxy : ICallProxyInterface
+  internal class pjsipCallProxy : ICallProxyInterface
   {
     #region DLL declarations
     // call API
@@ -60,16 +67,32 @@ namespace Sipek.Sip
 
     #endregion
 
+    #region Callback Declarations
+    // passing delegates to unmanaged code (.dll)
+    [DllImport("pjsipDll.dll")]
+    private static extern int onCallStateCallback(OnCallStateChanged cb);
+    [DllImport("pjsipDll.dll")]
+    private static extern int onCallIncoming(OnCallIncoming cb);
+    [DllImport("pjsipDll.dll")]
+    private static extern int onCallHoldConfirmCallback(OnCallHoldConfirm cb);
+
+    // Static declaration because of CallbackonCollectedDelegate exception!
+    static OnCallStateChanged csDel = new OnCallStateChanged(onCallStateChanged);
+    static OnCallIncoming ciDel = new OnCallIncoming(onCallIncoming);
+    static OnCallHoldConfirm chDel = new OnCallHoldConfirm(onCallHoldConfirm);
+
+    #endregion
+
     #region Properties
     private IConfiguratorInterface _config = new NullConfigurator();
 
-    public IConfiguratorInterface Config
+    private IConfiguratorInterface Config
     {
       get { return _config; }
     }
 
     private int _sessionId;
-    public int SessionId
+    public override int SessionId
     {
       get { return _sessionId; }
       set { _sessionId = value; }
@@ -78,11 +101,19 @@ namespace Sipek.Sip
 
     #region Constructor
 
-    public CSipCallProxy(IConfiguratorInterface config)
+    internal pjsipCallProxy()
+      : this(new NullConfigurator())
     {
-      _config = config;
     }
 
+    internal pjsipCallProxy(IConfiguratorInterface config)
+    {
+      _config = config;
+      // assign callbacks
+      onCallIncoming(ciDel);
+      onCallStateCallback(csDel);
+      onCallHoldConfirmCallback(chDel);
+    }
     #endregion Constructor
 
     #region Methods
@@ -94,7 +125,7 @@ namespace Sipek.Sip
     /// <param name="dialedNo"></param>
     /// <param name="accountId"></param>
     /// <returns>SessionId chosen by pjsip stack</returns>
-    public int makeCall(string dialedNo, int accountId)
+    public override int makeCall(string dialedNo, int accountId)
     {
       string sipuri = "";
 
@@ -107,10 +138,12 @@ namespace Sipek.Sip
       else
       {
         // prepare URI
-        sipuri = "sip:" + dialedNo + "@" + Config.getAccount(accountId).HostName;
+        sipuri = "sip:" + dialedNo + "@" + Config.Accounts[accountId].HostName;
       }
+
       // Store session identification for further requests
       SessionId = dll_makeCall(accountId, sipuri);
+
       return SessionId;
     }
 
@@ -119,7 +152,7 @@ namespace Sipek.Sip
     /// </summary>
     /// <param name="sessionId"></param>
     /// <returns></returns>
-    public bool endCall()
+    public override bool endCall()
     {
       dll_releaseCall(SessionId);
       return true;
@@ -130,7 +163,7 @@ namespace Sipek.Sip
     /// </summary>
     /// <param name="sessionId"></param>
     /// <returns></returns>
-    public bool alerted()
+    public override bool alerted()
     {
       dll_answerCall(SessionId, 180);
       return true;
@@ -141,7 +174,7 @@ namespace Sipek.Sip
     /// </summary>
     /// <param name="sessionId"></param>
     /// <returns></returns>
-    public bool acceptCall()
+    public override bool acceptCall()
     {
       dll_answerCall(SessionId, 200);
       return true;
@@ -152,7 +185,7 @@ namespace Sipek.Sip
     /// </summary>
     /// <param name="sessionId"></param>
     /// <returns></returns>
-    public bool holdCall()
+    public override bool holdCall()
     {
       dll_holdCall(SessionId);
       return true;
@@ -163,7 +196,7 @@ namespace Sipek.Sip
     /// </summary>
     /// <param name="sessionId"></param>
     /// <returns></returns>
-    public bool retrieveCall()
+    public override bool retrieveCall()
     {
       dll_retrieveCall(SessionId);
       return true;
@@ -175,9 +208,9 @@ namespace Sipek.Sip
     /// <param name="sessionId"></param>
     /// <param name="number"></param>
     /// <returns></returns>
-    public bool xferCall(string number)
+    public override bool xferCall(string number)
     {
-      string uri = "sip:" + number + "@" + Config.getAccount(Config.DefaultAccountIndex).HostName;
+      string uri = "sip:" + number + "@" + Config.Accounts[Config.DefaultAccountIndex].HostName;
       dll_xferCall(SessionId, uri);
       return true;
     }
@@ -188,7 +221,7 @@ namespace Sipek.Sip
     /// <param name="sessionId"></param>
     /// <param name="session"></param>
     /// <returns></returns>
-    public bool xferCallSession(int session)
+    public override bool xferCallSession(int session)
     {
       dll_xferCallWithReplaces(SessionId, session);
       return true;
@@ -200,7 +233,7 @@ namespace Sipek.Sip
     /// <param name="sessionId"></param>
     /// <param name="session"></param>
     /// <returns></returns>
-    public bool threePtyCall(int session)
+    public override bool threePtyCall(int session)
     {
       dll_serviceReq(SessionId, (int)EServiceCodes.SC_3PTY, "");
       return true;
@@ -213,9 +246,9 @@ namespace Sipek.Sip
     /// <param name="code"></param>
     /// <param name="dest"></param>
     /// <returns></returns>
-    public bool serviceRequest(int code, string dest)
+    public override bool serviceRequest(int code, string dest)
     {
-      string destUri = "<sip:" + dest + "@" + Config.getAccount(Config.DefaultAccountIndex).HostName + ">";
+      string destUri = "<sip:" + dest + "@" + Config.Accounts[Config.DefaultAccountIndex].HostName + ">";
       dll_serviceReq(SessionId, (int)code, destUri);
       return true;
     }
@@ -227,7 +260,7 @@ namespace Sipek.Sip
     /// <param name="digits"></param>
     /// <param name="mode"></param>
     /// <returns></returns>
-    public bool dialDtmf(string digits, int mode)
+    public override bool dialDtmf(string digits, int mode)
     {
       // TODO :::check the dtmf mode
       if (mode == 0)
@@ -242,7 +275,82 @@ namespace Sipek.Sip
     }
 
     #endregion Methods
+
+    #region Callbacks
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="callId"></param>
+    /// <param name="callState"></param>
+    /// <returns></returns>
+    private static int onCallStateChanged(int callId, ESessionState callState)
+    {
+      ICallProxyInterface.BaseCallStateChanged(callId, callState, "");
+      return 0;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="callId"></param>
+    /// <param name="sturi"></param>
+    /// <returns></returns>
+    private static int onCallIncoming(int callId, StringBuilder sturi)
+    {
+      string uri = sturi.ToString();
+      string display = "";
+      string number = "";
+
+      // get indices
+      int startNum = uri.IndexOf("<sip:");
+      int atPos = uri.IndexOf('@');
+      // search for number
+      if ((startNum >= 0) && (atPos > startNum))
+      {
+        number = uri.Substring(startNum + 5, atPos - startNum - 5);
+      }
+
+      // extract display name if exists
+      if (startNum >= 0)
+      {
+        display = uri.Remove(startNum).Trim();
+      }
+      else
+      {
+        int semiPos = display.IndexOf(';');
+        if (semiPos >= 0)
+        {
+          display = display.Remove(semiPos);
+        }
+        else
+        {
+          int colPos = display.IndexOf(':');
+          if (colPos >= 0)
+          {
+            display = display.Remove(colPos);
+          }
+        }
+
+      }
+      // invoke callback
+      ICallProxyInterface.BaseIncomingCall(callId, number, display);
+      return 1;
+    }
+
+    /// <summary>
+    /// Not used
+    /// </summary>
+    /// <param name="callId"></param>
+    /// <returns></returns>
+    private static int onCallHoldConfirm(int callId)
+    {
+      //if (sm != null) sm.getState().onHoldConfirm();
+      // TODO:::implement proper callback
+      BaseCallNotification(callId, ECallNotification.CN_HOLDCONFIRM, "");
+      return 1;
+    }
+    #endregion
   }
 
-  #endregion
 }

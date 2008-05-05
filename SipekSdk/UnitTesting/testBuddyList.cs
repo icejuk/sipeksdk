@@ -6,8 +6,6 @@ using NUnit.Framework;
 
 namespace UnitTest
 {
-#if DEBUG
-
   [TestFixture]
   public class testBuddyLilst
   {
@@ -56,5 +54,5 @@ namespace UnitTest
 
 
   }
-#endif
+
 }

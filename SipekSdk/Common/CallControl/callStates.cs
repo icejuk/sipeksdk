@@ -29,7 +29,7 @@ namespace Sipek.Common.CallControl
   /// <summary>
   /// State Idle indicates the call is inactive
   /// </summary>
-  public class CIdleState : IAbstractState
+  internal class CIdleState : IAbstractState
   {
     public CIdleState(IStateMachine sm) 
       : base(sm)
@@ -74,7 +74,7 @@ namespace Sipek.Common.CallControl
   /// <summary>
   /// Connecting states indicates outgoing call has been initiated and waiting for a response.
   /// </summary>
-  public class CConnectingState : IAbstractState
+  internal class CConnectingState : IAbstractState
   {
     public CConnectingState(CStateMachine sm) 
       : base(sm)
@@ -122,7 +122,7 @@ namespace Sipek.Common.CallControl
   /// <summary>
   /// Alerting state indicates other side accepts the call. Play ring back tone.
   /// </summary>
-  public class CAlertingState : IAbstractState
+  internal class CAlertingState : IAbstractState
   {
     public CAlertingState(CStateMachine sm)
       : base(sm)
@@ -164,7 +164,7 @@ namespace Sipek.Common.CallControl
   /// <summary>
   /// Active state indicates converstation. 
   /// </summary>
-  public class CActiveState : IAbstractState
+  internal class CActiveState : IAbstractState
   {
     public CActiveState(CStateMachine sm) 
       : base(sm)
@@ -231,7 +231,7 @@ namespace Sipek.Common.CallControl
   /// <summary>
   /// Released State indicates call has been released and waiting for destruction.
   /// </summary>
-  public class CReleasedState : IAbstractState
+  internal class CReleasedState : IAbstractState
   {
     public CReleasedState(CStateMachine sm)
       : base(sm)
@@ -269,7 +269,7 @@ namespace Sipek.Common.CallControl
   /// <summary>
   /// Incoming state indicates incoming call. Check CFx and DND features. Start ringer. 
   /// </summary>
-  public class CIncomingState : IAbstractState
+  internal class CIncomingState : IAbstractState
   {
     public CIncomingState(CStateMachine sm)
       : base(sm)
@@ -356,7 +356,7 @@ namespace Sipek.Common.CallControl
   /// <summary>
   /// Holding state indicates call is hodling.
   /// </summary>
-  public class CHoldingState : IAbstractState
+  internal class CHoldingState : IAbstractState
   {
     public CHoldingState(CStateMachine sm)
       : base(sm)

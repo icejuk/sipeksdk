@@ -637,9 +637,13 @@ static void on_reg_state(pjsua_acc_id acc_id)
   pjsua_acc_info accinfo;
 
   pjsua_acc_get_info(acc_id, &accinfo);
-
+  
 	// callback
-	if (cb_regstate != 0) cb_regstate(acc_id, accinfo.status);
+  if ((accinfo.status == 200)&&(accinfo.expires == -1))
+         cb_regstate(acc_id, -1);
+  else
+         cb_regstate(acc_id, accinfo.status);
+         
 }
 
 /*
@@ -782,10 +786,18 @@ PJSIPDLL_DLL_API int dll_init(SipConfigStruct* config)
 //	status = parse_args(argc, argv, &app_config, &uri_arg);
 //	if (status != PJ_SUCCESS)
 //		return status;
+
 	// set config parameters passed by SipConfigStruct
 	app_config.udp_cfg.port = config->listenPort;
 	app_config.no_udp =  (config->noUDP == true ? PJ_TRUE : PJ_FALSE);
 	app_config.use_tls = (config->useTLS == true ? PJ_TRUE : PJ_FALSE);
+	if (app_config.use_tls == PJ_TRUE)
+	{
+		//app_config->udp_cfg.tls_setting.ca_list_file = pj_str("");
+		app_config.udp_cfg.tls_setting.cert_file = pj_str("server.crt");
+		app_config.udp_cfg.tls_setting.privkey_file = pj_str("pkey.key");
+	}
+
 	//cfg->cfg.stun_domain = pj_str(pj_optarg);
 	if (strlen(config->stunAddress) > 0) app_config.cfg.stun_host = pj_str(config->stunAddress);
 
@@ -993,7 +1005,7 @@ on_error:
 PJSIPDLL_DLL_API int dll_main(void)
 {
 	pj_status_t status;
-
+	
 	/* Start pjsua */
 	status = pjsua_start();
 	if (status != PJ_SUCCESS) {
@@ -1062,7 +1074,15 @@ pjsua_acc_config accConfig;
 	// set parameters 
 	accConfig.id = pj_str(uri);
 	accConfig.reg_timeout = 3600;
-	accConfig.reg_uri = pj_str(reguri);
+
+	pj_str_t sipuri = pj_str(reguri);
+	// check security
+	if (app_config.use_tls)
+	{
+		pj_strcat(&sipuri, &pj_str(";transport=tls"));
+	}
+
+	accConfig.reg_uri = sipuri;
 	accConfig.publish_enabled = PJ_TRUE; // enable publish
 	pj_str_t tmpproxy = pj_str(proxy);
 	if (tmpproxy.slen > 0)
@@ -1111,7 +1131,16 @@ pjsua_acc_id ids[16];
 int dll_makeCall(int accountId, char* uri)
 {
 int newcallId = -1; 
-	pj_str_t tmp = pj_str(uri);
+
+	pj_str_t sipuri = pj_str(uri);
+
+	// check security
+	if (app_config.use_tls)
+	{
+		pj_strcat(&sipuri, &pj_str(";transport=tls"));
+	}
+
+	pj_str_t tmp = sipuri;
 	pjsua_call_make_call( accountId, &tmp, 0, NULL, NULL, &newcallId);
 
 	return newcallId;
@@ -1251,7 +1280,15 @@ int dll_addBuddy(char* uri, bool subscribe)
 pj_status_t status;
 pjsua_buddy_config buddy_cfg;
 
-  buddy_cfg.uri = pj_str(uri);
+	pj_str_t sipuri = pj_str(uri);
+
+	// check security
+	if (app_config.use_tls)
+	{
+		pj_strcat(&sipuri, &pj_str(";transport=tls"));
+	}
+
+  buddy_cfg.uri = sipuri;
   buddy_cfg.subscribe = (subscribe == true) ? 1 : 0;
   // Add buddy...
   int buddyId = -1;
@@ -1398,10 +1435,15 @@ pj_status_t status;
 void dll_setSipConfig(SipConfigStruct* config)
 {
 	app_config.udp_cfg.port = config->listenPort;
-
 	app_config.no_udp =  (config->noUDP == true ? PJ_TRUE : PJ_FALSE);
 	app_config.use_tls = (config->useTLS == true ? PJ_TRUE : PJ_FALSE);
+	if (app_config.use_tls == PJ_TRUE)
+	{
+		app_config.udp_cfg.tls_setting.ca_list_file = pj_str("calist.pem");
+		app_config.udp_cfg.tls_setting.cert_file = pj_str("server.crt");
+		app_config.udp_cfg.tls_setting.privkey_file = pj_str("pkey.key");
+	}
 
 	//cfg->cfg.stun_domain = pj_str(pj_optarg);
-//	if (strlen(config.stunAddress) > 0) app_config.cfg.stun_host = pj_str(config.stunAddress);
+	if (strlen(config->stunAddress) > 0) app_config.cfg.stun_host = pj_str(config->stunAddress);
 }

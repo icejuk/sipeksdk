@@ -131,6 +131,15 @@ namespace Sipek.Common.CallControl
       get { return _is3Pty; }
       set { _is3Pty = value; }
     }
+    
+    /// <summary>
+    /// 
+    /// </summary>
+    public override EStateId StateId
+    {
+      get { return _state.Id; }
+    }
+
 
     /// <summary>
     /// ???
@@ -168,7 +177,7 @@ namespace Sipek.Common.CallControl
     /// <summary>
     /// Current State of the state machine
     /// </summary>
-    public override IAbstractState State
+    internal override IAbstractState State
     {
       get { return _state; }
     }
@@ -197,7 +206,7 @@ namespace Sipek.Common.CallControl
     /// </summary>
     internal override IMediaProxyInterface MediaProxy
     {
-      get { return _manager.Factory.MediaProxy; }
+      get { return _manager.MediaProxy; }
     }
 
     /// <summary>
@@ -241,7 +250,7 @@ namespace Sipek.Common.CallControl
     /// </summary>
     internal override IConfiguratorInterface Config
     {
-      get { return _manager.Factory.Configurator;  }
+      get { return _manager.Config;  }
     }
 
     /// <summary>
@@ -249,7 +258,7 @@ namespace Sipek.Common.CallControl
     /// </summary>
     protected ICallLogInterface CallLoger
     {
-      get { return _manager.Factory.CallLogger; }
+      get { return _manager.CallLogger; }
     }
 
     #endregion
@@ -267,7 +276,7 @@ namespace Sipek.Common.CallControl
       _manager = manager;
 
       // create call proxy
-      _sigProxy = _manager.Factory.CommonProxy.createCallProxy();
+      _sigProxy = _manager.StackProxy.createCallProxy();
 
       // initialize call states
       _stateIdle = new CIdleState(this);
@@ -404,7 +413,8 @@ namespace Sipek.Common.CallControl
         case EStateId.INCOMING: changeState(_stateIncoming); break;
         case EStateId.HOLDING: changeState(_stateHolding); break;
       }
-      if (null != _manager) _manager.updateGui(this.Session);
+      // inform manager 
+      if ((null != _manager)&&(Session != -1)) _manager.updateGui(this.Session);
     }
 
     /// <summary>
