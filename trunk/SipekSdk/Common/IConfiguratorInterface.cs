@@ -14,6 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+ * 
+ * @see http://sipekphone.googlepages.com/pjsipwrapper
+ * @see http://voipengine.googlepages.com/
+ * 
  */
 
 using System;
@@ -68,23 +72,15 @@ namespace Sipek.Common
     /// </summary>
     int DefaultAccountIndex { get; set; }
     /// <summary>
-    /// Number of accounts property
-    /// </summary>
-    int NumOfAccounts { get; set; }
-    /// <summary>
     /// List of all codecs
     /// </summary>
     List<string> CodecList { get; set; }
 
+    List<IAccount> Accounts { get;}
+
     bool IsNull { get; }
 
     #region Public Methods
-    /// <summary>
-    /// Account getter
-    /// </summary>
-    /// <param name="index">index for account</param>
-    /// <returns>IAccount instance</returns>
-    IAccount getAccount(int index);
 
     /// <summary>
     /// Save settings 
@@ -92,7 +88,6 @@ namespace Sipek.Common
     void Save();
     #endregion Methods
   }
-
 
   /// <summary>
   /// IAccount interface
@@ -137,11 +132,12 @@ namespace Sipek.Common
     string ProxyAddress { get; set;}
   }
 
+
   #region Null Pattern
   /// <summary>
   /// 
   /// </summary>
-  public class NullConfigurator : IConfiguratorInterface
+  internal class NullConfigurator : IConfiguratorInterface
   {
     public class NullAccount : IAccount
     {
@@ -206,7 +202,7 @@ namespace Sipek.Common
       }
     }
 
-    #region IConfiguratorInterface Members
+    #region IConfiguratorInterface Properties
 
     public bool IsNull { get { return true; } }
 
@@ -268,27 +264,16 @@ namespace Sipek.Common
       set { }
     }
 
-    public int NumOfAccounts
-    {
-      get { return 0; }
-      set { }
-    }
 
-    public IAccount getAccount(int index)
+    public List<IAccount> Accounts
     {
-      return new NullAccount();
+      get { return new List<IAccount>(); }
     }
 
     public void Save()
     { }
 
     public List<string> CodecList { get { return null; } set { } }
-
-
-    public IAccount getAccount()
-    {
-      return new NullAccount();
-    }
 
     #endregion
   }
