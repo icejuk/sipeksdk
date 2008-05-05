@@ -14,6 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+ * 
+ * @see http://sipekphone.googlepages.com/pjsipwrapper
+ * @see http://voipengine.googlepages.com/
+ * 
  */
 
 using System;
@@ -31,7 +35,7 @@ namespace Sipek.Common
   }
 
   /// <summary>
-  /// 
+  /// General state machine interface. 
   /// </summary>
   public abstract class IStateMachine
   {
@@ -48,12 +52,20 @@ namespace Sipek.Common
     public abstract bool Is3Pty { get; set; }
     public abstract bool IsHeld { get; set; }
     public abstract int Session { get; set; }
-    public abstract IAbstractState State { get; }
     public abstract TimeSpan RuntimeDuration { get; }
     public abstract TimeSpan Duration { get; set; }
+    public abstract EStateId StateId { get; }
+    #endregion
+
+    #region Internal Methods
+    internal abstract void startTimer(ETimerType ttype);
+    internal abstract void stopTimer(ETimerType ttype);
+    internal abstract void stopAllTimers();
+    internal abstract void activatePendingAction();
     #endregion
 
     #region Internal Properties
+    internal abstract IAbstractState State { get; }
     internal abstract bool RetrieveRequested { get; set; }
     internal abstract bool HoldRequested { get; set; }
     internal abstract ICallProxyInterface CallProxy { get; }
@@ -64,19 +76,18 @@ namespace Sipek.Common
     internal abstract bool Counting { get; set; }
     #endregion
 
-    #region Internal Methods
-    internal abstract void startTimer(ETimerType ttype);
-    internal abstract void stopTimer(ETimerType ttype);
-    internal abstract void stopAllTimers();
-    internal abstract void activatePendingAction();
-    #endregion
   }
 
 
-
-  public class NullStateMachine : IStateMachine
+  #region Null Pattern
+  internal class NullStateMachine : IStateMachine
   {
     public NullStateMachine() : base() { }
+
+    public override EStateId StateId
+    {
+      get { return EStateId.NULL; }
+    }
 
     public override string CallingName
     {
@@ -142,7 +153,7 @@ namespace Sipek.Common
     {
       get
       {
-        throw new Exception("The method or operation is not implemented.");
+        return -1;
       }
       set
       {
@@ -150,7 +161,7 @@ namespace Sipek.Common
       }
     }
 
-    public override IAbstractState State
+    internal override IAbstractState State
     {
       get { return new NullState(); }
     }
@@ -292,4 +303,6 @@ namespace Sipek.Common
       }
     }
   }
+  #endregion
+
 }

@@ -32,6 +32,16 @@ namespace Sipek.Sip
   [StructLayout(LayoutKind.Sequential)]
   public class SipConfigStruct
   {
+    private static SipConfigStruct _instance = null;
+    public static SipConfigStruct Instance
+    {
+      get 
+      {
+        if (_instance == null) _instance = new SipConfigStruct();
+        return _instance;
+      }
+    }
+
     public int listenPort = 5060;
     [MarshalAs(UnmanagedType.I1)]   // warning:::Marshal managed bool type to unmanaged (C) bool !!!!
     public bool useTLS = false;

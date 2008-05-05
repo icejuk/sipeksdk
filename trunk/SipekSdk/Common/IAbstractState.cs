@@ -14,6 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+ * 
+ * @see http://sipekphone.googlepages.com/pjsipwrapper
+ * @see http://voipengine.googlepages.com/
+ * 
  */
 
 using System;
@@ -28,6 +32,7 @@ namespace Sipek.Common
   /// </summary>
   public enum EStateId : int
   {
+    NULL = 0x0,
     IDLE = 0x1,
     CONNECTING = 0x2,
     ALERTING = 0x4,
@@ -42,14 +47,13 @@ namespace Sipek.Common
   #region IAbstractState
   /// <summary>
   /// CAbstractState implements ICallProxyInterface interface. 
-  /// The interface is used for sending requests to call server.
-  /// It's a base for all call states used by CStateMachine. 
+  /// Sends requests to call server. 
+  /// It's a base for all call states classes (IStateMachine). 
   /// </summary>
-  public abstract class IAbstractState : ICallProxyInterface
+  internal abstract class IAbstractState : ICallProxyInterface
   {
 
     #region Properties
-    private EStateId _stateId = EStateId.IDLE;
     /// <summary>
     /// State identification property
     /// </summary>
@@ -76,7 +80,7 @@ namespace Sipek.Common
     /// <summary>
     /// Call/Session identification
     /// </summary>
-    public int SessionId
+    public override int SessionId
     {
       get { return _smref.Session; }
       set { }
@@ -90,6 +94,8 @@ namespace Sipek.Common
     #endregion
 
     #region Variables
+
+    private EStateId _stateId = EStateId.IDLE;
 
     protected IStateMachine _smref;
 
@@ -134,56 +140,56 @@ namespace Sipek.Common
 
     #region Inherited methods
 
-    public virtual int makeCall(string dialedNo, int accountId)
+    public override int makeCall(string dialedNo, int accountId)
     {
       return -1;
     }
 
-    public virtual bool endCall()
+    public override bool endCall()
     {
       return true;
     }
 
-    public virtual bool acceptCall()
+    public override bool acceptCall()
     {
       return true;
     }
 
 
-    public virtual bool alerted()
+    public override bool alerted()
     {
       return true;
     }
 
-    public virtual bool holdCall()
+    public override bool holdCall()
     {
       return true;
     }
 
-    public virtual bool retrieveCall()
+    public override bool retrieveCall()
     {
       return true;
     }
-    public virtual bool xferCall(string number)
+    public override bool xferCall(string number)
     {
       return true;
     }
-    public virtual bool xferCallSession(int partnersession)
+    public override bool xferCallSession(int partnersession)
     {
       return true;
     }
-    public virtual bool threePtyCall(int partnersession)
+    public override bool threePtyCall(int partnersession)
     {
       return true;
     }
 
-    public virtual bool serviceRequest(int code, string dest)
+    public override bool serviceRequest(int code, string dest)
     {
       CallProxy.serviceRequest(code, dest);
       return true;
     }
 
-    public virtual bool dialDtmf(string digits, int mode)
+    public override bool dialDtmf(string digits, int mode)
     {
       CallProxy.dialDtmf(digits, mode);
       return true;

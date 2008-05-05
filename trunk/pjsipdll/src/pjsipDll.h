@@ -60,6 +60,7 @@ extern "C" PJSIPDLL_DLL_API int onDtmfDigitCallback(fptr_dtmfdigit cb); // regis
 extern "C" PJSIPDLL_DLL_API int onMessageWaitingCallback(fptr_mwi cb); // register MWI notifier
 
 // pjsip common API
+extern "C" PJSIPDLL_DLL_API void dll_setSipConfig(SipConfigStruct* config);
 extern "C" PJSIPDLL_DLL_API int dll_init(SipConfigStruct* config);
 extern "C" PJSIPDLL_DLL_API int dll_shutdown(); 
 extern "C" PJSIPDLL_DLL_API int dll_main(void);

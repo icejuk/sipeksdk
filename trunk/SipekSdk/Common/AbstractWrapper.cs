@@ -25,80 +25,34 @@ using System.Text;
 
 namespace Sipek.Common
 {
-  ///
+  public enum ESessionState : int
+  {
+    SESSION_STATE_NULL,	    /**< Before INVITE is sent or received  */
+    SESSION_STATE_CALLING,	    /**< After INVITE is sent		    */
+    SESSION_STATE_INCOMING,	    /**< After INVITE is received.	    */
+    SESSION_STATE_EARLY,	    /**< After response with To tag.	    */
+    SESSION_STATE_CONNECTING,	    /**< After 2xx is sent/received.	    */
+    SESSION_STATE_CONFIRMED,	    /**< After ACK is sent/received.	    */
+    SESSION_STATE_DISCONNECTED,   /**< Session is terminated.		    */
+  }
+
   // event methods prototypes
-  public delegate void DCallStateChanged(int callId, int callState, string info);
-  public delegate void DCallIncoming(int callId, string number, string info);
-  public delegate void DAccountStateChanged(int accountId, int accState);
-  public delegate void DMessageReceived(string from, string text);
-  public delegate void DBuddyStatusChanged(int buddyId, int status, string text);
   public delegate void DDtmfDigitReceived(int callId, int digit);
-  public delegate void DCallNotification(int callId, ECallNotification notFlag, string text);
   public delegate void DMessageWaitingNotification(int mwi, string text);
 
    
   /// <summary>
-  /// Non-call oriented VoIP interface defines events invoked by VoIP stack and 
-  /// API consisting methods invoked by user.
+  /// VoIP protocol stack interface. Defines some common events invoked by VoIP stack and 
+  /// API methods invoked by user.
   /// </summary>
-  public abstract class IVoipProxy
+  public abstract class IVoipProxy 
   {
     #region Events
 
     /// <summary>
-    /// Events exposed to user layers. A protected virtual method added because 
-    /// derived classes cannot invoke events directly.
+    /// User Events. A protected virtual method makes possible to invoke events from derived classes. 
     /// </summary>
-    
 
-    /// <summary>
-    /// CallStateChanged event trigger by VoIP stack when call state changed
-    /// </summary>
-    public event DCallStateChanged CallStateChanged;
-    protected void BaseCallStateChanged(int callId, int callState, string info)
-    {
-      if (null != CallStateChanged) CallStateChanged(callId, callState, info);
-    }
-    /// <summary>
-    /// CallIncoming event triggered by VoIP stack when new incoming call arrived
-    /// </summary>
-    public event DCallIncoming CallIncoming;
-    protected void BaseIncomingCall(int callId, string number, string info)
-    {
-      if (null != CallIncoming) CallIncoming(callId, number, info);
-    }
-    /// <summary>
-    /// CallNotification event trigger by VoIP stack when call notification arrived
-    /// </summary>
-    public event DCallNotification CallNotification;
-    protected void BaseCallNotification(int callId, ECallNotification notifFlag, string text)
-    {
-      if (null != CallNotification) CallNotification(callId, notifFlag, text);
-    }
-    /// <summary>
-    /// AccountStateChanged event trigger by VoIP stack when registration state changed
-    /// </summary>
-    public event DAccountStateChanged AccountStateChanged;
-    protected void BaseAccountStateChanged(int accountId, int accState)
-    {
-      if (null != AccountStateChanged) AccountStateChanged(accountId, accState);
-    }
-    /// <summary>
-    /// MessageReceived event trigger by VoIP stack when instant message arrived
-    /// </summary>
-    public event DMessageReceived MessageReceived;
-    protected void BaseMessageReceived(string from, string text)
-    {
-      if (null != MessageReceived) MessageReceived(from, text);
-    }
-    /// <summary>
-    /// BuddyStatusChanged event trigger by VoIP stack when buddy status changed
-    /// </summary>
-    public event DBuddyStatusChanged BuddyStatusChanged;
-    protected void BaseBuddyStatusChanged(int buddyId, int status, string text)
-    {
-      if (null != BuddyStatusChanged) BuddyStatusChanged(buddyId, status, text);
-    }
     /// <summary>
     /// DtmfDigitReceived event trigger by VoIP stack when DTMF is detected 
     /// </summary>
@@ -150,52 +104,10 @@ namespace Sipek.Common
     /// <returns></returns>
     public virtual int shutdown()
     {
-      AccountStateChanged = null;
-      MessageReceived = null;
-      BuddyStatusChanged = null;
       DtmfDigitReceived = null;
       MessageWaitingIndication = null;
-      CallNotification = null;
-      CallIncoming = null;
-      CallStateChanged = null;
       return 1;
     }
-
-    /// <summary>
-    /// Register all configured accounts
-    /// </summary>
-    /// <returns></returns>
-    public abstract int registerAccounts();
-
-    /// <summary>
-    /// Add buddy to buddy list and subscribe presence
-    /// </summary>
-    /// <param name="ident">buddy identification</param>
-    /// <returns></returns>
-    public abstract int addBuddy(string ident, bool presence);
-
-    /// <summary>
-    /// Delete buddy with given identification
-    /// </summary>
-    /// <param name="buddyId">buddy identification</param>
-    /// <returns></returns>
-    public abstract int delBuddy(int buddyId);
-
-    /// <summary>
-    /// Send Instant Message
-    /// </summary>
-    /// <param name="dest">Destination part of URI</param>
-    /// <param name="message">Message Content</param>
-    /// <returns></returns>
-    public abstract int sendMessage(string dest, string message);
-
-    /// <summary>
-    /// Set device status for default account 
-    /// </summary>
-    /// <param name="accId">Account id</param>
-    /// <param name="presence_state">Presence state - User Status</param>
-    /// <returns></returns>
-    public abstract int setStatus(int accId, EUserStatus presence_state);
 
     /// <summary>
     /// Set codec priority
@@ -226,17 +138,55 @@ namespace Sipek.Common
     #endregion
   }
 
+  #region CallProxy interface
+  
+  public delegate void DCallStateChanged(int callId, ESessionState callState, string info);
+  public delegate void DCallIncoming(int callId, string number, string info);
+  public delegate void DCallNotification(int callId, ECallNotification notFlag, string text);
+
+  #endregion
+
   /// <summary>
-  /// Call oriented interface. Offers basic session control API.
+  /// Call oriented interface. Offers basic session control API and events called from VoIP stack
   /// </summary>
-  public interface ICallProxyInterface
+  /// 
+  public abstract class ICallProxyInterface
   {
     #region Properties
     /// <summary>
     /// Call/Session identification. All public methods refers to this identification
     /// </summary>
-    int SessionId
+    public abstract int SessionId
     { get; set; }
+
+    #endregion
+
+    #region Events
+    /// <summary>
+    /// CallStateChanged event trigger by VoIP stack when call state changed
+    /// </summary>
+    public static event DCallStateChanged CallStateChanged;
+    protected static void BaseCallStateChanged(int callId, ESessionState callState, string info)
+    {
+      if (null != CallStateChanged) CallStateChanged(callId, callState, info);
+    }
+    /// <summary>
+    /// CallIncoming event triggered by VoIP stack when new incoming call arrived
+    /// </summary>
+    public static event DCallIncoming CallIncoming;
+    protected static void BaseIncomingCall(int callId, string number, string info)
+    {
+      if (null != CallIncoming) CallIncoming(callId, number, info);
+    }
+    /// <summary>
+    /// CallNotification event trigger by VoIP stack when call notification arrived
+    /// </summary>
+    public static event DCallNotification CallNotification;
+    protected static void BaseCallNotification(int callId, ECallNotification notifFlag, string text)
+    {
+      if (null != CallNotification) CallNotification(callId, notifFlag, text);
+    }
+    
     #endregion
 
     #region Public Methods
@@ -246,58 +196,58 @@ namespace Sipek.Common
     /// <param name="dialedNo">Calling Number</param>
     /// <param name="accountId">Account Id</param>
     /// <returns>Session Identification</returns>
-    int makeCall(string dialedNo, int accountId);
+    public abstract int makeCall(string dialedNo, int accountId);
 
     /// <summary>
     /// End call
     /// </summary>
     /// <returns></returns>
-    bool endCall();
+    public abstract bool endCall();
 
     /// <summary>
     /// Report that device is alerted
     /// </summary>
     /// <returns></returns>
-    bool alerted();
+    public abstract bool alerted();
 
     /// <summary>
     /// Report that call is accepted/answered
     /// </summary>
     /// <returns></returns>
-    bool acceptCall();
+    public abstract bool acceptCall();
 
     /// <summary>
     /// Request call hold
     /// </summary>
     /// <returns></returns>
-    bool holdCall();
+    public abstract bool holdCall();
 
     /// <summary>
     /// Request retrieve call
     /// </summary>
     /// <returns></returns>
-    bool retrieveCall();
+    public abstract bool retrieveCall();
 
     /// <summary>
     /// Tranfer call to a given number
     /// </summary>
     /// <param name="number">Number to transfer call to</param>
     /// <returns></returns>
-    bool xferCall(string number);
+    public abstract bool xferCall(string number);
 
     /// <summary>
     /// Transfer call to partner session
     /// </summary>
     /// <param name="partnersession">Session to transfer call to</param>
     /// <returns></returns>
-    bool xferCallSession(int partnersession);
+    public abstract bool xferCallSession(int partnersession);
 
     /// <summary>
     /// Request three party conference
     /// </summary>
     /// <param name="partnersession">Partner session for conference with</param>
     /// <returns></returns>
-    bool threePtyCall(int partnersession);
+    public abstract bool threePtyCall(int partnersession);
 
     /// <summary>
     /// Request service (TODO)
@@ -305,7 +255,7 @@ namespace Sipek.Common
     /// <param name="code"></param>
     /// <param name="dest"></param>
     /// <returns></returns>
-    bool serviceRequest(int code, string dest);
+    public abstract bool serviceRequest(int code, string dest);
 
     /// <summary>
     /// Dial digit by DTMF
@@ -313,7 +263,7 @@ namespace Sipek.Common
     /// <param name="digits">digit string</param>
     /// <param name="mode">digit mode (TODO)</param>
     /// <returns></returns>
-    bool dialDtmf(string digits, int mode);
+    public abstract bool dialDtmf(string digits, int mode);
 
     #endregion
   }
@@ -324,11 +274,11 @@ namespace Sipek.Common
   /// <summary>
   /// 
   /// </summary>
-  public class NullCallProxy : ICallProxyInterface
+  internal class NullCallProxy : ICallProxyInterface
   {
     #region ICallProxyInterface Members
 
-    public int makeCall(string dialedNo, int accountId)
+    public override int makeCall(string dialedNo, int accountId)
     {
       return 1;
     }
@@ -338,57 +288,57 @@ namespace Sipek.Common
       return 1;
     }
 
-    public bool endCall()
+    public override bool endCall()
     {
       return false;
     }
 
-    public bool alerted()
+    public override bool alerted()
     {
       return false;
     }
 
-    public bool acceptCall()
+    public override bool acceptCall()
     {
       return false;
     }
 
-    public bool holdCall()
+    public override bool holdCall()
     {
       return false;
     }
 
-    public bool retrieveCall()
+    public override bool retrieveCall()
     {
       return false;
     }
 
-    public bool xferCall(string number)
+    public override bool xferCall(string number)
     {
       return false;
     }
 
-    public bool xferCallSession(int session)
+    public override bool xferCallSession(int session)
     {
       return false;
     }
 
-    public bool threePtyCall(int session)
+    public override bool threePtyCall(int session)
     {
       return false;
     }
 
-    public bool serviceRequest(int code, string dest)
+    public override bool serviceRequest(int code, string dest)
     {
       return false;
     }
 
-    public bool dialDtmf(string digits, int mode)
+    public override bool dialDtmf(string digits, int mode)
     {
       return false;
     }
 
-    public int SessionId
+    public override int SessionId
     {
       get { return 0; }
       set { ; }
@@ -415,30 +365,30 @@ namespace Sipek.Common
       return 1;
     }
 
-    public override int registerAccounts()
-    {
-      return 1;
-    }
+    //public override int registerAccounts()
+    //{
+    //  return 1;
+    //}
 
-    public override int addBuddy(string ident, bool presence)
-    {
-      return 1;
-    }
+    //public override int addBuddy(string ident, bool presence)
+    //{
+    //  return 1;
+    //}
 
-    public override int delBuddy(int buddyId)
-    {
-      return 1;
-    }
+    //public override int delBuddy(int buddyId)
+    //{
+    //  return 1;
+    //}
 
-    public override int sendMessage(string dest, string message)
-    {
-      return 1;
-    }
+    //public override int sendMessage(string dest, string message)
+    //{
+    //  return 1;
+    //}
 
-    public override int setStatus(int accId, EUserStatus presence_state)
-    {
-      return 1;
-    }
+    //public override int setStatus(int accId, EUserStatus presence_state)
+    //{
+    //  return 1;
+    //}
 
     public override void setCodecPriority(string item, int p)
     {
