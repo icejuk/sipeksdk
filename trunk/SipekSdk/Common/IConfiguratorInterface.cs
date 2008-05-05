@@ -204,6 +204,8 @@ namespace Sipek.Common
 
     #region IConfiguratorInterface Properties
 
+    List<IAccount> _accountList = new List<IAccount>();
+
     public bool IsNull { get { return true; } }
 
     public bool CFUFlag
@@ -267,7 +269,7 @@ namespace Sipek.Common
 
     public List<IAccount> Accounts
     {
-      get { return new List<IAccount>(); }
+      get { return _accountList; }
     }
 
     public void Save()
