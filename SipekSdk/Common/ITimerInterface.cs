@@ -14,6 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+ * 
+ * @see http://sipekphone.googlepages.com/pjsipwrapper
+ * @see http://voipengine.googlepages.com/
+ * 
  */
 
 using System;
@@ -61,7 +65,7 @@ namespace Sipek.Common
   /// <summary>
   /// 
   /// </summary>
-  public class NullTimer : ITimer
+  internal class NullTimer : ITimer
   {
     #region ITimer Members
     public void Start() { }

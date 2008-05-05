@@ -38,7 +38,7 @@ namespace Sipek.Common
   }
 
   /// <summary>
-  /// Container interface for call log functionality
+  /// Container providing call log functionality
   /// </summary>
   public interface ICallLogInterface
   {
