@@ -544,9 +544,9 @@ namespace Sipek.Common.CallControl
     /// <param name="session"></param>
     /// <param name="digits"></param>
     /// <param name="mode"></param>
-    public void onUserDialDigit(int session, string digits, int mode)
+    public void onUserDialDigit(int session, string digits, EDtmfMode mode)
     {
-      this[session].State.dialDtmf(digits, 0);
+      this[session].State.dialDtmf(digits, mode);
     }
 
     /// <summary>

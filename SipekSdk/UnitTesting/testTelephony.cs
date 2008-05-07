@@ -49,7 +49,7 @@ namespace UnitTest
 
     public override bool serviceRequest(int code, string dest) { return true; }
 
-    public override bool dialDtmf(string digits, int mode) { return true; }
+    public override bool dialDtmf(string digits, EDtmfMode mode) { return true; }
 
     public override int SessionId
     {
