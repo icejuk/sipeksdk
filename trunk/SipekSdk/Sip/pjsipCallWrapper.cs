@@ -260,16 +260,21 @@ namespace Sipek.Sip
     /// <param name="digits"></param>
     /// <param name="mode"></param>
     /// <returns></returns>
-    public override bool dialDtmf(string digits, int mode)
+    public override bool dialDtmf(string digits, EDtmfMode mode)
     {
-      // TODO :::check the dtmf mode
-      if (mode == 0)
+      // check the dtmf mode
+      switch (mode)
       {
-        dll_dialDtmf(SessionId, digits, mode);
-      }
-      else
-      {
-        dll_sendInfo(SessionId, digits);
+        case EDtmfMode.DM_Inband:
+          dll_dialDtmf(SessionId, digits, (int)mode);
+        break;
+        case EDtmfMode.DM_Outband:
+          dll_sendInfo(SessionId, digits);
+        break;
+        case EDtmfMode.DM_Transparent:
+          // TODO!!!!
+          //dll_playDtmf(SessionId, digits);
+          break;
       }
       return true;
     }

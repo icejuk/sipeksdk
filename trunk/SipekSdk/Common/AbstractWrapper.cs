@@ -263,7 +263,7 @@ namespace Sipek.Common
     /// <param name="digits">digit string</param>
     /// <param name="mode">digit mode (TODO)</param>
     /// <returns></returns>
-    public abstract bool dialDtmf(string digits, int mode);
+    public abstract bool dialDtmf(string digits, EDtmfMode mode);
 
     #endregion
   }
@@ -333,7 +333,7 @@ namespace Sipek.Common
       return false;
     }
 
-    public override bool dialDtmf(string digits, int mode)
+    public override bool dialDtmf(string digits, EDtmfMode mode)
     {
       return false;
     }

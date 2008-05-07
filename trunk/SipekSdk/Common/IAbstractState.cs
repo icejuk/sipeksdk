@@ -189,7 +189,7 @@ namespace Sipek.Common
       return true;
     }
 
-    public override bool dialDtmf(string digits, int mode)
+    public override bool dialDtmf(string digits, EDtmfMode mode)
     {
       CallProxy.dialDtmf(digits, mode);
       return true;
