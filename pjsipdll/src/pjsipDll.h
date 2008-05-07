@@ -33,7 +33,7 @@ struct SipConfigStruct
 	bool noUDP;
 	bool noTCP;
 	bool imsEnabled;
-	char* stunAddress;
+	char stunAddress[255];
 };
 
 // calback function definitions
@@ -61,7 +61,7 @@ extern "C" PJSIPDLL_DLL_API int onMessageWaitingCallback(fptr_mwi cb); // regist
 
 // pjsip common API
 extern "C" PJSIPDLL_DLL_API void dll_setSipConfig(SipConfigStruct* config);
-extern "C" PJSIPDLL_DLL_API int dll_init(SipConfigStruct* config);
+extern "C" PJSIPDLL_DLL_API int dll_init();
 extern "C" PJSIPDLL_DLL_API int dll_shutdown(); 
 extern "C" PJSIPDLL_DLL_API int dll_main(void);
 extern "C" PJSIPDLL_DLL_API int dll_getNumOfCodecs();
