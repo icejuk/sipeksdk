@@ -51,8 +51,8 @@ namespace Sipek.Sip
     public bool noTCP = true;
     [MarshalAs(UnmanagedType.I1)]
     public bool imsEnabled = false;
-
-    public string stunServer = "";
+    [MarshalAs(UnmanagedType.ByValTStr,SizeConst=255)]
+    public string stunServer;
     [MarshalAs(UnmanagedType.I1)]
     public bool secAgreement = false; // rfc 3329
   }

@@ -71,11 +71,13 @@ namespace Sipek.Sip
     #region Wrapper functions
     
     [DllImport("pjsipDll.dll")]
-    private static extern int dll_init(SipConfigStruct config);
+    private static extern int dll_init();
     [DllImport("pjsipDll.dll")]
     private static extern int dll_main();
     [DllImport("pjsipDll.dll")]
     private static extern int dll_shutdown();
+    [DllImport("pjsipDll.dll")]
+    private static extern void dll_setSipConfig(SipConfigStruct config);
 
     [DllImport("pjsipDll.dll")]
     private static extern int dll_getCodec(int index, StringBuilder codec);
@@ -121,7 +123,8 @@ namespace Sipek.Sip
         ConfigMore.listenPort = Config.SIPPort;
       }
 
-      status = dll_init(ConfigMore);
+      dll_setSipConfig(ConfigMore);
+      status = dll_init();
 
       if (status != 0) return status;
 

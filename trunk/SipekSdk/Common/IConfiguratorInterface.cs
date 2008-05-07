@@ -139,6 +139,12 @@ namespace Sipek.Common
   /// </summary>
   internal class NullConfigurator : IConfiguratorInterface
   {
+    public NullConfigurator()
+    {
+      // add 1 account
+      _accountList.Add(new NullAccount());
+    }
+
     public class NullAccount : IAccount
     {
       public string AccountName
@@ -262,7 +268,7 @@ namespace Sipek.Common
     }
     public int DefaultAccountIndex
     {
-      get { return 1; }
+      get { return 0; }
       set { }
     }
 

@@ -46,6 +46,10 @@ enum {
     SC_3Pty
 };
 
+// sipek configuration container
+static SipConfigStruct sipek_config;
+static bool sipekConfigEnabled = false;
+
 ////////////////////////////////////////////////////////////////////////
 // Presence structs 
 
@@ -764,7 +768,7 @@ static void on_nat_detect(const pj_stun_nat_detect_result *res)
 
 //////////////////////////////////////////////////////////////////////////
 // Public API - DLL functions...
-PJSIPDLL_DLL_API int dll_init(SipConfigStruct* config)
+PJSIPDLL_DLL_API int dll_init()
 {
 	pjsua_transport_id transport_id = -1;
     pjsua_transport_config tcp_cfg;
@@ -787,19 +791,23 @@ PJSIPDLL_DLL_API int dll_init(SipConfigStruct* config)
 //	if (status != PJ_SUCCESS)
 //		return status;
 
-	// set config parameters passed by SipConfigStruct
-	app_config.udp_cfg.port = config->listenPort;
-	app_config.no_udp =  (config->noUDP == true ? PJ_TRUE : PJ_FALSE);
-	app_config.use_tls = (config->useTLS == true ? PJ_TRUE : PJ_FALSE);
-	if (app_config.use_tls == PJ_TRUE)
-	{
-		//app_config->udp_cfg.tls_setting.ca_list_file = pj_str("");
-		app_config.udp_cfg.tls_setting.cert_file = pj_str("server.crt");
-		app_config.udp_cfg.tls_setting.privkey_file = pj_str("pkey.key");
-	}
+	// check sipek config
+	if (sipekConfigEnabled == true)
+	{ 
+		// set config parameters passed by SipConfigStruct
+		app_config.udp_cfg.port = sipek_config.listenPort;
+		app_config.no_udp =  (sipek_config.noUDP == true ? PJ_TRUE : PJ_FALSE);
+		app_config.use_tls = (sipek_config.useTLS == true ? PJ_TRUE : PJ_FALSE);
+		if (app_config.use_tls == PJ_TRUE)
+		{
+			//app_config->udp_cfg.tls_setting.ca_list_file = pj_str("");
+			app_config.udp_cfg.tls_setting.cert_file = pj_str("server.crt");
+			app_config.udp_cfg.tls_setting.privkey_file = pj_str("pkey.key");
+		}
 
-	//cfg->cfg.stun_domain = pj_str(pj_optarg);
-	if (strlen(config->stunAddress) > 0) app_config.cfg.stun_host = pj_str(config->stunAddress);
+		//cfg->cfg.stun_domain = pj_str(pj_optarg);
+		if (strlen(sipek_config.stunAddress) > 0) app_config.cfg.stun_host = pj_str(sipek_config.stunAddress);
+	}
 
 	/* Initialize application callbacks */
 	app_config.cfg.cb.on_call_state = &on_call_state;
@@ -1434,16 +1442,6 @@ pj_status_t status;
 // SipConfig
 void dll_setSipConfig(SipConfigStruct* config)
 {
-	app_config.udp_cfg.port = config->listenPort;
-	app_config.no_udp =  (config->noUDP == true ? PJ_TRUE : PJ_FALSE);
-	app_config.use_tls = (config->useTLS == true ? PJ_TRUE : PJ_FALSE);
-	if (app_config.use_tls == PJ_TRUE)
-	{
-		app_config.udp_cfg.tls_setting.ca_list_file = pj_str("calist.pem");
-		app_config.udp_cfg.tls_setting.cert_file = pj_str("server.crt");
-		app_config.udp_cfg.tls_setting.privkey_file = pj_str("pkey.key");
-	}
-
-	//cfg->cfg.stun_domain = pj_str(pj_optarg);
-	if (strlen(config->stunAddress) > 0) app_config.cfg.stun_host = pj_str(config->stunAddress);
+	sipekConfigEnabled = true;
+	sipek_config = *config;
 }

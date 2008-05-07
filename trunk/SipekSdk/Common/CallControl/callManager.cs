@@ -350,8 +350,19 @@ namespace Sipek.Common.CallControl
         }
         // update call table
         // TODO catch argument exception (same key)!!!!
-        call.Session = newsession;
-        _calls.Add(newsession, call);
+        try
+        {
+          call.Session = newsession;
+          _calls.Add(newsession, call);
+        }
+        catch (ArgumentException e)
+        {
+          // previous call not released ()
+          // first release old one
+          _calls[newsession].destroy();
+          // and then add new one
+          _calls.Add(newsession, call);
+        }
 
         return call;
       }
