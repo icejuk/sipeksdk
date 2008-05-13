@@ -19,7 +19,6 @@
  *  
  */
 
-using System.Timers;
 using System;
 using Sipek.Common;
 
