@@ -1272,13 +1272,29 @@ int dll_serviceReq(int callId, int serviceCode, const char* destUri)
 
 int dll_dialDtmf(int callId, char* digits, int mode)
 {
-	// todo:::implemenent dtmf mode
-	pj_status_t status = pjsua_call_dial_dtmf(callId, &pj_str(digits));
-	if (status != PJ_SUCCESS) {
-	    pjsua_perror(THIS_FILE, "Unable to send DTMF", status);
-	} else {
-	    puts("DTMF digits enqueued for transmission");
+pj_status_t status;
+
+	// dtmf mode
+	switch(mode)
+	{
+		case 0:
+			status = dll_sendInfo(callId, digits);
+		break;
+
+		case 1:
+			status = pjsua_call_dial_dtmf(callId, &pj_str(digits));
+			if (status != PJ_SUCCESS) {
+					pjsua_perror(THIS_FILE, "Unable to send DTMF", status);
+			} else {
+					puts("DTMF digits enqueued for transmission");
+			}
+		break;
+
+		case 2:
+
+		break;
 	}
+
 	return status;
 }
 

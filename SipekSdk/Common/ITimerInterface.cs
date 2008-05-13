@@ -41,12 +41,12 @@ namespace Sipek.Common
     /// <summary>
     /// Request timer start
     /// </summary>
-    void Start();
+    bool Start();
 
     /// <summary>
     /// Request timer stop
     /// </summary>
-    void Stop();
+    bool Stop();
 
     /// <summary>
     /// Set tiemr interval
@@ -68,8 +68,8 @@ namespace Sipek.Common
   internal class NullTimer : ITimer
   {
     #region ITimer Members
-    public void Start() { }
-    public void Stop() { }
+    public bool Start() { return false; }
+    public bool Stop() { return false; }
     public int Interval
     {
       get { return 100; }

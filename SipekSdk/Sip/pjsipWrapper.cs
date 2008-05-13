@@ -150,6 +150,9 @@ namespace Sipek.Sip
         // register callbacks (delegates)
         onDtmfDigitCallback(dtdel);
         onMessageWaitingCallback(mwidel);      
+
+        // init call proxy (callbacks)
+        pjsipCallProxy.initialize();
       }
 
       // Initialize pjsip...
