@@ -94,7 +94,6 @@ namespace Sipek.Common.CallControl
     public override void onReleased()
     {
       _smref.changeState(EStateId.RELEASED);
-      _smref.destroy();
     }
 
     public override void onAlerting()
@@ -239,10 +238,14 @@ namespace Sipek.Common.CallControl
       Id = EStateId.RELEASED;
     }
 
+    /// <summary>
+    /// Enter release state. If release timer not implemented release call imediately
+    /// </summary>
     public override void onEntry()
     {
       MediaProxy.playTone(ETones.EToneCongestion);
-      _smref.startTimer(ETimerType.ERELEASED);
+      bool success = _smref.startTimer(ETimerType.ERELEASED);
+      if (!success) _smref.destroy();
     }
 
     public override void onExit()
@@ -327,7 +330,6 @@ namespace Sipek.Common.CallControl
     public override void onReleased()
     {
       _smref.changeState(EStateId.RELEASED);
-      _smref.destroy();
     }
 
     public override bool xferCall(string number)
@@ -392,7 +394,6 @@ namespace Sipek.Common.CallControl
 
     public override void onReleased()
     {
-      //_smref.destroy();
       _smref.changeState(EStateId.RELEASED);
     }
 

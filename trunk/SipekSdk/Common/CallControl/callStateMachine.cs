@@ -68,7 +68,7 @@ namespace Sipek.Common.CallControl
     /// <summary>
     /// A reference to CCallManager instance
     /// </summary>
-    public  CCallManager Manager
+    public CCallManager Manager
     {
       get { return _manager; }
     }
@@ -189,9 +189,6 @@ namespace Sipek.Common.CallControl
     {
       get { return false; }
     }
-
-
-
 
     /// <summary>
     /// Signaling proxy instance (seperately created for each call)
@@ -346,34 +343,38 @@ namespace Sipek.Common.CallControl
     /// Start timer by timer type
     /// </summary>
     /// <param name="ttype">timer type</param>
-    internal override void startTimer(ETimerType ttype)
+    internal override bool startTimer(ETimerType ttype)
     {
+      bool success = false;
       switch (ttype)
       {
         case ETimerType.ENOREPLY:
-          _noreplyTimer.Start();
+          success = _noreplyTimer.Start();
           break;
         case ETimerType.ERELEASED:
-          _releasedTimer.Start();
+          success = _releasedTimer.Start();
           break;
       }
+      return success;
     }
 
     /// <summary>
     /// Stop timer by timer type
     /// </summary>
     /// <param name="ttype">timer type</param>
-    internal override void stopTimer(ETimerType ttype)
+    internal override bool stopTimer(ETimerType ttype)
     {
+      bool success = false;
       switch (ttype)
       {
         case ETimerType.ENOREPLY:
-          _noreplyTimer.Stop();
+          success = _noreplyTimer.Stop();
           break;
         case ETimerType.ERELEASED:
-          _releasedTimer.Stop();
+          success = _releasedTimer.Stop();
           break;
       }
+      return success;
     }
 
     /// <summary>
@@ -383,7 +384,6 @@ namespace Sipek.Common.CallControl
     {
       _noreplyTimer.Stop();
       _releasedTimer.Stop();
-      // ...
     }
 
     /// <summary>

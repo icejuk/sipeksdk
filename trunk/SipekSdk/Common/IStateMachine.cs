@@ -58,8 +58,8 @@ namespace Sipek.Common
     #endregion
 
     #region Internal Methods
-    internal abstract void startTimer(ETimerType ttype);
-    internal abstract void stopTimer(ETimerType ttype);
+    internal abstract bool startTimer(ETimerType ttype);
+    internal abstract bool stopTimer(ETimerType ttype);
     internal abstract void stopAllTimers();
     internal abstract void activatePendingAction();
     #endregion
@@ -242,12 +242,12 @@ namespace Sipek.Common
       }
     }
 
-    internal override void startTimer(ETimerType ttype)
+    internal override bool startTimer(ETimerType ttype)
     {
       throw new Exception("The method or operation is not implemented.");
     }
 
-    internal override void stopTimer(ETimerType ttype)
+    internal override bool stopTimer(ETimerType ttype)
     {
       throw new Exception("The method or operation is not implemented.");
     }

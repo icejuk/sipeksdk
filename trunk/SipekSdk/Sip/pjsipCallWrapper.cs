@@ -109,11 +109,16 @@ namespace Sipek.Sip
     internal pjsipCallProxy(IConfiguratorInterface config)
     {
       _config = config;
+    }
+
+    public static void initialize()
+    {
       // assign callbacks
       onCallIncoming(ciDel);
       onCallStateCallback(csDel);
       onCallHoldConfirmCallback(chDel);
     }
+
     #endregion Constructor
 
     #region Methods
@@ -262,20 +267,7 @@ namespace Sipek.Sip
     /// <returns></returns>
     public override bool dialDtmf(string digits, EDtmfMode mode)
     {
-      // check the dtmf mode
-      switch (mode)
-      {
-        case EDtmfMode.DM_Inband:
-          dll_dialDtmf(SessionId, digits, (int)mode);
-        break;
-        case EDtmfMode.DM_Outband:
-          dll_sendInfo(SessionId, digits);
-        break;
-        case EDtmfMode.DM_Transparent:
-          // TODO!!!!
-          //dll_playDtmf(SessionId, digits);
-          break;
-      }
+      int status = dll_dialDtmf(SessionId, digits, (int)mode);
       return true;
     }
 
