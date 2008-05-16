@@ -32,13 +32,22 @@ namespace Sipek.Sip
   public class pjsipPresenceAndMessaging : IPresenceAndMessaging
   {
     #region Dll declarations
-    [DllImport("pjsipDll.dll")]
+
+
+#if LINUX
+		internal const string PJSIP_DLL = "libpjsipDll.so"; 
+#else
+    internal const string PJSIP_DLL = "pjsipDll.dll";
+#endif
+
+
+    [DllImport(PJSIP_DLL)]
     private static extern int dll_addBuddy(string uri, bool subscribe);
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int dll_removeBuddy(int buddyId);
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int dll_sendMessage(int buddyId, string uri, string message);
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int dll_setStatus(int accId, int presence_state);
     #endregion 
 
@@ -46,9 +55,9 @@ namespace Sipek.Sip
     delegate int OnMessageReceivedCallback(StringBuilder from, StringBuilder message);
     delegate int OnBuddyStatusChangedCallback(int buddyId, int status, StringBuilder statusText);
 
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int onMessageReceivedCallback(OnMessageReceivedCallback cb);
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int onBuddyStatusChangedCallback(OnBuddyStatusChangedCallback cb);
 
     static OnMessageReceivedCallback mrdel = new OnMessageReceivedCallback(onMessageReceived);

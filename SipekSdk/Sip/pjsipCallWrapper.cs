@@ -43,37 +43,44 @@ namespace Sipek.Sip
   internal class pjsipCallProxy : ICallProxyInterface
   {
     #region DLL declarations
+
+#if LINUX
+		internal const string PJSIP_DLL = "libpjsipDll.so"; 
+#else
+    internal const string PJSIP_DLL = "pjsipDll.dll";
+#endif
+
     // call API
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int dll_makeCall(int accountId, string uri);
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int dll_releaseCall(int callId);
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int dll_answerCall(int callId, int code);
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int dll_holdCall(int callId);
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int dll_retrieveCall(int callId);
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int dll_xferCall(int callId, string uri);
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int dll_xferCallWithReplaces(int callId, int dstSession);
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int dll_serviceReq(int callId, int serviceCode, string destUri);
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int dll_dialDtmf(int callId, string digits, int mode);
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int dll_sendInfo(int callid, string content);
 
     #endregion
 
     #region Callback Declarations
     // passing delegates to unmanaged code (.dll)
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int onCallStateCallback(OnCallStateChanged cb);
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int onCallIncoming(OnCallIncoming cb);
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int onCallHoldConfirmCallback(OnCallHoldConfirm cb);
 
     // Static declaration because of CallbackonCollectedDelegate exception!
