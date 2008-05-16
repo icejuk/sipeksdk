@@ -33,11 +33,18 @@ namespace Sipek.Sip
   {
 
     #region Dll declarations
-    [DllImport("pjsipDll.dll")]
+
+#if LINUX
+		internal const string PJSIP_DLL = "libpjsipDll.so"; 
+#else
+    internal const string PJSIP_DLL = "pjsipDll.dll";
+#endif
+
+    [DllImport(PJSIP_DLL)]
     private static extern int dll_registerAccount(string uri, string reguri, string domain, string username, string password, string proxy, bool isdefault);
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int dll_removeAccounts();
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int onRegStateCallback(OnRegStateChanged cb);
     
     #endregion

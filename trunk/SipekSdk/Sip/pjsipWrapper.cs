@@ -69,30 +69,36 @@ namespace Sipek.Sip
     #endregion
 
     #region Wrapper functions
-    
-    [DllImport("pjsipDll.dll")]
+
+#if LINUX
+	internal const string PJSIP_DLL = "libpjsipDll.so"; 
+#else
+    internal const string PJSIP_DLL = "pjsipDll.dll";
+#endif
+
+    [DllImport(PJSIP_DLL)]
     private static extern int dll_init();
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int dll_main();
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int dll_shutdown();
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern void dll_setSipConfig(SipConfigStruct config);
 
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int dll_getCodec(int index, StringBuilder codec);
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int dll_getNumOfCodecs();
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int dll_setCodecPriority(string name, int prio);
 
     #endregion Wrapper functions
 
     #region Callback declarations
 
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int onDtmfDigitCallback(OnDtmfDigitCallback cb);
-    [DllImport("pjsipDll.dll")]
+    [DllImport(PJSIP_DLL)]
     private static extern int onMessageWaitingCallback(OnMessageWaitingCallback cb);
 
     static OnDtmfDigitCallback dtdel = new OnDtmfDigitCallback(onDtmfDigitCallback);
