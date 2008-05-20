@@ -135,6 +135,7 @@ namespace Sipek.Sip
       if (status != 0) return status;
 
       status |= dll_main();
+
       return status;
     }
     #endregion
@@ -175,6 +176,8 @@ namespace Sipek.Sip
     /// <returns></returns>
     public override int shutdown()
     {
+      if (!IsInitialized) return -1;
+
       return dll_shutdown();
     }
 
@@ -185,6 +188,8 @@ namespace Sipek.Sip
     /// <returns></returns>
     public override string getCodec(int index)
     {
+      if (!IsInitialized) return "";
+
       StringBuilder codec = new StringBuilder(256);
       dll_getCodec(index, codec);
       return (codec.ToString());
