@@ -93,6 +93,8 @@ namespace Sipek.Sip
     /// <returns></returns>
     public override int addBuddy(string name, bool presence, int accId)
     {
+      if (!pjsipStackProxy.Instance.IsInitialized) return -1;
+
        string sipuri = "";
 
       // check if name contains URI
@@ -126,6 +128,8 @@ namespace Sipek.Sip
     /// <returns></returns>
     public override int sendMessage(string destAddress, string message, int accId)
     {
+      if (!pjsipStackProxy.Instance.IsInitialized) return -1;
+
        string sipuri = "";
 
       // check if name contains URI
@@ -160,6 +164,8 @@ namespace Sipek.Sip
     /// <returns></returns>
     public override int setStatus(int accId, EUserStatus status)
     {
+      if (!pjsipStackProxy.Instance.IsInitialized) return -1;
+
       return dll_setStatus(accId, (int)status);
     }
 

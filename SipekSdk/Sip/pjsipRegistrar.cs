@@ -81,7 +81,7 @@ namespace Sipek.Sip
     /// <returns></returns>
     public override int registerAccounts()
     {
-      //if (!IsInitialized) return -1;
+      if (!pjsipStackProxy.Instance.IsInitialized) return -1;
 
       if (Config.Accounts.Count <= 0) return 0;
 
