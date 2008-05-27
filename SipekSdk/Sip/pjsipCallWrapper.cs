@@ -31,7 +31,7 @@ namespace Sipek.Sip
 
   // callback delegates
   delegate int OnCallStateChanged(int callId, ESessionState stateId);
-  delegate int OnCallIncoming(int callId, StringBuilder number);
+  delegate int OnCallIncoming(int callId, string number);
   delegate int OnCallHoldConfirm(int callId);
 
   /// <summary>
@@ -300,7 +300,7 @@ namespace Sipek.Sip
     /// <param name="callId"></param>
     /// <param name="sturi"></param>
     /// <returns></returns>
-    private static int onCallIncoming(int callId, StringBuilder sturi)
+    private static int onCallIncoming(int callId, string sturi)
     {
       string uri = sturi.ToString();
       string display = "";

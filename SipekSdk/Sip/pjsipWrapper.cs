@@ -28,7 +28,7 @@ using Sipek.Common;
 namespace Sipek.Sip
 {
   delegate int OnDtmfDigitCallback(int callId, int digit);
-  delegate int OnMessageWaitingCallback(int mwi, StringBuilder info);
+  delegate int OnMessageWaitingCallback(int mwi, string info);
 
   /// <summary>
   /// Implementation of SIP interface using pjsip.org SIP stack.
@@ -241,7 +241,7 @@ namespace Sipek.Sip
       return 1;
     }
 
-    private static int onMessageWaitingCallback(int mwi, StringBuilder info)
+    private static int onMessageWaitingCallback(int mwi, string info)
     {
       Instance.BaseMessageWaitingIndication(mwi, info.ToString());
       return 1;

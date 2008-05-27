@@ -52,8 +52,8 @@ namespace Sipek.Sip
     #endregion 
 
     #region Callback declarations
-    delegate int OnMessageReceivedCallback(StringBuilder from, StringBuilder message);
-    delegate int OnBuddyStatusChangedCallback(int buddyId, int status, StringBuilder statusText);
+    delegate int OnMessageReceivedCallback(string from, string message);
+    delegate int OnBuddyStatusChangedCallback(int buddyId, int status, string statusText);
 
     [DllImport(PJSIP_DLL)]
     private static extern int onMessageReceivedCallback(OnMessageReceivedCallback cb);
@@ -164,7 +164,9 @@ namespace Sipek.Sip
     /// <returns></returns>
     public override int setStatus(int accId, EUserStatus status)
     {
-      if (!pjsipStackProxy.Instance.IsInitialized) return -1;
+      if ((!pjsipStackProxy.Instance.IsInitialized) || (accId < 0)) return -1;
+			
+			if (Config.Accounts[accId].RegState != 200) return -1;
 
       return dll_setStatus(accId, (int)status);
     }
@@ -172,13 +174,13 @@ namespace Sipek.Sip
     #endregion
 
     #region Callbacks
-    private static int onMessageReceived(StringBuilder from, StringBuilder text)
+    private static int onMessageReceived(string from, string text)
     {
       Instance.BaseMessageReceived(from.ToString(), text.ToString());
       return 1;
     }
 
-    private static int onBuddyStatusChanged(int buddyId, int status, StringBuilder text)
+    private static int onBuddyStatusChanged(int buddyId, int status, string text)
     {
       Instance.BaseBuddyStatusChanged(buddyId, status, text.ToString());
       return 1;
