@@ -1,0 +1,254 @@
+/* 
+ * Copyright (C) 2007 Sasa Coh <sasacoh@gmail.com>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
+ * 
+ * @see http://sipekphone.googlepages.com/pjsipwrapper
+ * @see http://voipengine.googlepages.com/
+ *  
+ */
+
+using System.Runtime.InteropServices;
+using System;
+using System.Text;
+using Sipek.Common;
+
+namespace Sipek.Sip
+{
+  delegate int OnDtmfDigitCallback(int callId, int digit);
+  delegate int OnMessageWaitingCallback(int mwi, string info);
+
+  /// <summary>
+  /// Implementation of SIP interface using pjsip.org SIP stack.
+  /// This proxy is used for sip stack initialization and shut down, registration, and 
+  /// callback methods handling.
+  /// </summary>
+  public class pjsipStackProxy : IVoipProxy
+  {
+    #region Constructor
+
+    private static pjsipStackProxy _instance = null;
+
+    public static pjsipStackProxy Instance
+    {
+      get
+      {
+        if (_instance == null)
+        {
+          _instance = new pjsipStackProxy();
+        }
+        return _instance;
+      }
+    }
+
+    protected pjsipStackProxy()
+    {
+    }
+    #endregion
+
+    #region Properties
+
+    private bool _initialized = false;
+    public override bool IsInitialized
+    {
+      get { return _initialized; }
+      set { _initialized = value; }
+    }
+    #endregion
+
+    #region Wrapper functions
+
+#if LINUX
+	internal const string PJSIP_DLL = "libpjsipDll.so"; 
+#else
+    internal const string PJSIP_DLL = "pjsipDll.dll";
+#endif
+
+    [DllImport(PJSIP_DLL)]
+    private static extern int dll_init();
+    [DllImport(PJSIP_DLL)]
+    private static extern int dll_main();
+    [DllImport(PJSIP_DLL)]
+    private static extern int dll_shutdown();
+    [DllImport(PJSIP_DLL)]
+    private static extern void dll_setSipConfig(SipConfigStruct config);
+
+    [DllImport(PJSIP_DLL)]
+    private static extern int dll_getCodec(int index, StringBuilder codec);
+    [DllImport(PJSIP_DLL)]
+    private static extern int dll_getNumOfCodecs();
+    [DllImport(PJSIP_DLL)]
+    private static extern int dll_setCodecPriority(string name, int prio);
+
+    #endregion Wrapper functions
+
+    #region Callback declarations
+
+    [DllImport(PJSIP_DLL)]
+    private static extern int onDtmfDigitCallback(OnDtmfDigitCallback cb);
+    [DllImport(PJSIP_DLL)]
+    private static extern int onMessageWaitingCallback(OnMessageWaitingCallback cb);
+
+    static OnDtmfDigitCallback dtdel = new OnDtmfDigitCallback(onDtmfDigitCallback);
+    static OnMessageWaitingCallback mwidel = new OnMessageWaitingCallback(onMessageWaitingCallback);
+    
+    #endregion
+
+    #region Variables
+
+    // config structure (used for special configuration options)
+    public SipConfigStruct ConfigMore = SipConfigStruct.Instance;
+
+    #endregion Variables
+
+    #region Private Methods
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    private int start()
+    {
+      int status = -1;
+
+      // prepare configuration struct
+      // read data from Config interface. If null read all values directly from SipConfigMore
+      if (!Config.IsNull)
+      {
+        ConfigMore.listenPort = Config.SIPPort;
+      }
+
+      dll_setSipConfig(ConfigMore);
+      status = dll_init();
+
+      if (status != 0) return status;
+
+      status |= dll_main();
+
+      return status;
+    }
+    #endregion
+
+    #region Public Methods
+
+    /// <summary>
+    /// Initialize pjsip stack
+    /// </summary>
+    /// <returns></returns>
+    public override int initialize()
+    {
+      // shutdown if started already
+      if (IsInitialized)
+      {
+        shutdown();
+      }
+      else { 
+        // register callbacks (delegates)
+        onDtmfDigitCallback(dtdel);
+        onMessageWaitingCallback(mwidel);      
+
+        // init call proxy (callbacks)
+        pjsipCallProxy.initialize();
+      }
+
+      // Initialize pjsip...
+      int status = start();
+      // set initialized flag
+      IsInitialized = (status == 0) ? true : false;
+
+      return status;
+    }
+
+    /// <summary>
+    /// Shutdown pjsip stack
+    /// </summary>
+    /// <returns></returns>
+    public override int shutdown()
+    {
+      if (!IsInitialized) return -1;
+
+      return dll_shutdown();
+    }
+
+    /// <summary>
+    /// Get codec by index
+    /// </summary>
+    /// <param name="index"></param>
+    /// <returns></returns>
+    public override string getCodec(int index)
+    {
+      if (!IsInitialized) return "";
+
+      StringBuilder codec = new StringBuilder(256);
+      dll_getCodec(index, codec);
+      return (codec.ToString());
+    }
+
+    /// <summary>
+    /// Get number of all codecs
+    /// </summary>
+    /// <returns></returns>
+    public override int getNoOfCodecs()
+    {
+      if (!IsInitialized) return 0;
+
+      int no = dll_getNumOfCodecs();
+      return no;
+    }
+
+    /// <summary>
+    /// Set codec priority
+    /// </summary>
+    /// <param name="codecname"></param>
+    /// <param name="priority"></param>
+    public override void setCodecPriority(string codecname, int priority)
+    {
+      if (!IsInitialized) return;
+
+      dll_setCodecPriority(codecname, priority);
+    }
+
+    /// <summary>
+    /// Call proxy factory method
+    /// </summary>
+    /// <returns></returns>
+    public override ICallProxyInterface createCallProxy()
+    {
+      return new pjsipCallProxy(Config);
+    }
+
+    #endregion Methods
+
+    #region Callbacks
+
+
+    //////////////////////////////////////////////////////////////////////////////////
+
+    private static int onDtmfDigitCallback(int callId, int digit)
+    {
+      Instance.BaseDtmfDigitReceived(callId, digit);
+      return 1;
+    }
+
+    private static int onMessageWaitingCallback(int mwi, string info)
+    {
+      Instance.BaseMessageWaitingIndication(mwi, info.ToString());
+      return 1;
+    }
+
+    #endregion Callbacks
+
+  }
+
+} // namespace PjsipWrapper
