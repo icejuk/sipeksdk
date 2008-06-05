@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
+#if DEBUG
 using NUnit.Framework;
 
 namespace UnitTest
@@ -56,3 +57,4 @@ namespace UnitTest
   }
 
 }
+#endif
