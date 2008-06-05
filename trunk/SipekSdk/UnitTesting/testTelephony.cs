@@ -19,9 +19,12 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using NUnit.Framework;
 using Sipek.Common;
 using Sipek.Common.CallControl;
+
+#if DEBUG
+
+using NUnit.Framework;
 
 
 namespace UnitTest
@@ -808,3 +811,4 @@ namespace UnitTest
   }
 
 }
+#endif
