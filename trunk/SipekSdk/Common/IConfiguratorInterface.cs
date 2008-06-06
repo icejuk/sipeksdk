@@ -142,7 +142,7 @@ namespace Sipek.Common
     public NullConfigurator()
     {
       // add 1 account
-      _accountList.Add(new NullAccount());
+      //_accountList.Add(new NullAccount());
     }
 
     public class NullAccount : IAccount

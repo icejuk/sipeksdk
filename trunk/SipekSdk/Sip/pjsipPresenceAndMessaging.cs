@@ -165,8 +165,8 @@ namespace Sipek.Sip
     public override int setStatus(int accId, EUserStatus status)
     {
       if ((!pjsipStackProxy.Instance.IsInitialized) || (accId < 0)) return -1;
-			
-			if (Config.Accounts[accId].RegState != 200) return -1;
+
+      if ((Config.Accounts.Count > 0)&&(Config.Accounts[accId].RegState != 200)) return -1;
 
       return dll_setStatus(accId, (int)status);
     }

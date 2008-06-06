@@ -149,18 +149,14 @@ namespace Sipek.Sip
     public override int initialize()
     {
       // shutdown if started already
-      if (IsInitialized)
-      {
-        shutdown();
-      }
-      else { 
-        // register callbacks (delegates)
-        onDtmfDigitCallback(dtdel);
-        onMessageWaitingCallback(mwidel);      
+      shutdown();
 
-        // init call proxy (callbacks)
-        pjsipCallProxy.initialize();
-      }
+      // register callbacks (delegates)
+      onDtmfDigitCallback(dtdel);
+      onMessageWaitingCallback(mwidel);      
+
+      // init call proxy (callbacks)
+      pjsipCallProxy.initialize();
 
       // Initialize pjsip...
       int status = start();
@@ -176,7 +172,7 @@ namespace Sipek.Sip
     /// <returns></returns>
     public override int shutdown()
     {
-      if (!IsInitialized) return -1;
+      //if (!IsInitialized) return -1;
 
       return dll_shutdown();
     }
