@@ -128,7 +128,7 @@ namespace Sipek.Sip
 
     #endregion Constructor
 
-    #region Methods
+    #region Public Methods
 
     /// <summary>
     /// Method makeCall creates call session. Checks the 1st parameter 
@@ -152,9 +152,12 @@ namespace Sipek.Sip
         // prepare URI
         sipuri = "sip:" + dialedNo + "@" + Config.Accounts[accountId].HostName;
       }
+      // Select configured trnasport for this account: udp, tcp, tls 
+      sipuri = pjsipStackProxy.Instance.SetTransport(accountId, sipuri);
 
+      // Don't forget to convert accontId here!!!
       // Store session identification for further requests
-      SessionId = dll_makeCall(accountId, sipuri);
+      SessionId = dll_makeCall(Config.Accounts[accountId].Index, sipuri);
 
       return SessionId;
     }

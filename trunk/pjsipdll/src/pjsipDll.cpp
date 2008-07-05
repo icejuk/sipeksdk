@@ -43,7 +43,15 @@ enum {
     SC_CFU,
     SC_CFNR,
     SC_DND,
-    SC_3Pty
+    SC_3Pty,
+		SC_CFB
+};
+
+enum ETransportMode 
+{
+  TM_UDP,
+  TM_TCP,
+  TM_TLS
 };
 
 // sipek configuration container
@@ -1084,14 +1092,9 @@ pjsua_acc_config accConfig;
 	accConfig.reg_timeout = 3600;
 
 	pj_str_t sipuri = pj_str(reguri);
-	// check security
-	if (app_config.use_tls)
-	{
-		pj_strcat(&sipuri, &pj_str(";transport=tls"));
-	}
 
 	accConfig.reg_uri = sipuri;
-	accConfig.publish_enabled = PJ_TRUE; // enable publish
+	accConfig.publish_enabled = sipek_config.publishEnabled == true ? PJ_TRUE : PJ_FALSE; // enable publish
 	pj_str_t tmpproxy = pj_str(proxy);
 	if (tmpproxy.slen > 0)
 	{
@@ -1141,15 +1144,7 @@ int dll_makeCall(int accountId, char* uri)
 int newcallId = -1; 
 
 	pj_str_t sipuri = pj_str(uri);
-
-	// check security
-	if (app_config.use_tls)
-	{
-		pj_strcat(&sipuri, &pj_str(";transport=tls"));
-	}
-
-	pj_str_t tmp = sipuri;
-	pjsua_call_make_call( accountId, &tmp, 0, NULL, NULL, &newcallId);
+	pjsua_call_make_call( accountId, &sipuri, 0, NULL, NULL, &newcallId);
 
 	return newcallId;
 }
@@ -1237,7 +1232,7 @@ int dll_serviceReq(int callId, int serviceCode, const char* destUri)
       }
   	  break;
     case SC_CFU:
-    //case SC_CFB:
+    case SC_CFB:
     case SC_CFNR:
     case SC_Deflect:
       {
@@ -1305,12 +1300,6 @@ pj_status_t status;
 pjsua_buddy_config buddy_cfg;
 
 	pj_str_t sipuri = pj_str(uri);
-
-	// check security
-	if (app_config.use_tls)
-	{
-		pj_strcat(&sipuri, &pj_str(";transport=tls"));
-	}
 
   buddy_cfg.uri = sipuri;
   buddy_cfg.subscribe = (subscribe == true) ? 1 : 0;

@@ -201,14 +201,6 @@
 				RelativePath="..\src\pjsipDll.h"
 				>
 			</File>
-			<File
-				RelativePath="..\src\pjsipDll_PlayWav.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\src\pjsipDll_PlayWav.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

@@ -68,13 +68,17 @@ namespace Sipek.Common
     /// </summary>
     int SIPPort { get; set; }
     /// <summary>
-    /// Default account index property
+    /// Internal representation of account identification. Assigned by voip stack.
     /// </summary>
-    int DefaultAccountIndex { get; set; }
+    int DefaultAccountIndex { get;  }
     /// <summary>
     /// List of all codecs
     /// </summary>
     List<string> CodecList { get; set; }
+    /// <summary>
+    /// Flag to enable publish method (user status)
+    /// </summary>
+    bool PublishEnabled { get; set; }
 
     List<IAccount> Accounts { get;}
 
@@ -94,6 +98,10 @@ namespace Sipek.Common
   /// </summary>
   public interface IAccount
   {
+    /// <summary>
+    /// Represent value assigned to an account by sip stack.   
+    /// </summary>
+    int Index { get; set;}
     /// <summary>
     /// Account name
     /// </summary>
@@ -130,6 +138,10 @@ namespace Sipek.Common
     /// Account Proxy Address (optional)
     /// </summary>
     string ProxyAddress { get; set;}
+    /// <summary>
+    /// VoIP Transport mode
+    /// </summary>
+    ETransportMode TransportMode { get; set; }
   }
 
 
@@ -147,6 +159,13 @@ namespace Sipek.Common
 
     public class NullAccount : IAccount
     {
+      public int Index
+      {
+        get { return 0; }
+        set { }
+      }
+
+
       public string AccountName
       {
         get { return ""; }
@@ -206,6 +225,8 @@ namespace Sipek.Common
         get { return ""; }
         set { }
       }
+
+      public ETransportMode TransportMode { get { return ETransportMode.TM_UDP; } set { } }
     }
 
     #region IConfiguratorInterface Properties
@@ -272,6 +293,11 @@ namespace Sipek.Common
       set { }
     }
 
+    public bool PublishEnabled
+    {
+      get { return false; }
+      set { }
+    }
 
     public List<IAccount> Accounts
     {

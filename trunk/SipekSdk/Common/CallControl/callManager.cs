@@ -339,8 +339,12 @@ namespace Sipek.Common.CallControl
       if (this.getNoCallsInState(EStateId.ACTIVE) == 0)
       {
         // create state machine
-        // TODO check max calls!!!!
-        IStateMachine call = Factory.createStateMachine(this);
+        IStateMachine call = Factory.createStateMachine();
+        // couldn't create new call instance (max calls?)
+        if (call == null)
+        {
+          return null;
+        }
 
         // make call request (stack provides new sessionId)
         int newsession = call.State.makeCall(number, accountId);
@@ -349,7 +353,7 @@ namespace Sipek.Common.CallControl
           return new NullStateMachine();
         }
         // update call table
-        // TODO catch argument exception (same key)!!!!
+        // catch argument exception (same key)!!!!
         try
         {
           call.Session = newsession;
@@ -589,9 +593,21 @@ namespace Sipek.Common.CallControl
     {
       if (callState == ESessionState.SESSION_STATE_INCOMING)
       {
-        IStateMachine incall = Factory.createStateMachine(this);
-        if (incall.IsNull) return;
-
+        IStateMachine incall = Factory.createStateMachine();
+        // couldn't create new call instance (max calls?)
+        if (incall.IsNull)
+        {
+          // check if CFB, activate redirection
+          if (Config.CFBFlag == true)
+          {
+            // get stack proxy
+            ICallProxyInterface proxy = StackProxy.createCallProxy();
+            // assign callid to the proxy...
+            //proxy.SessionId = callId;
+            proxy.serviceRequest((int)EServiceCodes.SC_CFB, Config.CFBNumber);
+            return;
+          }
+        }
         // save session parameters
         incall.Session = callId;
         // add call to call table

@@ -151,9 +151,9 @@ namespace UnitTest
       return new NullTimer();
     }
 
-    public IStateMachine createStateMachine(CCallManager mng)
+    public IStateMachine createStateMachine()
     {
-      return new CStateMachine(mng);
+      return new CStateMachine();
     }
 
     #endregion
@@ -255,7 +255,7 @@ namespace UnitTest
     [Test]
     public void testStateMachineCreate()
     {
-      CStateMachine sm = new CStateMachine(_manager);
+      CStateMachine sm = new CStateMachine();
 
       Assert.AreEqual(-1, sm.Session);
       Assert.AreEqual(TimeSpan.Zero ,sm.Duration);
@@ -282,7 +282,7 @@ namespace UnitTest
     [Test]
     public void testStateMachineCreateSequence()
     {
-      CStateMachine sm = new CStateMachine(_manager);
+      CStateMachine sm = new CStateMachine();
 
       Assert.AreEqual(-1, sm.Session);
       Assert.AreEqual(TimeSpan.Zero, sm.Duration);
@@ -305,7 +305,7 @@ namespace UnitTest
       sm.destroy();
 
       // Second
-      sm = new CStateMachine(_manager);
+      sm = new CStateMachine();
       Assert.AreEqual(-1, sm.Session);
       Assert.AreEqual(TimeSpan.Zero, sm.Duration);
       Assert.AreEqual(EStateId.IDLE, sm.StateId);
@@ -327,7 +327,7 @@ namespace UnitTest
 
       // third
 
-      sm = new CStateMachine(_manager);
+      sm = new CStateMachine();
       Assert.AreEqual(-1, sm.Session);
       Assert.AreEqual(TimeSpan.Zero, sm.Duration);
       Assert.AreEqual(EStateId.IDLE, sm.StateId);
@@ -351,9 +351,9 @@ namespace UnitTest
     [Test]
     public void testMultipleStateMachines()
     {
-      CStateMachine sm1 = new CStateMachine(_manager);
-      CStateMachine sm2 = new CStateMachine(_manager);
-      CStateMachine sm3 = new CStateMachine(_manager);
+      CStateMachine sm1 = new CStateMachine();
+      CStateMachine sm2 = new CStateMachine();
+      CStateMachine sm3 = new CStateMachine();
 
       Assert.AreEqual(-1, sm1.Session);
       Assert.AreEqual(TimeSpan.Zero, sm1.Duration);
@@ -387,7 +387,7 @@ namespace UnitTest
     [Test]
     public void testMultipleStateMachinesSequence()
     {
-      CStateMachine sm1 = new CStateMachine(_manager);
+      CStateMachine sm1 = new CStateMachine();
 
       Assert.AreEqual(-1, sm1.Session);
       Assert.AreEqual(TimeSpan.Zero, sm1.Duration);
@@ -398,7 +398,7 @@ namespace UnitTest
       Assert.AreEqual(EStateId.INCOMING, sm1.StateId);
       sm1.destroy();
 
-      CStateMachine sm2 = new CStateMachine(_manager);
+      CStateMachine sm2 = new CStateMachine();
       Assert.AreEqual(-1, sm2.Session);
       Assert.AreEqual(TimeSpan.Zero, sm2.Duration);
       Assert.AreEqual(EStateId.IDLE, sm2.StateId);
@@ -408,7 +408,7 @@ namespace UnitTest
 
       sm2.destroy();
 
-      CStateMachine sm3 = new CStateMachine(_manager);
+      CStateMachine sm3 = new CStateMachine();
       Assert.AreEqual(-1, sm3.Session);
       Assert.AreEqual(TimeSpan.Zero, sm3.Duration);
       Assert.AreEqual(EStateId.IDLE, sm3.StateId);
@@ -428,7 +428,7 @@ namespace UnitTest
     [Test]
     public void testIncomingCall()
     {
-      CStateMachine sm1 = new CStateMachine(_manager);
+      CStateMachine sm1 = new CStateMachine();
       Assert.AreEqual(EStateId.IDLE, sm1.StateId);
       Assert.AreEqual(false, sm1.Incoming);
       sm1.changeState(EStateId.INCOMING);
@@ -448,7 +448,7 @@ namespace UnitTest
     [Test]
     public void testOutgoingCall()
     {
-      CStateMachine sm1 = new CStateMachine(_manager);
+      CStateMachine sm1 = new CStateMachine();
       Assert.AreEqual(EStateId.IDLE, sm1.StateId);
       Assert.AreEqual(false, sm1.Incoming);
       sm1.changeState(EStateId.CONNECTING);
@@ -474,7 +474,7 @@ namespace UnitTest
     [Test]
     public void testStateMachineEventHandlingOutgoing()
     {
-      CStateMachine sm1 = new CStateMachine(_manager);
+      CStateMachine sm1 = new CStateMachine();
       sm1.State.makeCall("1234", 0);
       Assert.AreEqual(EStateId.CONNECTING, sm1.StateId);
       Assert.AreEqual(false, sm1.Incoming);
@@ -500,7 +500,7 @@ namespace UnitTest
     [Test]
     public void testStateMachineEventHandlingIncoming()
     {
-      CStateMachine sm1 = new CStateMachine(_manager);
+      CStateMachine sm1 = new CStateMachine();
       
       sm1.State.incomingCall("1234","");
       Assert.AreEqual(EStateId.INCOMING, sm1.StateId);
@@ -523,7 +523,7 @@ namespace UnitTest
     [Test]
     public void testCallFeaturesCallHold()
     {
-      CStateMachine sm1 = new CStateMachine(_manager);
+      CStateMachine sm1 = new CStateMachine();
 
       sm1.State.incomingCall("1234","");
       Assert.AreEqual(EStateId.INCOMING, sm1.StateId);
@@ -579,7 +579,7 @@ namespace UnitTest
     [Test]
     public void testCallFeaturesCallHoldMultiple()
     {
-      CStateMachine sm1 = new CStateMachine(_manager);
+      CStateMachine sm1 = new CStateMachine();
       sm1.State.incomingCall("1234","");
       Assert.AreEqual(EStateId.INCOMING, sm1.StateId);
       Assert.AreEqual(true, sm1.Incoming);
@@ -596,7 +596,7 @@ namespace UnitTest
       Assert.AreEqual(EStateId.HOLDING, sm1.StateId);
 
       // next call
-      CStateMachine sm2 = new CStateMachine(_manager);
+      CStateMachine sm2 = new CStateMachine();
 
       sm2.State.makeCall("4444", 0);
       Assert.AreEqual(EStateId.CONNECTING, sm2.StateId);
@@ -632,7 +632,7 @@ namespace UnitTest
     public void testCallFeaturesCallWaiting()
     {
       // out call
-      CStateMachine sm2 = new CStateMachine(_manager);
+      CStateMachine sm2 = new CStateMachine();
 
       sm2.State.makeCall("4444", 0);
       Assert.AreEqual(EStateId.CONNECTING, sm2.StateId);
@@ -648,7 +648,7 @@ namespace UnitTest
       Assert.AreEqual(true, sm2.Counting);
 
       // inc call
-      CStateMachine sm1 = new CStateMachine(_manager);
+      CStateMachine sm1 = new CStateMachine();
       sm1.State.incomingCall("1234","");
       Assert.AreEqual(EStateId.INCOMING, sm1.StateId);
       Assert.AreEqual(true, sm1.Incoming);
