@@ -95,12 +95,14 @@ namespace Sipek.Sip
         // check if accounts available
         if (null == acc) return -1;
 
+        // reset account Index field
+        Config.Accounts[i].Index = -1;
+
         // reset account state
         BaseAccountStateChanged(i, 0);
 
-        if (acc.Id.Length > 0)
+        if ((acc.Id.Length > 0)&&(acc.HostName.Length > 0))
         {
-          if (acc.HostName == "0") continue;
 
           string displayName = acc.DisplayName;
           // warning:::Publish do not work if display name in uri !!!
@@ -110,6 +112,8 @@ namespace Sipek.Sip
             uri += "@" + acc.HostName;
           }
           string reguri = "sip:" + acc.HostName;
+          // check transport - if TCP add transport=TCP
+          reguri = pjsipStackProxy.Instance.SetTransport(i, reguri);
 
           string domain = acc.DomainName;
           string username = acc.UserName;
@@ -121,9 +125,10 @@ namespace Sipek.Sip
             proxy = "sip:" + acc.ProxyAddress;
           }
 
-          dll_registerAccount(uri, reguri, domain, username, password, proxy, (i == Config.DefaultAccountIndex ? true : false));
+          int accId = dll_registerAccount(uri, reguri, domain, username, password, proxy, (i == Config.DefaultAccountIndex ? true : false));
 
-          // todo:::check if accId corresponds to account index!!!
+          // store account Id to Index field
+          Config.Accounts[i].Index = accId;
         }
       }
       return 1;
@@ -131,16 +136,27 @@ namespace Sipek.Sip
 
 
     /// <summary>
-    /// 
+    /// Reception of on registration state change events. First account Id should be mapped to 
+    /// account configuration sequence number.
     /// </summary>
     /// <param name="accId"></param>
     /// <param name="regState"></param>
     /// <returns></returns>
     private static int onRegStateChanged(int accId, int regState)
     {
-      Instance.Config.Accounts[accId].RegState = regState;
-      Instance.BaseAccountStateChanged(accId, regState);
-      return 1;
+      // first map account index
+      for (int i = 0; i < Instance.Config.Accounts.Count; i++)
+      {
+        IAccount account = Instance.Config.Accounts[i];
+        if (account.Index == accId)
+        {
+          Instance.Config.Accounts[i].RegState = regState;
+          Instance.BaseAccountStateChanged(i, regState);
+          return 1;
+        }
+      }
+      // should be here!
+      return -1;
     }
     #endregion
   }

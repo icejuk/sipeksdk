@@ -32,8 +32,13 @@ struct SipConfigStruct
 	bool useTLS;
 	bool noUDP;
 	bool noTCP;
-	bool imsEnabled;
 	char stunAddress[255];
+	bool publishEnabled;
+	// IMS specifics
+	bool imsEnabled;
+	bool secAgreement;
+	bool ipsecHeaders;
+	bool useIPSecTransport;
 };
 
 // calback function definitions

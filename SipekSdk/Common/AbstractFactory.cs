@@ -21,7 +21,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-
 using Sipek.Common.CallControl;
 
 
@@ -51,7 +50,7 @@ namespace Sipek.Common
     /// State machine factory. Use this method to create your own call state machine class.
     /// </summary>
     /// <returns></returns>
-    IStateMachine createStateMachine(CCallManager mng);
+    IStateMachine createStateMachine();
   }
 
   #region Null Pattern
@@ -66,9 +65,9 @@ namespace Sipek.Common
     {
       return new NullTimer();
     }
-    public IStateMachine createStateMachine(CCallManager mng)
+    public IStateMachine createStateMachine()
     {
-      return new CStateMachine(mng);
+      return new CStateMachine();
     }
 
     #endregion

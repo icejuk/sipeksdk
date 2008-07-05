@@ -239,11 +239,30 @@ namespace Sipek.Sip
 
     private static int onMessageWaitingCallback(int mwi, string info)
     {
+			if (null == info) return -1;
       Instance.BaseMessageWaitingIndication(mwi, info.ToString());
       return 1;
     }
 
     #endregion Callbacks
+
+    #region Utility Methods
+    internal string SetTransport(int accountId, string sipuri)
+    {
+      string temp = sipuri;
+      // set transport mode
+      switch (Config.Accounts[accountId].TransportMode)
+      {
+        case ETransportMode.TM_TCP:
+          temp = sipuri + ";transport=tcp";
+          break;
+        case ETransportMode.TM_TLS:
+          temp = sipuri + ";transport=tls";
+          break;
+      }
+      return temp;
+    }
+    #endregion
 
   }
 

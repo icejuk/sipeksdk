@@ -266,10 +266,10 @@ namespace Sipek.Common.CallControl
     /// initialize timers.
     /// </summary>
     /// <param name="manager">reference to call manager</param>
-    public CStateMachine(CCallManager manager)
+    public CStateMachine()
     {
       // store manager reference...
-      _manager = manager;
+      _manager = CCallManager.Instance;
 
       // create call proxy
       _sigProxy = _manager.StackProxy.createCallProxy();
@@ -297,7 +297,7 @@ namespace Sipek.Common.CallControl
         _noreplyTimer.Elapsed = new TimerExpiredCallback(_noreplyTimer_Elapsed);
 
         _releasedTimer = _manager.Factory.createTimer();
-        _releasedTimer.Interval = 5000; // hardcoded to 15s
+        _releasedTimer.Interval = 5000; // hardcoded to 5s
         _releasedTimer.Elapsed = new TimerExpiredCallback(_releasedTimer_Elapsed);
       }
     }

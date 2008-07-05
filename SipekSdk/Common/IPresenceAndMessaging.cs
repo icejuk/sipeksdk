@@ -68,8 +68,8 @@ namespace Sipek.Common
     /// <summary>
     /// Add buddy to buddy list and subscribe presence
     /// </summary>
-    /// <param name="ident"></param>
-    /// <param name="presence"></param>
+    /// <param name="ident">Buddy identification</param>
+    /// <param name="presence">Flag if buddy is to subscribe sip presence</param>
     /// <returns></returns>
     public int addBuddy(string ident, bool presence)
     {

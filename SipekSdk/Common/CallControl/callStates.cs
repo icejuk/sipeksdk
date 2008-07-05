@@ -289,21 +289,24 @@ namespace Sipek.Common.CallControl
       if ((_smref.Config.CFUFlag == true) && (_smref.Config.CFUNumber.Length > 0))
       {
         CallProxy.serviceRequest((int)EServiceCodes.SC_CFU, _smref.Config.CFUNumber);
+        CallProxy.endCall();
+        return;
       }
       else if (_smref.Config.DNDFlag == true)
       {
         CallProxy.serviceRequest((int)EServiceCodes.SC_DND, "");
+        CallProxy.endCall();
+        return;
       }
       else if (_smref.Config.AAFlag == true)
       {
         this.acceptCall();
       }
-      else
-      {
-        CallProxy.alerted();
-        _smref.Type = ECallType.EMissed;
-        MediaProxy.playTone(ETones.EToneRing);
-      }
+
+      // normal incoming call handling
+      CallProxy.alerted();
+      _smref.Type = ECallType.EMissed;
+      MediaProxy.playTone(ETones.EToneRing);
 
       // if CFNR active start timer
       if (_smref.Config.CFNRFlag)

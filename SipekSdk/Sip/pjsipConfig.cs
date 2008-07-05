@@ -49,12 +49,19 @@ namespace Sipek.Sip
     public bool noUDP = false;
     [MarshalAs(UnmanagedType.I1)]
     public bool noTCP = true;
-    [MarshalAs(UnmanagedType.I1)]
-    public bool imsEnabled = false;
     [MarshalAs(UnmanagedType.ByValTStr,SizeConst=255)]
     public string stunServer;
     [MarshalAs(UnmanagedType.I1)]
+    public bool publishEnabled = false;
+    // IMS specifics
+    [MarshalAs(UnmanagedType.I1)]
+    public bool imsEnabled = false;
+    [MarshalAs(UnmanagedType.I1)]
     public bool secAgreement = false; // rfc 3329
+    [MarshalAs(UnmanagedType.I1)]
+    public bool ipsecHeaders = false; 
+    [MarshalAs(UnmanagedType.I1)]
+    public bool useIPSecTransport = false; 
   }
 
   #endregion

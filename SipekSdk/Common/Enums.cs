@@ -25,6 +25,11 @@ namespace Sipek.Common
 
   #region Enums
 
+  /// <summary>
+  /// List of user status modes.
+  /// Do NOT change the order of enums. It should be synchronized with 
+  /// native stack implementation!!!
+  /// </summary>
   public enum EUserStatus : int
   {
     AVAILABLE,
@@ -35,15 +40,23 @@ namespace Sipek.Common
     BRB,
     OFFLINE,
     OPT_MAX
+    // add new enum here
   }
 
+  /// <summary>
+  /// List of supported service codes.
+  /// Do NOT change the order of enums. It should be synchronized with 
+  /// native stack implementation!!!
+  /// </summary>
   public enum EServiceCodes : int
   {
     SC_CD,
     SC_CFU,
     SC_CFNR,
     SC_DND,
-    SC_3PTY
+    SC_3PTY,
+    SC_CFB
+    // add new enum here
   }
 
 
@@ -60,6 +73,14 @@ namespace Sipek.Common
     DM_Outband,
     DM_Inband,
     DM_Transparent
+  }
+
+
+  public enum ETransportMode : int
+  {
+    TM_UDP,
+    TM_TCP,
+    TM_TLS
   }
 
   #endregion

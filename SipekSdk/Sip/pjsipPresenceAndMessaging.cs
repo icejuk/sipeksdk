@@ -93,9 +93,9 @@ namespace Sipek.Sip
     /// <returns></returns>
     public override int addBuddy(string name, bool presence, int accId)
     {
-      if (!pjsipStackProxy.Instance.IsInitialized) return -1;
+      string sipuri = "";
 
-       string sipuri = "";
+      if (!pjsipStackProxy.Instance.IsInitialized) return -1;
 
       // check if name contains URI
       if (name.Contains("sip:"))
@@ -107,6 +107,9 @@ namespace Sipek.Sip
       { 
         sipuri = "sip:" + name + "@" + Config.Accounts[accId].HostName;
       }
+      // check transport - if TCP add transport=TCP
+      sipuri = pjsipStackProxy.Instance.SetTransport(accId, sipuri);
+
       return dll_addBuddy(sipuri, presence);
     }
 
@@ -142,7 +145,10 @@ namespace Sipek.Sip
       {
         sipuri = "sip:" + destAddress + "@" + Config.Accounts[accId].HostName;
       }
-      return dll_sendMessage(accId, sipuri, message);
+      // set transport
+      sipuri = pjsipStackProxy.Instance.SetTransport(accId, sipuri);
+
+      return dll_sendMessage(Config.Accounts[accId].Index, sipuri, message);
     }
 
     /// <summary>
@@ -153,7 +159,7 @@ namespace Sipek.Sip
     /// <returns></returns>
     public override int sendMessage(string destAddress, string message)
     {
-      return sendMessage(destAddress, message, Config.DefaultAccountIndex);
+      return sendMessage(destAddress, message, Config.Accounts[Config.DefaultAccountIndex].Index);
     }
 
     /// <summary>
@@ -167,8 +173,9 @@ namespace Sipek.Sip
       if ((!pjsipStackProxy.Instance.IsInitialized) || (accId < 0)) return -1;
 
       if ((Config.Accounts.Count > 0)&&(Config.Accounts[accId].RegState != 200)) return -1;
+      if (!Config.PublishEnabled) return -1;
 
-      return dll_setStatus(accId, (int)status);
+      return dll_setStatus(Config.Accounts[accId].Index, (int)status);
     }
 
     #endregion
