@@ -805,13 +805,15 @@ PJSIPDLL_DLL_API int dll_init()
 		// set config parameters passed by SipConfigStruct
 		app_config.udp_cfg.port = sipek_config.listenPort;
 		app_config.no_udp =  (sipek_config.noUDP == true ? PJ_TRUE : PJ_FALSE);
-		app_config.use_tls = (sipek_config.useTLS == true ? PJ_TRUE : PJ_FALSE);
+#ifdef PJSIP_HAS_TLS_TRANSPORT
+		app_config.use_tls = PJ_TRUE; //(sipek_config.useTLS == true ? PJ_TRUE : PJ_FALSE);
 		if (app_config.use_tls == PJ_TRUE)
 		{
 			//app_config->udp_cfg.tls_setting.ca_list_file = pj_str("");
 			app_config.udp_cfg.tls_setting.cert_file = pj_str("server.crt");
 			app_config.udp_cfg.tls_setting.privkey_file = pj_str("pkey.key");
 		}
+#endif
 
 		//cfg->cfg.stun_domain = pj_str(pj_optarg);
 		if (strlen(sipek_config.stunAddress) > 0) app_config.cfg.stun_host = pj_str(sipek_config.stunAddress);

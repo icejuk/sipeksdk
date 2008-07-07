@@ -44,8 +44,6 @@ namespace Sipek.Sip
 
     public int listenPort = 5060;
     [MarshalAs(UnmanagedType.I1)]   // warning:::Marshal managed bool type to unmanaged (C) bool !!!!
-    public bool useTLS = false;
-    [MarshalAs(UnmanagedType.I1)]
     public bool noUDP = false;
     [MarshalAs(UnmanagedType.I1)]
     public bool noTCP = true;

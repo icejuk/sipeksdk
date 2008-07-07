@@ -29,7 +29,6 @@
 struct SipConfigStruct
 {
 	int listenPort;
-	bool useTLS;
 	bool noUDP;
 	bool noTCP;
 	char stunAddress[255];
