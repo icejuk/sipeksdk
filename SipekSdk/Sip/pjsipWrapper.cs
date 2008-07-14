@@ -250,15 +250,22 @@ namespace Sipek.Sip
     internal string SetTransport(int accountId, string sipuri)
     {
       string temp = sipuri;
-      // set transport mode
-      switch (Config.Accounts[accountId].TransportMode)
+
+      try
       {
-        case ETransportMode.TM_TCP:
-          temp = sipuri + ";transport=tcp";
-          break;
-        case ETransportMode.TM_TLS:
-          temp = sipuri + ";transport=tls";
-          break;
+        // set transport mode
+        switch (Config.Accounts[accountId].TransportMode)
+        {
+          case ETransportMode.TM_TCP:
+            temp = sipuri + ";transport=tcp";
+            break;
+          case ETransportMode.TM_TLS:
+            temp = sipuri + ";transport=tls";
+            break;
+        }
+      }
+      catch (ArgumentOutOfRangeException ex)
+      {
       }
       return temp;
     }
