@@ -1091,7 +1091,7 @@ pjsua_acc_config accConfig;
 
 	// set parameters 
 	accConfig.id = pj_str(uri);
-	accConfig.reg_timeout = 3600;
+	accConfig.reg_timeout = sipek_config.expires;		
 
 	pj_str_t sipuri = pj_str(reguri);
 
@@ -1450,5 +1450,6 @@ pj_status_t status;
 void dll_setSipConfig(SipConfigStruct* config)
 {
 	sipekConfigEnabled = true;
-	sipek_config = *config;
+	sipek_config = *config; 
 }
+
