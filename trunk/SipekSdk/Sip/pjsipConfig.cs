@@ -51,6 +51,10 @@ namespace Sipek.Sip
     public string stunServer;
     [MarshalAs(UnmanagedType.I1)]
     public bool publishEnabled = false;
+
+    public int expires = 3600;
+
+
     // IMS specifics
     [MarshalAs(UnmanagedType.I1)]
     public bool imsEnabled = false; // secAgreement rfc 3329

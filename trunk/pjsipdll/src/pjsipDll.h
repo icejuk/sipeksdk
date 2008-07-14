@@ -39,11 +39,11 @@ struct SipConfigStruct
 	bool noTCP;
 	char stunAddress[255];
 	bool publishEnabled;
+	int expires;
 	// IMS specifics
 	bool imsEnabled;
-	bool secAgreement;
-	bool ipsecHeaders;
-	bool useIPSecTransport;
+	bool imsIPSecHeaders;
+	bool imsIPSecTransport;
 };
 
 // calback function definitions
