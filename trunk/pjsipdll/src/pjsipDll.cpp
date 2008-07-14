@@ -810,8 +810,8 @@ PJSIPDLL_DLL_API int dll_init()
 		if (app_config.use_tls == PJ_TRUE)
 		{
 			//app_config->udp_cfg.tls_setting.ca_list_file = pj_str("");
-			app_config.udp_cfg.tls_setting.cert_file = pj_str("server.crt");
-			app_config.udp_cfg.tls_setting.privkey_file = pj_str("pkey.key");
+			//app_config.udp_cfg.tls_setting.cert_file = pj_str("server.crt");
+			//app_config.udp_cfg.tls_setting.privkey_file = pj_str("pkey.key");
 		}
 #endif
 

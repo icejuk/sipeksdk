@@ -74,7 +74,7 @@
 				StackReserveSize="65536"
 				StackCommitSize="4096"
 				ImportLibrary="$(OutDir)/pjsipdll_mobile.lib"
-				TargetMachine="3"
+				TargetMachine="16"
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -127,7 +127,7 @@
 				ExecutionBucket="7"
 				Optimization="2"
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../../pjsip/include&quot;;&quot;$(SolutionDir)../../../pjlib/include&quot;;&quot;$(SolutionDir)../../../pjlib-util/include&quot;;&quot;$(SolutionDir)../../../pjmedia/include&quot;;&quot;$(SolutionDir)../../../pjnath/include&quot;"
-				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);ARM;_ARM_;$(CePlatform);THUMB;_THUMB_;ARMV4T;UNDER_CE=$(CEVER);UNICODE;NDEBUG;_USRDLL;PJSIPDLL_EXPORTS"
+				PreprocessorDefinitions="_WIN32_WCE=$(CEVER);ARM;_ARM_;$(CePlatform);ARMV4T;UNDER_CE=$(CEVER);UNICODE;NDEBUG;_USRDLL;PJSIPDLL_EXPORTS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -162,6 +162,7 @@
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				ImportLibrary="$(OutDir)/pjsipdll_mobile.lib"
+				TargetMachine="16"
 			/>
 			<Tool
 				Name="VCALinkTool"

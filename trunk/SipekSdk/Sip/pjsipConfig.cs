@@ -53,13 +53,11 @@ namespace Sipek.Sip
     public bool publishEnabled = false;
     // IMS specifics
     [MarshalAs(UnmanagedType.I1)]
-    public bool imsEnabled = false;
+    public bool imsEnabled = false; // secAgreement rfc 3329
     [MarshalAs(UnmanagedType.I1)]
-    public bool secAgreement = false; // rfc 3329
+    public bool imsIPSecHeaders = false; 
     [MarshalAs(UnmanagedType.I1)]
-    public bool ipsecHeaders = false; 
-    [MarshalAs(UnmanagedType.I1)]
-    public bool useIPSecTransport = false; 
+    public bool imsIPSecTransport = false; 
   }
 
   #endregion

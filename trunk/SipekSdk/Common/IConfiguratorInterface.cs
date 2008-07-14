@@ -295,7 +295,7 @@ namespace Sipek.Common
 
     public bool PublishEnabled
     {
-      get { return false; }
+      get { return true; }
       set { }
     }
 

@@ -19,11 +19,17 @@
 // pjsipDll.h : Declares the entry point for the .Net GUI application.
 //
 
+#ifdef LINUX
+	#define __stdcall
+	#define PJSIPDLL_DLL_API
+#else
 #ifdef PJSIPDLL_EXPORTS
 	#define PJSIPDLL_DLL_API __declspec(dllexport)
 #else
 	#define PJSIPDLL_DLL_API __declspec(dllimport)
 #endif
+#endif
+
 
 // Structure containing pjsip configuration parameters
 struct SipConfigStruct
