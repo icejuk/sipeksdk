@@ -195,6 +195,11 @@ namespace Sipek.Common
       return true;
     }
 
+    public override string getCurrentCodec()
+    {
+      // not used!
+      return "";
+    }
     #endregion Methods
 
     #region Callbacks

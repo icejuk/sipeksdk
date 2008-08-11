@@ -1430,19 +1430,41 @@ pj_status_t status;
 
 	if (prio > 0)
 	{
-		status = pjsua_codec_set_priority(pj_cstr(&id, name), (pj_uint8_t)(PJMEDIA_CODEC_PRIO_NORMAL));
+		status = pjsua_codec_set_priority(pj_cstr(&id, name), (pj_uint8_t)prio);
 	}
 	else
 	{
 		status = pjsua_codec_set_priority(pj_cstr(&id, name), (pj_uint8_t)(PJMEDIA_CODEC_PRIO_DISABLED));
 	}
-	PJ_LOG(3,(THIS_FILE,"Setting codec (%s) prio: %d", name, prio));
 
   
 	if (status != PJ_SUCCESS)
-			PJ_LOG(3, (THIS_FILE, "Error setting codec (%s) priority %d", name, prio));
+		PJ_LOG(3, (THIS_FILE, "Error setting codec (%s) priority %d", name, prio));
+	else
+		PJ_LOG(3,(THIS_FILE,"Setting codec (%s) prio: %d", name, prio));
 
 	return 1;
+}
+
+#include <pjsua-lib/pjsua_internal.h>
+
+int dll_getCurrentCodec(pjsua_call_id call_id, char* codec)
+{	
+	pjmedia_session_info media_info;
+	pj_status_t status;
+
+	if(pjsua_var.calls[call_id].session == NULL)
+	return -1;
+
+	status = pjmedia_session_get_info(pjsua_var.calls[call_id].session, &media_info);
+
+	if ((status != PJ_SUCCESS) || (media_info.stream_cnt <= 0))
+		return -1;
+
+	strncpy(codec , media_info.stream_info[0].fmt.encoding_name.ptr, media_info.stream_info[0].fmt.encoding_name.slen);
+	codec[media_info.stream_info[0].fmt.encoding_name.slen] = 0;
+
+	return 0;
 }
 
 /////////////////////////////////////////////////////////////////////////
