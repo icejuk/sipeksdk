@@ -257,6 +257,16 @@ namespace Sipek.Common.CallControl
       get { return _manager.CallLogger; }
     }
 
+    /// <summary>
+    /// Get Current codec for this call
+    /// </summary>
+    /// <returns>Codec name</returns>
+    public override string Codec
+    {
+      get { return _sigProxy.getCurrentCodec(); }
+    }
+
+
     #endregion
 
     #region Constructor

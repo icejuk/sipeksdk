@@ -265,6 +265,12 @@ namespace Sipek.Common
     /// <returns></returns>
     public abstract bool dialDtmf(string digits, EDtmfMode mode);
 
+    /// <summary>
+    /// Retrieve codec information for this call
+    /// </summary>
+    /// <returns>codec name</returns>
+    public abstract string getCurrentCodec();
+
     #endregion
   }
 
@@ -336,6 +342,11 @@ namespace Sipek.Common
     public override bool dialDtmf(string digits, EDtmfMode mode)
     {
       return false;
+    }
+    
+    public override string getCurrentCodec()
+    {
+      throw new Exception("The method or operation is not implemented.");
     }
 
     public override int SessionId

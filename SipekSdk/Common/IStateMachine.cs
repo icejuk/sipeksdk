@@ -55,6 +55,7 @@ namespace Sipek.Common
     public abstract TimeSpan RuntimeDuration { get; }
     public abstract TimeSpan Duration { get; set; }
     public abstract EStateId StateId { get; }
+    public abstract string Codec { get; }
     #endregion
 
     #region Internal Methods
@@ -301,6 +302,11 @@ namespace Sipek.Common
       {
         throw new Exception("The method or operation is not implemented.");
       }
+    }
+
+    public override string Codec
+    {
+      get { throw new Exception("The method or operation is not implemented."); }
     }
   }
   #endregion

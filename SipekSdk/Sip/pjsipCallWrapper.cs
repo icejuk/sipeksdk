@@ -71,6 +71,8 @@ namespace Sipek.Sip
     private static extern int dll_dialDtmf(int callId, string digits, int mode);
     [DllImport(PJSIP_DLL)]
     private static extern int dll_sendInfo(int callid, string content);
+    [DllImport(PJSIP_DLL)]
+    private static extern int dll_getCurrentCodec(int callId, StringBuilder codec);
 
     #endregion
 
@@ -108,16 +110,19 @@ namespace Sipek.Sip
 
     #region Constructor
 
-    internal pjsipCallProxy()
-      : this(new NullConfigurator())
-    {
-    }
-
+    /// <summary>
+    /// Constructor called by pjsipWrapper with Config parameter. 
+    /// Make sure you set Config in pjsipWrapper before using pjsipCallProxy
+    /// </summary>
+    /// <param name="config"></param>
     internal pjsipCallProxy(IConfiguratorInterface config)
     {
       _config = config;
     }
 
+    /// <summary>
+    /// Static initializer. Call this method to set callbacks from SIP stack. 
+    /// </summary>
     public static void initialize()
     {
       // assign callbacks
@@ -279,6 +284,17 @@ namespace Sipek.Sip
     {
       int status = dll_dialDtmf(SessionId, digits, (int)mode);
       return true;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <returns></returns>
+    public override string getCurrentCodec()
+    {
+      StringBuilder codec = new StringBuilder(256);
+      int status = dll_getCurrentCodec(SessionId, codec);
+      return codec.ToString();
     }
 
     #endregion Methods

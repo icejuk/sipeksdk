@@ -91,6 +91,7 @@ extern "C" PJSIPDLL_DLL_API int dll_serviceReq(int callId, int serviceCode, cons
 extern "C" PJSIPDLL_DLL_API int dll_dialDtmf(int callId, char* digits, int mode);
 extern "C" PJSIPDLL_DLL_API int dll_removeAccounts();
 extern "C" PJSIPDLL_DLL_API int dll_sendInfo(int callid, char* content);
+extern "C" PJSIPDLL_DLL_API int dll_getCurrentCodec(int callId, char* codec);
 // IM & Presence api
 extern "C" PJSIPDLL_DLL_API int dll_addBuddy(char* uri, bool subscribe);
 extern "C" PJSIPDLL_DLL_API int dll_removeBuddy(int buddyId);
