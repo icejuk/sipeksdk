@@ -32,6 +32,7 @@
 
 
 // Structure containing pjsip configuration parameters
+// Should be synhronized with appropriate .Net structure!!!!!
 struct SipConfigStruct
 {
 	int listenPort;
@@ -40,6 +41,10 @@ struct SipConfigStruct
 	char stunAddress[255];
 	bool publishEnabled;
 	int expires;
+
+	bool VADEnabled;
+	int ECTail;
+
 	// IMS specifics
 	bool imsEnabled;
 	bool imsIPSecHeaders;

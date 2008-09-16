@@ -22,6 +22,10 @@
 #include "pjsipDll.h" 
 #include <pjsua-lib/pjsua.h>
 
+#include <string>
+
+using namespace std;
+
 #define THIS_FILE	"pjsipDll.cpp"
 #define NO_LIMIT	(int)0x7FFFFFFF
 
@@ -805,6 +809,12 @@ PJSIPDLL_DLL_API int dll_init()
 		// set config parameters passed by SipConfigStruct
 		app_config.udp_cfg.port = sipek_config.listenPort;
 		app_config.no_udp =  (sipek_config.noUDP == true ? PJ_TRUE : PJ_FALSE);
+
+		// Set VAD flag
+		app_config.media_cfg.no_vad = !sipek_config.VADEnabled;
+		// Set EC tail length in ms
+		app_config.media_cfg.ec_tail_len = sipek_config.ECTail;
+
 #ifdef PJSIP_HAS_TLS_TRANSPORT
 		app_config.use_tls = PJ_TRUE; //(sipek_config.useTLS == true ? PJ_TRUE : PJ_FALSE);
 		if (app_config.use_tls == PJ_TRUE)
@@ -1376,21 +1386,26 @@ pjrpid_element elem;
 int dll_sendInfo(int callid, char* content)
 {
 pj_status_t status;
-pjsua_msg_data msg_data;
+string temp = "Signal=";
 
-	msg_data.content_type = pj_str("application/dtmf-relay");
-	pj_str_t output; 
+	try
+	{
+		pjsua_msg_data msg_data;
+		pjsua_msg_data_init(&msg_data);  
+		
+		temp += content;
 
-	output.ptr = (char*)pj_pool_alloc(app_config.pool, 128);
+		msg_data.content_type = pj_str("application/dtmf-relay");
+		msg_data.msg_body = pj_str((char*)temp.c_str());
+		pj_str_t typeInfo = pj_str("INFO");
+		status = pjsua_call_send_request(callid, &typeInfo, &msg_data);
+	}
+	catch(exception e) 
+	{
+		pjsua_perror(THIS_FILE, e.what(), status);
+	}
 
-	pj_strcat2(&output,	"Signal=");
-	pj_strcat(&output,	&pj_str(content));
-	
-	msg_data.msg_body = output;
-
-	// Send INFO request	
-	status = pjsua_call_send_request(callid, &pj_str("INFO"), &msg_data);
-	return status;	
+	return status;
 }	
 
 //////////////////////////////////////////////////////////////////////////////
