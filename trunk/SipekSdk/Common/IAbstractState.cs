@@ -125,17 +125,28 @@ namespace Sipek.Common
     public abstract void onExit();
 
     /// <summary>
-    /// Reply timer 
+    /// Handler for Reply timer timeout. Reply timer is started on incoming call if 
+    /// Call Forward No Reply is active. 
     /// </summary>
     /// <param name="sessionId"></param>
     /// <returns></returns>
     public virtual bool noReplyTimerExpired(int sessionId) { return false; }
+
     /// <summary>
-    /// Released timer
+    /// Handle Release timer timeout. Release timer is usualy started when other 
+    /// party releases the call.
     /// </summary>
     /// <param name="sessionId"></param>
     /// <returns></returns>
     public virtual bool releasedTimerExpired(int sessionId) { return false; }
+    
+    /// <summary>
+    /// Handler no response on incoming call. Trigerred by ENORESPONSE timer
+    /// </summary>
+    /// <param name="sessionId"></param>
+    /// <returns></returns>
+    public virtual bool noResponseTimerExpired(int sessionId) { return false; }
+
     #endregion
 
     #region Inherited methods

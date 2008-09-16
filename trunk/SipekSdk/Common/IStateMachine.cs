@@ -32,6 +32,7 @@ namespace Sipek.Common
   {
     ENOREPLY,
     ERELEASED,
+    ENORESPONSE,
   }
 
   /// <summary>

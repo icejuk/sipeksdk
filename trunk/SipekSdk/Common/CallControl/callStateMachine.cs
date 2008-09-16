@@ -48,8 +48,11 @@ namespace Sipek.Common.CallControl
     private TimeSpan _duration;
     private DateTime _timestamp;
     private CCallManager _manager;
+    // Timers
     protected ITimer _noreplyTimer;
     protected ITimer _releasedTimer;
+    protected ITimer _noresponseTimer;
+
     private int _session = -1;
     private ICallProxyInterface _sigProxy;
     private string _callingNumber = "";
@@ -309,6 +312,11 @@ namespace Sipek.Common.CallControl
         _releasedTimer = _manager.Factory.createTimer();
         _releasedTimer.Interval = 5000; // hardcoded to 5s
         _releasedTimer.Elapsed = new TimerExpiredCallback(_releasedTimer_Elapsed);
+
+        _noresponseTimer = _manager.Factory.createTimer();
+        _noresponseTimer.Interval = 60000; // hardcoded to 60s
+        _noresponseTimer.Elapsed = new TimerExpiredCallback(_noresponseTimer_Elapsed);
+
       }
     }
 
@@ -346,6 +354,16 @@ namespace Sipek.Common.CallControl
       State.releasedTimerExpired(this.Session);
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
+    private void _noresponseTimer_Elapsed(object sender, EventArgs e)
+    {
+      State.noResponseTimerExpired(this.Session);
+    }
+
     ///////////////////////////////////////////////////////////////////////////////////
     // Timers
     /// <summary>
@@ -362,6 +380,9 @@ namespace Sipek.Common.CallControl
           break;
         case ETimerType.ERELEASED:
           success = _releasedTimer.Start();
+          break;
+        case ETimerType.ENORESPONSE:
+          success = _noresponseTimer.Start();
           break;
       }
       return success;
@@ -382,17 +403,21 @@ namespace Sipek.Common.CallControl
         case ETimerType.ERELEASED:
           success = _releasedTimer.Stop();
           break;
+        case ETimerType.ENORESPONSE:
+          success = _noresponseTimer.Stop();
+          break;
       }
       return success;
     }
 
     /// <summary>
-    /// Stop all timer...
+    /// Stop all timers...
     /// </summary>
     internal override void stopAllTimers()
     {
       _noreplyTimer.Stop();
       _releasedTimer.Stop();
+      _noresponseTimer.Stop();
     }
 
     /// <summary>
