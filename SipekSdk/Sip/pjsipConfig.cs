@@ -29,6 +29,11 @@ namespace Sipek.Sip
 {
   #region Config Structure
 
+  /// <summary>
+  /// Sip Config structure. 
+  /// BE CAREFUL!
+  /// SYNCHRONIZE FIELDS WITH C-STRUCTURE IN PJSIPDLL.H!!!!!
+  /// </summary>
   [StructLayout(LayoutKind.Sequential)]
   public class SipConfigStruct
   {
@@ -54,6 +59,10 @@ namespace Sipek.Sip
 
     public int expires = 3600;
 
+    [MarshalAs(UnmanagedType.I1)]
+    public bool VADEnabled = true; 
+
+    public int ECTail = 200;
 
     // IMS specifics
     [MarshalAs(UnmanagedType.I1)]

@@ -286,6 +286,10 @@ namespace Sipek.Common.CallControl
 
       int sessionId = SessionId;
 
+      // Start no response timer
+      _smref.startTimer(ETimerType.ENORESPONSE);
+
+      // Check for Supplementary services
       if ((_smref.Config.CFUFlag == true) && (_smref.Config.CFUNumber.Length > 0))
       {
         CallProxy.serviceRequest((int)EServiceCodes.SC_CFU, _smref.Config.CFUNumber);
@@ -318,6 +322,7 @@ namespace Sipek.Common.CallControl
     public override void onExit()
     {
       MediaProxy.stopTone();
+      _smref.stopAllTimers();
     }
 
     public override bool acceptCall()
@@ -348,12 +353,28 @@ namespace Sipek.Common.CallControl
       return base.endCall();
     }
 
+    /// <summary>
+    /// No reply timer expired. Send service code to call proxy.
+    /// </summary>
+    /// <param name="sessionId"></param>
+    /// <returns></returns>
     public override bool noReplyTimerExpired(int sessionId)
     {
       CallProxy.serviceRequest((int)EServiceCodes.SC_CFNR, _smref.Config.CFUNumber);
       return true;
     }
 
+    /// <summary>
+    /// Response timer expired. Releasing the call...
+    /// </summary>
+    /// <param name="sessionId"></param>
+    /// <returns></returns>
+    public override bool noResponseTimerExpired(int sessionId)
+    {
+      CallProxy.endCall();
+      _smref.destroy();
+      return true;
+    }
   }
   #endregion
 

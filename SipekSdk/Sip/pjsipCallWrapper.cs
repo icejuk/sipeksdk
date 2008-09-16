@@ -70,8 +70,6 @@ namespace Sipek.Sip
     [DllImport(PJSIP_DLL)]
     private static extern int dll_dialDtmf(int callId, string digits, int mode);
     [DllImport(PJSIP_DLL)]
-    private static extern int dll_sendInfo(int callid, string content);
-    [DllImport(PJSIP_DLL)]
     private static extern int dll_getCurrentCodec(int callId, StringBuilder codec);
 
     #endregion
