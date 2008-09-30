@@ -46,30 +46,32 @@ namespace Sipek.Sip
 
 #if LINUX
 		internal const string PJSIP_DLL = "libpjsipDll.so"; 
+#elif MOBILE
+		internal const string PJSIP_DLL = "pjsipdll_mobile.dll"; 
 #else
     internal const string PJSIP_DLL = "pjsipDll.dll";
 #endif
 
     // call API
-    [DllImport(PJSIP_DLL)]
+    [DllImport(PJSIP_DLL, EntryPoint = "dll_makeCall")]
     private static extern int dll_makeCall(int accountId, string uri);
-    [DllImport(PJSIP_DLL)]
+    [DllImport(PJSIP_DLL, EntryPoint = "dll_releaseCall")]
     private static extern int dll_releaseCall(int callId);
-    [DllImport(PJSIP_DLL)]
+    [DllImport(PJSIP_DLL, EntryPoint = "dll_answerCall")]
     private static extern int dll_answerCall(int callId, int code);
-    [DllImport(PJSIP_DLL)]
+    [DllImport(PJSIP_DLL, EntryPoint = "dll_holdCall")]
     private static extern int dll_holdCall(int callId);
-    [DllImport(PJSIP_DLL)]
+    [DllImport(PJSIP_DLL, EntryPoint = "dll_retrieveCall")]
     private static extern int dll_retrieveCall(int callId);
-    [DllImport(PJSIP_DLL)]
+    [DllImport(PJSIP_DLL, EntryPoint = "dll_xferCall")]
     private static extern int dll_xferCall(int callId, string uri);
-    [DllImport(PJSIP_DLL)]
+    [DllImport(PJSIP_DLL, EntryPoint = "dll_xferCallWithReplaces")]
     private static extern int dll_xferCallWithReplaces(int callId, int dstSession);
-    [DllImport(PJSIP_DLL)]
+    [DllImport(PJSIP_DLL, EntryPoint = "dll_serviceReq")]
     private static extern int dll_serviceReq(int callId, int serviceCode, string destUri);
-    [DllImport(PJSIP_DLL)]
+    [DllImport(PJSIP_DLL, EntryPoint = "dll_dialDtmf")]
     private static extern int dll_dialDtmf(int callId, string digits, int mode);
-    [DllImport(PJSIP_DLL)]
+    [DllImport(PJSIP_DLL, EntryPoint = "dll_getCurrentCodec")]
     private static extern int dll_getCurrentCodec(int callId, StringBuilder codec);
 
     #endregion
@@ -145,7 +147,7 @@ namespace Sipek.Sip
       string sipuri = "";
 
       // check if call by URI
-      if (dialedNo.Contains("sip:"))
+      if (dialedNo.IndexOf("sip:") == 0)
       {
         // do nothing...
         sipuri = dialedNo;
@@ -319,7 +321,7 @@ namespace Sipek.Sip
     /// <returns></returns>
     private static int onCallIncoming(int callId, string sturi)
     {
-      string uri = sturi.ToString();
+      string uri = sturi;
       string display = "";
       string number = "";
 
