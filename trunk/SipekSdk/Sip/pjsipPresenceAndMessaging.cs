@@ -36,18 +36,19 @@ namespace Sipek.Sip
 
 #if LINUX
 		internal const string PJSIP_DLL = "libpjsipDll.so"; 
+#elif MOBILE
+		internal const string PJSIP_DLL = "pjsipdll_mobile.dll"; 
 #else
     internal const string PJSIP_DLL = "pjsipDll.dll";
 #endif
 
-
-    [DllImport(PJSIP_DLL)]
+    [DllImport(PJSIP_DLL,EntryPoint="dll_addBuddy")]
     private static extern int dll_addBuddy(string uri, bool subscribe);
-    [DllImport(PJSIP_DLL)]
+    [DllImport(PJSIP_DLL,EntryPoint="dll_removeBuddy")]
     private static extern int dll_removeBuddy(int buddyId);
-    [DllImport(PJSIP_DLL)]
+    [DllImport(PJSIP_DLL,EntryPoint="dll_sendMessage")]
     private static extern int dll_sendMessage(int buddyId, string uri, string message);
-    [DllImport(PJSIP_DLL)]
+    [DllImport(PJSIP_DLL,EntryPoint="dll_setStatus")]
     private static extern int dll_setStatus(int accId, int presence_state);
     #endregion 
 
@@ -98,7 +99,7 @@ namespace Sipek.Sip
       if (!pjsipStackProxy.Instance.IsInitialized) return -1;
 
       // check if name contains URI
-      if (name.Contains("sip:"))
+            if (name.IndexOf("sip:") == 0)
       {
         // do nothing...
         sipuri = name;
@@ -136,7 +137,7 @@ namespace Sipek.Sip
        string sipuri = "";
 
       // check if name contains URI
-       if (destAddress.Contains("sip:"))
+            if (destAddress.IndexOf("sip:") == 0)
       {
         // do nothing...
         sipuri = destAddress;

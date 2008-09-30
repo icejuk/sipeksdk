@@ -36,15 +36,17 @@ namespace Sipek.Sip
 
 #if LINUX
 		internal const string PJSIP_DLL = "libpjsipDll.so"; 
+#elif MOBILE
+		internal const string PJSIP_DLL = "pjsipdll_mobile.dll"; 
 #else
     internal const string PJSIP_DLL = "pjsipDll.dll";
 #endif
 
-    [DllImport(PJSIP_DLL)]
+        [DllImport(PJSIP_DLL, EntryPoint = "dll_registerAccount")]
     private static extern int dll_registerAccount(string uri, string reguri, string domain, string username, string password, string proxy, bool isdefault);
-    [DllImport(PJSIP_DLL)]
+        [DllImport(PJSIP_DLL, EntryPoint = "dll_removeAccounts")]
     private static extern int dll_removeAccounts();
-    [DllImport(PJSIP_DLL)]
+        [DllImport(PJSIP_DLL, EntryPoint = "onRegStateCallback")]
     private static extern int onRegStateCallback(OnRegStateChanged cb);
     
     #endregion
@@ -107,7 +109,7 @@ namespace Sipek.Sip
           string displayName = acc.DisplayName;
           // warning:::Publish do not work if display name in uri !!!
           string uri = "sip:" + acc.UserName;
-          if (!acc.UserName.Contains("@"))
+          if (acc.UserName.IndexOf("@") < 0)
           {
             uri += "@" + acc.HostName;
           }
