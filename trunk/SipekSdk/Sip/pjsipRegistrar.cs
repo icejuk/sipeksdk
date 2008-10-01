@@ -136,6 +136,14 @@ namespace Sipek.Sip
       return 1;
     }
 
+    /// <summary>
+    /// Unregister all accounts
+    /// </summary>
+    /// <returns></returns>
+    public override int unregisterAccounts()
+    {
+      return dll_removeAccounts();
+    }
 
     /// <summary>
     /// Reception of on registration state change events. First account Id should be mapped to 

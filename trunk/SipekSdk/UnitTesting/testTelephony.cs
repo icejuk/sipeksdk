@@ -82,6 +82,11 @@ namespace UnitTest
       BaseCallStateChanged(callId, callState, info);
     }
 
+
+    public override string getCurrentCodec()
+    {
+      throw new Exception("The method or operation is not implemented.");
+    }
   }
 
   public class MockCommonProxy : IVoipProxy
