@@ -59,6 +59,12 @@ namespace Sipek.Common
     /// </summary>
     /// <returns></returns>
     public abstract int registerAccounts();
+    
+    /// <summary>
+    /// Unregister all accounts
+    /// </summary>
+    /// <returns></returns>
+    public abstract int unregisterAccounts();
 
     #endregion
 
