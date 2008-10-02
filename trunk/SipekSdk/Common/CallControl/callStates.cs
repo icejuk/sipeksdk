@@ -109,8 +109,8 @@ namespace Sipek.Common.CallControl
 
     public override bool endCall()
     {
+      _smref.changeState(EStateId.TERMINATED);
       CallProxy.endCall();
-      _smref.destroy();
       return base.endCall();
     }
 
@@ -152,8 +152,8 @@ namespace Sipek.Common.CallControl
 
     public override bool endCall()
     {
+      _smref.changeState(EStateId.TERMINATED);
       CallProxy.endCall();
-      _smref.destroy();
       return base.endCall();
     }
   }
@@ -184,8 +184,8 @@ namespace Sipek.Common.CallControl
     {
       _smref.Duration = System.DateTime.Now.Subtract(_smref.Time);
 
+      _smref.changeState(EStateId.TERMINATED);
       CallProxy.endCall();
-      _smref.destroy();
       return base.endCall();
     }
 
@@ -228,7 +228,9 @@ namespace Sipek.Common.CallControl
 
   #region ReleasedState
   /// <summary>
-  /// Released State indicates call has been released and waiting for destruction.
+  /// Released State indicates call has been released from other party (stack) 
+  /// and now waiting for destruction. The state machine will be release on 
+  /// endCall user request or released timer timeout.
   /// </summary>
   internal class CReleasedState : IAbstractState
   {
@@ -256,6 +258,9 @@ namespace Sipek.Common.CallControl
 
     public override bool endCall()
     {
+      // try once more (might not be needed)!
+      CallProxy.endCall();
+      // destroy it!
       _smref.destroy();
       return true;
     }
@@ -264,6 +269,74 @@ namespace Sipek.Common.CallControl
     {
       _smref.destroy();
       return true;
+    }
+
+    /// <summary>
+    /// If by any chance this lost event comes here: destroy State machine
+    /// </summary>
+    public override void onReleased()
+    {
+      _smref.destroy();
+    }
+  }
+  #endregion
+
+  #region TerminatedState
+  /// <summary>
+  /// Released State indicates call has been released by user and waiting for destruction.
+  /// The state machine will be destroyed on onReleased event from stack or on released timer 
+  /// timeout
+  /// </summary>
+  internal class CTerminatedState : IAbstractState
+  {
+    public CTerminatedState(CStateMachine sm)
+      : base(sm)
+    {
+      Id = EStateId.TERMINATED;
+    }
+
+    /// <summary>
+    /// Enter release state. If release timer not implemented release call imediately
+    /// </summary>
+    public override void onEntry()
+    {
+      bool success = _smref.startTimer(ETimerType.ERELEASED);
+      if (!success) _smref.destroy();
+    }
+
+    public override void onExit()
+    {
+      _smref.stopAllTimers();
+    }
+
+    public override bool endCall()
+    {
+      CallProxy.endCall();
+      return true;
+    }
+
+    public override bool releasedTimerExpired(int sessionId)
+    {
+      _smref.destroy();
+      return true;
+    }
+
+    public override void onAlerting()
+    {
+      CallProxy.endCall();
+    }
+
+    public override void onConnect()
+    {
+      CallProxy.endCall();
+    }
+
+    /// <summary>
+    /// Destroy state machine 
+    /// </summary>
+    public override void onReleased()
+    {
+      _smref.destroy();
     }
   }
   #endregion
@@ -348,8 +421,8 @@ namespace Sipek.Common.CallControl
 
     public override bool endCall()
     {
+      _smref.changeState(EStateId.TERMINATED);
       CallProxy.endCall();
-      _smref.destroy();
       return base.endCall();
     }
 
@@ -371,8 +444,8 @@ namespace Sipek.Common.CallControl
     /// <returns></returns>
     public override bool noResponseTimerExpired(int sessionId)
     {
+      _smref.changeState(EStateId.TERMINATED);
       CallProxy.endCall();
-      _smref.destroy();
       return true;
     }
   }
@@ -424,7 +497,7 @@ namespace Sipek.Common.CallControl
     public override bool endCall()
     {
       CallProxy.endCall();
-      _smref.destroy();
+      _smref.changeState(EStateId.TERMINATED);
       return base.endCall();
     }
   }
