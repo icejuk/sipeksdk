@@ -782,10 +782,18 @@ static void on_nat_detect(const pj_stun_nat_detect_result *res)
 // Public API - DLL functions...
 PJSIPDLL_DLL_API int dll_init()
 {
-	pjsua_transport_id transport_id = -1;
-    pjsua_transport_config tcp_cfg;
-	unsigned i;
-	pj_status_t status;
+pjsua_transport_id transport_id = -1;
+pjsua_transport_config tcp_cfg;
+unsigned i;
+pj_status_t status;
+
+	if ((sipekConfigEnabled == true) && (true == sipek_config.pollingEventsEnabled) )
+	{
+		// register thread 
+		pj_thread_desc desc = {0};
+		pj_thread_t* thread = NULL;
+		pj_thread_register("GThread", desc, &thread);
+	}
 
 	/* Create pjsua */
 	status = pjsua_create();
@@ -806,6 +814,12 @@ PJSIPDLL_DLL_API int dll_init()
 	// check sipek config
 	if (sipekConfigEnabled == true)
 	{ 
+		if (true == sipek_config.pollingEventsEnabled)
+		{
+			// set num of worker threads to 0		
+			app_config.cfg.thread_cnt = 0; // for POLLING
+			app_config.media_cfg.thread_cnt = 0; // for POLLING
+		}
 		// set config parameters passed by SipConfigStruct
 		app_config.udp_cfg.port = sipek_config.listenPort;
 		app_config.no_udp =  (sipek_config.noUDP == true ? PJ_TRUE : PJ_FALSE);
@@ -1033,7 +1047,7 @@ on_error:
 PJSIPDLL_DLL_API int dll_main(void)
 {
 	pj_status_t status;
-	
+
 	/* Start pjsua */
 	status = pjsua_start();
 	if (status != PJ_SUCCESS) {
@@ -1163,8 +1177,13 @@ int newcallId = -1;
 
 int dll_releaseCall(int callId)
 {
-	pjsua_call_hangup(callId, 0, NULL, NULL);
-	return 0;
+	pj_status_t status = -1;
+
+	status = pjsua_call_hangup(callId, 0, NULL, NULL);
+
+	PJ_LOG(3, (THIS_FILE, "Releasing call %d", callId));
+
+	return status;
 }
 
 
@@ -1490,3 +1509,16 @@ void dll_setSipConfig(SipConfigStruct* config)
 	sipek_config = *config; 
 }
 
+
+//
+int dll_pollForEvents(int timeout)
+{
+	pj_status_t status = !PJ_SUCCESS;
+
+	status = pjsua_handle_events(timeout);
+	if (0 > status)
+	{
+			PJ_LOG(1,(THIS_FILE, "Error handling events!"));
+	}
+	return status;
+}

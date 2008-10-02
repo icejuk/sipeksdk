@@ -39,7 +39,8 @@ namespace Sipek.Common
     ACTIVE = 0x8,
     RELEASED = 0x10,
     INCOMING = 0x20,
-    HOLDING = 0x40
+    HOLDING = 0x40,
+    TERMINATED = 0x80,
   }
 
   #endregion

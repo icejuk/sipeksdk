@@ -43,6 +43,7 @@ namespace Sipek.Common.CallControl
     private CReleasedState _stateReleased;
     private CIncomingState _stateIncoming;
     private CHoldingState _stateHolding;
+    private CTerminatedState _stateTerminated ;
     // call properties
     private ECallType _callType ;
     private TimeSpan _duration;
@@ -295,6 +296,7 @@ namespace Sipek.Common.CallControl
       _stateReleased = new CReleasedState(this);
       _stateIncoming = new CIncomingState(this);
       _stateHolding = new CHoldingState(this);
+      _stateTerminated = new CTerminatedState(this);
       // change state
       _state = _stateIdle;
       
@@ -446,6 +448,7 @@ namespace Sipek.Common.CallControl
         case EStateId.RELEASED: changeState(_stateReleased); break;
         case EStateId.INCOMING: changeState(_stateIncoming); break;
         case EStateId.HOLDING: changeState(_stateHolding); break;
+        case EStateId.TERMINATED: changeState(_stateTerminated); break;
       }
       // inform manager 
       if ((null != _manager)&&(Session != -1)) _manager.updateGui(this.Session);

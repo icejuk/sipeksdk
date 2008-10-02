@@ -64,6 +64,9 @@ namespace Sipek.Sip
 
     public int ECTail = 200;
 
+    [MarshalAs(UnmanagedType.I1)]
+    public bool pollingEventsEnabled = false;
+
     // IMS specifics
     [MarshalAs(UnmanagedType.I1)]
     public bool imsEnabled = false; // secAgreement rfc 3329
