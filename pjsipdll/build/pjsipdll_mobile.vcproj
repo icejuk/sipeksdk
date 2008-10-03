@@ -200,11 +200,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\src\pjsipDll.cpp"
+				RelativePath="..\src\pjsipDll_mobile.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\src\pjsipDll.h"
+				RelativePath="..\src\pjsipDll_mobile.h"
 				>
 			</File>
 		</Filter>
