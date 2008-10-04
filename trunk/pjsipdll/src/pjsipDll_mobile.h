@@ -38,7 +38,7 @@ struct SipConfigStruct
 	int listenPort;
 	bool noUDP;
 	bool noTCP;
-	char stunAddress[255];
+	wchar_t stunAddress[255];
 	bool publishEnabled;
 	int expires;
 
