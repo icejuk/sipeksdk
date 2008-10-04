@@ -836,8 +836,12 @@ pj_status_t status;
 		}
 #endif
 
-		//cfg->cfg.stun_domain = pj_str(pj_optarg);
-		if (strlen(sipek_config.stunAddress) > 0) app_config.cfg.stun_host = pj_str(sipek_config.stunAddress);
+		char tstun[256] = {0};
+		if (pj_native_strlen(sipek_config.stunAddress) > 0 )
+		{
+			app_config.cfg.stun_host = pj_str( PJ_NATIVE_TO_STRING(sipek_config.stunAddress, tstun, sizeof(tstun)) );
+		}
+
 	}
 
 	/* Initialize application callbacks */
@@ -1179,7 +1183,7 @@ int newcallId = -1;
 char turi[256];
 
 	pj_str_t sipuri = pj_str(PJ_NATIVE_TO_STRING(uri, turi, sizeof(turi)));
-	//pjsua_call_make_call( accountId, &sipuri, 0, NULL, NULL, &newcallId);
+	pjsua_call_make_call( accountId, &sipuri, 0, NULL, NULL, &newcallId);
 
 	return newcallId;
 }
