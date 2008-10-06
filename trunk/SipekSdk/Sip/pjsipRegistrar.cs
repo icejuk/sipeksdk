@@ -46,7 +46,7 @@ namespace Sipek.Sip
     private static extern int dll_registerAccount(string uri, string reguri, string domain, string username, string password, string proxy, bool isdefault);
         [DllImport(PJSIP_DLL, EntryPoint = "dll_removeAccounts")]
     private static extern int dll_removeAccounts();
-        [DllImport(PJSIP_DLL, EntryPoint = "onRegStateCallback")]
+        [DllImportAttribute(PJSIP_DLL, EntryPoint = "onRegStateCallback")]
     private static extern int onRegStateCallback(OnRegStateChanged cb);
     
     #endregion
