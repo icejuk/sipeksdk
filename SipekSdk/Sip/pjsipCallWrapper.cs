@@ -337,21 +337,21 @@ namespace Sipek.Sip
       // extract display name if exists
       if (startNum >= 0)
       {
-        display = uri.Remove(startNum, uri.Length).Trim();
+        display = uri.Remove(startNum, uri.Length - startNum).Trim();
       }
       else
       {
         int semiPos = display.IndexOf(';');
         if (semiPos >= 0)
         {
-          display = display.Remove(semiPos, display.Length);
+          display = display.Remove(semiPos, display.Length - semiPos);
         }
         else
         {
           int colPos = display.IndexOf(':');
           if (colPos >= 0)
           {
-            display = display.Remove(colPos, display.Length);
+            display = display.Remove(colPos, display.Length - colPos);
           }
         }
 
