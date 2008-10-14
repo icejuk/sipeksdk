@@ -1423,6 +1423,7 @@ pjrpid_element elem;
 int dll_sendInfo(int callid, wchar_t* content)
 {
 pj_status_t status;
+// TODO!!!!!!!!!!!!!!!!!
 //string temp = "Signal=";
 //
 //	try

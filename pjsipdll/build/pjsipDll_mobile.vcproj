@@ -72,7 +72,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /subsystem:windowsce,4.20 /machine:ARM /ARMPADCODE"
-				AdditionalDependencies="commctrl.lib coredll.lib winsock.lib ws2.lib iphlpapi.lib secchk.lib ccrtrtti.lib"
+				AdditionalDependencies="commctrl.lib coredll.lib winsock.lib ws2.lib iphlpapi.lib secchk.lib"
 				OutputFile="$(ProjectDir)\..\lib\$(ProjectName)d.dll"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="$(CENoDefaultLib)"
@@ -157,7 +157,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /subsystem:windowsce,4.20 /machine:ARM /ARMPADCODE"
-				AdditionalDependencies="commctrl.lib coredll.lib winsock.lib ws2.lib iphlpapi.lib secchk.lib ccrtrtti.lib"
+				AdditionalDependencies="commctrl.lib coredll.lib winsock.lib ws2.lib iphlpapi.lib secchk.lib"
 				OutputFile="$(ProjectDir)\..\lib\$(ProjectName)d.dll"
 				LinkIncremental="2"
 				IgnoreDefaultLibraryNames="$(CENoDefaultLib)"
@@ -411,7 +411,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /subsystem:windowsce,4.20 /machine:ARM /ARMPADCODE"
-				AdditionalDependencies="commctrl.lib coredll.lib winsock.lib ws2.lib iphlpapi.lib secchk.lib ccrtrtti.lib"
+				AdditionalDependencies="commctrl.lib coredll.lib winsock.lib ws2.lib iphlpapi.lib secchk.lib"
 				OutputFile="$(ProjectDir)\..\lib\$(ProjectName).dll"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="$(CENoDefaultLib)"
@@ -497,7 +497,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions=" /subsystem:windowsce,4.20 /machine:ARM /ARMPADCODE"
-				AdditionalDependencies="commctrl.lib coredll.lib winsock.lib ws2.lib iphlpapi.lib secchk.lib ccrtrtti.lib"
+				AdditionalDependencies="commctrl.lib coredll.lib winsock.lib ws2.lib iphlpapi.lib secchk.lib"
 				OutputFile="$(ProjectDir)\..\lib\$(ProjectName).dll"
 				LinkIncremental="1"
 				IgnoreDefaultLibraryNames="$(CENoDefaultLib)"
