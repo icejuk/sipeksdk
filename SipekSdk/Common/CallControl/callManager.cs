@@ -385,7 +385,7 @@ namespace Sipek.Common.CallControl
     /// Destroy call 
     /// </summary>
     /// <param name="session">session identification</param>
-    public void destroySession(int session)
+    internal void destroySession(int session)
     {
       _calls.Remove(session);
       // Warning: this call no longer exists
