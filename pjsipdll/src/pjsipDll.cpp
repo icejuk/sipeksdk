@@ -21,10 +21,7 @@
 
 #include "pjsipDll.h" 
 #include <pjsua-lib/pjsua.h>
-
-#include <string>
-
-using namespace std;
+#include <pjsua-lib/pjsua_internal.h>
 
 #define THIS_FILE	"pjsipDll.cpp"
 #define NO_LIMIT	(int)0x7FFFFFFF
@@ -822,7 +819,7 @@ pj_status_t status;
 		}
 		// set config parameters passed by SipConfigStruct
 		app_config.udp_cfg.port = sipek_config.listenPort;
-		app_config.no_udp =  (sipek_config.noUDP == true ? PJ_TRUE : PJ_FALSE);
+		app_config.no_udp =  (sipek_config.noUDP == true ? PJ_TRUE : PJ_FALSE); 
 
 		// Set VAD flag
 		app_config.media_cfg.no_vad = !sipek_config.VADEnabled;
@@ -839,8 +836,17 @@ pj_status_t status;
 		}
 #endif
 
-		//cfg->cfg.stun_domain = pj_str(pj_optarg);
-		if (strlen(sipek_config.stunAddress) > 0) app_config.cfg.stun_host = pj_str(sipek_config.stunAddress);
+		// set stun address
+		if (strlen(sipek_config.stunAddress) > 0) 
+		{
+			app_config.cfg.stun_host = pj_str(sipek_config.stunAddress);
+		}
+		// set nameserver address for DNS SRV support. Allow only 1 server.
+		if (strlen(sipek_config.nameServer) > 0) 
+		{
+			app_config.cfg.nameserver_count = 1;
+			app_config.cfg.nameserver[0] = pj_str(sipek_config.nameServer);
+		}
 	}
 
 	/* Initialize application callbacks */
@@ -1011,10 +1017,9 @@ pj_status_t status;
 
     if (app_config.capture_dev != PJSUA_INVALID_ID
         || app_config.playback_dev != PJSUA_INVALID_ID) {
-	status
-	  = pjsua_set_snd_dev(app_config.capture_dev, app_config.playback_dev);
-	if (status != PJ_SUCCESS)
-	    goto on_error;
+			status = pjsua_set_snd_dev(app_config.capture_dev, app_config.playback_dev);
+			if (status != PJ_SUCCESS)
+				goto on_error;
     }
 
 	//////////////////////////////////////////////////////////////////////////
@@ -1114,13 +1119,15 @@ pjsua_acc_config accConfig;
 	pjsua_acc_config_default(&accConfig);
 
 	// set parameters 
-	accConfig.id = pj_str(uri);
+	// disable contact rewrite
+	accConfig.allow_contact_rewrite = 0;
+
+	accConfig.publish_enabled = sipek_config.publishEnabled == true ? PJ_TRUE : PJ_FALSE; // enable publish
 	accConfig.reg_timeout = sipek_config.expires;		
 
-	pj_str_t sipuri = pj_str(reguri);
+	accConfig.id = pj_str(uri);
+	accConfig.reg_uri = pj_str(reguri);
 
-	accConfig.reg_uri = sipuri;
-	accConfig.publish_enabled = sipek_config.publishEnabled == true ? PJ_TRUE : PJ_FALSE; // enable publish
 	pj_str_t tmpproxy = pj_str(proxy);
 	if (tmpproxy.slen > 0)
 	{
@@ -1405,24 +1412,22 @@ pjrpid_element elem;
 int dll_sendInfo(int callid, char* content)
 {
 pj_status_t status;
-string temp = "Signal=";
+pj_str_t temp;
 
-	try
-	{
-		pjsua_msg_data msg_data;
-		pjsua_msg_data_init(&msg_data);  
-		
-		temp += content;
+	// allocate buffer
+	temp.slen = 255;
+	temp.ptr = (char*) pj_pool_alloc(app_config.pool, 255);
 
-		msg_data.content_type = pj_str("application/dtmf-relay");
-		msg_data.msg_body = pj_str((char*)temp.c_str());
-		pj_str_t typeInfo = pj_str("INFO");
-		status = pjsua_call_send_request(callid, &typeInfo, &msg_data);
-	}
-	catch(exception e) 
-	{
-		pjsua_perror(THIS_FILE, e.what(), status);
-	}
+	pj_strcpy(&temp, &pj_str("Signal="));
+	pj_strcat(&temp, &pj_str(content));
+
+	pjsua_msg_data msg_data;
+	pjsua_msg_data_init(&msg_data);  
+
+	msg_data.content_type = pj_str("application/dtmf-relay");
+	msg_data.msg_body = temp;
+	pj_str_t typeInfo = pj_str("INFO");
+	status = pjsua_call_send_request(callid, &typeInfo, &msg_data);
 
 	return status;
 }	
@@ -1480,7 +1485,6 @@ pj_status_t status;
 	return 1;
 }
 
-#include <pjsua-lib/pjsua_internal.h>
 
 int dll_getCurrentCodec(pjsua_call_id call_id, char* codec)
 {	
@@ -1499,6 +1503,13 @@ int dll_getCurrentCodec(pjsua_call_id call_id, char* codec)
 	codec[media_info.stream_info[0].fmt.encoding_name.slen] = 0;
 
 	return 0;
+}
+
+
+int dll_setSoundDevice(int playbackDeviceId, int recordingDeviceId)
+{
+pj_status_t status = pjsua_set_snd_dev(recordingDeviceId, playbackDeviceId);
+	return status;	
 }
 
 /////////////////////////////////////////////////////////////////////////

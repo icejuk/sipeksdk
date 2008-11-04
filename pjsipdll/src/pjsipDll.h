@@ -45,6 +45,8 @@ struct SipConfigStruct
 	bool VADEnabled;
 	int ECTail;
 
+	char nameServer[255];
+
 	bool pollingEventsEnabled;
 
 	// IMS specifics
@@ -104,5 +106,7 @@ extern "C" PJSIPDLL_DLL_API int dll_addBuddy(char* uri, bool subscribe);
 extern "C" PJSIPDLL_DLL_API int dll_removeBuddy(int buddyId);
 extern "C" PJSIPDLL_DLL_API int dll_sendMessage(int accId, char* uri, char* message);
 extern "C" PJSIPDLL_DLL_API int dll_setStatus(int accId, int presence_state);
+
+extern "C" PJSIPDLL_DLL_API int dll_setSoundDevice(int playbackDeviceId, int recordingDeviceId);
 
 extern "C" PJSIPDLL_DLL_API int dll_pollForEvents(int timeout);
