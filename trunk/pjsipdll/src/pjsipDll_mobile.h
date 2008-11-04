@@ -45,6 +45,8 @@ struct SipConfigStruct
 	bool VADEnabled;
 	int ECTail;
 
+	wchar_t nameServer[255];
+
 	bool pollingEventsEnabled;
 
 	// IMS specifics
@@ -56,14 +58,14 @@ struct SipConfigStruct
 // calback function definitions
 typedef int __stdcall fptr_regstate(int, int);				// on registration state changed
 typedef int __stdcall fptr_callstate(int, int);	// on call state changed
-typedef int __stdcall fptr_callincoming(int, char*);	// on call incoming
+typedef int __stdcall fptr_callincoming(int, wchar_t*);	// on call incoming
 typedef int __stdcall fptr_getconfigdata(int);	// get config data
 typedef int __stdcall fptr_callholdconf(int);
 typedef int __stdcall fptr_callretrieveconf(int);
-typedef int __stdcall fptr_msgrec (char*, char*);
-typedef int __stdcall fptr_buddystatus(int, int, const char*);
+typedef int __stdcall fptr_msgrec (wchar_t*, wchar_t*);
+typedef int __stdcall fptr_buddystatus(int, int, const wchar_t*);
 typedef int __stdcall fptr_dtmfdigit(int callId, int digit);
-typedef int __stdcall fptr_mwi(int mwi, char* info);
+typedef int __stdcall fptr_mwi(int mwi, wchar_t* info);
 
 // Callback registration 
 extern "C" PJSIPDLL_DLL_API int onRegStateCallback(fptr_regstate cb);	  // register registration notifier

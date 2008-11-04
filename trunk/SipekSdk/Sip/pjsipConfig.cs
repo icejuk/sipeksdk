@@ -64,6 +64,9 @@ namespace Sipek.Sip
 
     public int ECTail = 200;
 
+    [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 255)]
+    public string nameServer;
+
     [MarshalAs(UnmanagedType.I1)]
     public bool pollingEventsEnabled = false;
 

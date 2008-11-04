@@ -160,6 +160,8 @@ pj_status_t app_destroy(void);
 // Request handler to receive out-of-dialog NOTIFY (from Asterisk)
 static pj_bool_t on_rx_request(pjsip_rx_data *rdata)
 {
+	wchar_t tmsg[255] = {0};
+
 	if (strstr(pj_strbuf(&rdata->msg_info.msg->line.req.method.name),
 		"NOTIFY"))
 	{
@@ -179,13 +181,13 @@ static pj_bool_t on_rx_request(pjsip_rx_data *rdata)
 		// Process body message as desired...
 		if (strstr(buf, "Messages-Waiting: yes") != 0)
 		{
-			if (cb_mwi != 0) cb_mwi(1, buf);
+			if (cb_mwi != 0) cb_mwi(1, PJ_STRING_TO_NATIVE(buf, tmsg, sizeof(tmsg)));
 		}
 		else
 		{
-			if (cb_mwi != 0) cb_mwi(0, buf);
+			if (cb_mwi != 0) cb_mwi(0, PJ_STRING_TO_NATIVE(buf, tmsg, sizeof(tmsg)));
 		}
-
+		PJ_LOG(3,(THIS_FILE,"MWI %s", buf));
 	}
 
 	pjsip_endpt_respond_stateless(pjsip_ua_get_endpt(pjsip_ua_instance()),
@@ -451,11 +453,12 @@ static void on_call_state(pjsua_call_id call_id, pjsip_event *e)
 static void on_incoming_call(pjsua_acc_id acc_id, pjsua_call_id call_id,
 														 pjsip_rx_data *rdata)
 {
+	wchar_t tremcontat[255];
 	pjsua_call_info call_info;
 
 	pjsua_call_get_info(call_id, &call_info);
 
-  if (cb_callincoming != 0) cb_callincoming(call_id, call_info.remote_contact.ptr);
+  if (cb_callincoming != 0) cb_callincoming(call_id, PJ_STRING_TO_NATIVE(call_info.remote_contact.ptr, tremcontat, sizeof(tremcontat)));
 }
 
 
@@ -666,6 +669,7 @@ static void on_buddy_state(pjsua_buddy_id buddy_id)
 {
     pjsua_buddy_info info;
     pjsua_buddy_get_info(buddy_id, &info);
+		wchar_t tstatus[255] = {0};
 
     PJ_LOG(3,(THIS_FILE, "%.*s status is %.*s",
 	      (int)info.uri.slen,
@@ -675,8 +679,9 @@ static void on_buddy_state(pjsua_buddy_id buddy_id)
 
 		char text[255] = {0};
 		strncpy(text, info.status_text.ptr, (info.status_text.slen < 255) ? info.status_text.slen : 255);
+
 	// callback
-  if (cb_buddystatus != 0) cb_buddystatus(buddy_id, info.status, text);
+  if (cb_buddystatus != 0) cb_buddystatus(buddy_id, info.status, PJ_STRING_TO_NATIVE(text, tstatus, sizeof(tstatus)));
 }
 
 
@@ -687,6 +692,9 @@ static void on_pager(pjsua_call_id call_id, const pj_str_t *from,
 		     const pj_str_t *to, const pj_str_t *contact,
 		     const pj_str_t *mime_type, const pj_str_t *text)
 {
+wchar_t tfrom[255] = {0};
+wchar_t ttext[255] = {0};
+
     /* Note: call index may be -1 */
     PJ_UNUSED_ARG(call_id);
     PJ_UNUSED_ARG(to);
@@ -697,8 +705,9 @@ static void on_pager(pjsua_call_id call_id, const pj_str_t *from,
 	      (int)from->slen, from->ptr,
 	      (int)text->slen, text->ptr,
 	      (int)mime_type->slen, mime_type->ptr)); 
-
-   if (cb_messagereceived != 0) (*cb_messagereceived)(from->ptr, text->ptr);
+	
+   if (cb_messagereceived != 0) 
+		 (*cb_messagereceived)(PJ_STRING_TO_NATIVE(from->ptr, tfrom, sizeof(tfrom)), PJ_STRING_TO_NATIVE(text->ptr, ttext, sizeof(ttext)));
 }
 
 
@@ -836,12 +845,19 @@ pj_status_t status;
 		}
 #endif
 
+		// set stun address
 		char tstun[256] = {0};
 		if (pj_native_strlen(sipek_config.stunAddress) > 0 )
 		{
 			app_config.cfg.stun_host = pj_str( PJ_NATIVE_TO_STRING(sipek_config.stunAddress, tstun, sizeof(tstun)) );
 		}
-
+		// set nameserver address for DNS SRV support. Allow only 1 server.
+		char tnameServer[256] = {0};
+		if (pj_native_strlen(sipek_config.nameServer) > 0) 
+		{
+			app_config.cfg.nameserver_count = 1;
+			app_config.cfg.nameserver[0] = pj_str( PJ_NATIVE_TO_STRING(sipek_config.nameServer, tnameServer, sizeof(tnameServer)));
+		}
 	}
 
 	/* Initialize application callbacks */
@@ -1012,8 +1028,7 @@ pj_status_t status;
 
     if (app_config.capture_dev != PJSUA_INVALID_ID
         || app_config.playback_dev != PJSUA_INVALID_ID) {
-	status
-	  = pjsua_set_snd_dev(app_config.capture_dev, app_config.playback_dev);
+	status = pjsua_set_snd_dev(app_config.capture_dev, app_config.playback_dev);
 	if (status != PJ_SUCCESS)
 	    goto on_error;
     }
@@ -1118,13 +1133,14 @@ char tusername[255] = {0};
 char tpassword[255] = {0};
 char trealm[255] = {0};
 
-
 	pjsua_acc_config_default(&accConfig);
 
 	// set parameters 
+	// disable contact rewrite
+	accConfig.allow_contact_rewrite = 0;
 
 	accConfig.publish_enabled = sipek_config.publishEnabled == true ? PJ_TRUE : PJ_FALSE; // enable publish
-	accConfig.reg_timeout = 3600; //sipek_config.expires;		
+	accConfig.reg_timeout = sipek_config.expires;		
 
 	accConfig.id = pj_str( PJ_NATIVE_TO_STRING( uri, turi, sizeof(turi)) );
 	accConfig.reg_uri = pj_str( PJ_NATIVE_TO_STRING( reguri, treguri, sizeof(treguri)) );
@@ -1151,7 +1167,6 @@ char trealm[255] = {0};
 
 	PJ_LOG(1,(THIS_FILE, "dll_registerAccount: reguri='%s'", accConfig.reg_uri));
 	PJ_LOG(1,(THIS_FILE, "dll_registerAccount: id='%s'", accConfig.id));
-
 
 	pjsua_acc_id pjAccId= -1;
 	int status = pjsua_acc_add(&accConfig, isdefault == true ? PJ_TRUE : PJ_FALSE, &pjAccId);
@@ -1423,25 +1438,23 @@ pjrpid_element elem;
 int dll_sendInfo(int callid, wchar_t* content)
 {
 pj_status_t status;
-// TODO!!!!!!!!!!!!!!!!!
-//string temp = "Signal=";
-//
-//	try
-//	{
-//		pjsua_msg_data msg_data;
-//		pjsua_msg_data_init(&msg_data);  
-//		
-//		temp += content;
-//
-//		msg_data.content_type = pj_str("application/dtmf-relay");
-//		msg_data.msg_body = pj_str((char*)temp.c_str());
-//		pj_str_t typeInfo = pj_str("INFO");
-//		status = pjsua_call_send_request(callid, &typeInfo, &msg_data);
-//	}
-//	catch(exception e) 
-//	{
-//		pjsua_perror(THIS_FILE, e.what(), status);
-//	}
+pj_str_t temp;
+char tcontent[255] = {0};
+
+	// allocate buffer
+	temp.slen = 255;
+	temp.ptr = (char*) pj_pool_alloc(app_config.pool, 255);
+
+	pj_strcpy(&temp, &pj_str("Signal="));
+	pj_strcat(&temp, &pj_str(PJ_NATIVE_TO_STRING(content, tcontent, sizeof(tcontent))));
+
+	pjsua_msg_data msg_data;
+	pjsua_msg_data_init(&msg_data);  
+		
+	msg_data.content_type = pj_str("application/dtmf-relay");
+	msg_data.msg_body = temp;
+	pj_str_t typeInfo = pj_str("INFO");
+	status = pjsua_call_send_request(callid, &typeInfo, &msg_data);
 
 	return status;
 }	
@@ -1461,6 +1474,7 @@ int dll_getCodec(int index, wchar_t* codec)
 {
 pjsua_codec_info c[32];
 unsigned count = PJ_ARRAY_SIZE(c);
+char tcodec[255] = {0};
 
 	pjsua_enum_codecs(c, &count);
 	
@@ -1468,13 +1482,14 @@ unsigned count = PJ_ARRAY_SIZE(c);
 	
 	if (c[index].codec_id.slen >= 256) return -1;
 
-	// TODO!!!
-	//strncpy(codec , c[index].codec_id.ptr, c[index].codec_id.slen);
-	//pj_unicode_strncpy(codec , c[index].codec_id.ptr, c[index].codec_id.slen);
+	strncpy(tcodec, c[index].codec_id.ptr, c[index].codec_id.slen);
+	// null terminated
+	tcodec[c[index].codec_id.slen] = 0;
 
-	//codec[c[index].codec_id.slen] = 0;
+	// convert to native
+	codec = PJ_STRING_TO_NATIVE(tcodec, codec, 255);
 
-	//PJ_LOG(3,(THIS_FILE,"Codec %s, prio %d", codec, c[index].priority ));
+	PJ_LOG(3,(THIS_FILE,"Codec %s, prio %d", codec, c[index].priority ));
 
 	return 1;
 }	
@@ -1508,6 +1523,7 @@ int dll_getCurrentCodec(pjsua_call_id call_id, wchar_t* codec)
 {	
 	pjmedia_session_info media_info;
 	pj_status_t status;
+	char tcodec[255] = {0};
 
 	if(pjsua_var.calls[call_id].session == NULL)
 	return -1;
@@ -1517,9 +1533,11 @@ int dll_getCurrentCodec(pjsua_call_id call_id, wchar_t* codec)
 	if ((status != PJ_SUCCESS) || (media_info.stream_cnt <= 0))
 		return -1;
 
-	//TODO
-	//strncpy(codec , media_info.stream_info[0].fmt.encoding_name.ptr, media_info.stream_info[0].fmt.encoding_name.slen);
-	//codec[media_info.stream_info[0].fmt.encoding_name.slen] = 0;
+	strncpy(tcodec , media_info.stream_info[0].fmt.encoding_name.ptr, media_info.stream_info[0].fmt.encoding_name.slen);
+	tcodec[media_info.stream_info[0].fmt.encoding_name.slen] = 0;
+
+	// convert to native
+	codec = PJ_STRING_TO_NATIVE(tcodec, codec, 255);
 
 	return 0;
 }
