@@ -19,7 +19,7 @@
 		<td vAlign="middle" width="46"><A href="/"><img alt="sipek logo" src="sipeklogo.jpg" border="0"></A>
 		</td>
 		<td vAlign="top">
-		<font face="Verdana,Arial,Helvetica" size="5"><b><A style="color: black; text-decoration: none" HREF="/">Sipek SDK - voipengine.googlepages.org</A></b></FONT><br>
+		<font face="Verdana,Arial,Helvetica" size="5"><b><A style="color: black; text-decoration: none" HREF="/">Sipek Software Development Kit</A></b></FONT><br>
 
 		<FONT face="Arial,Helvetica" size="1"><A style="color: black; text-decoration: none" HREF="/">Open source SIP Software Development Kit - SipekSDK</A></FONT><br>
 		<br>
@@ -55,33 +55,19 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 	     <TR valign="top">
 		    <TD valign="top" width="160" style="background-image: url(/images/bg2.jpg);">
 
-<h3>Content </h3>
+<h3>Links </h3>
 
-<p><a href="home">Home</a></p>
+<p><a href="http://sites.google.com/site/sipekvoip">Sipek Projects Home</a></p>
 
-<p><a href="generalprinciples">General Principles</a></p>
+<p><a href="http://sites.google.com/site/sipekvoip/sipeksdk">SipekSdk</a></p>
 
-<p><a href="modulesandinterfaces">Modules and Interfaces</a></p>
+<p><a href="http://sites.google.com/site/sipekvoip/Home/documentation/tutorial">SipekSdk Tutorial</a></p>
 
-<p><a href="modulesandinterfaces">SipekSdk</a></p>
-
-<p><a href="programmingguide">Programming Guide </a></p>
-
-<p>Examples </p>
-
-<p></p>
-
-<h3>Links<br></h3>
-
-<p><a href="http://sipekphone.googlepages.com/">Sipek Phone</a></p>
-
-<p><a href="http://code.google.com/p/sipek2/">Sipek Phone Project Home</a></p>
+<p><a href="http://code.google.com/p/sipek2/">Sipek Softphone Project Home</a></p>
 
 <p><a href="http://code.google.com/p/sipeksdk/">SipekSDK Project Home</a></p>
 
-<p>SipekSDK API <br></p>
-
-<p><a href="http://groups.google.com/group/sipek">Discussion Group</a></p>
+<p><a href="http://groups.google.com/group/sipek">Sipek Discussion Group</a></p>
 <hr size="2">
 <b>About:</b><FONT face="Arial, Verdana" size="1"> Sipek and SipekSDK are created by: Sasa Coh<br>
 <br>
@@ -138,49 +124,71 @@ Inherited by <a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_a
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#a71f03080ba8d708e14477b3353a999d">IAbstractState</a> (<a class="el" href="class_sipek_1_1_common_1_1_i_state_machine.html">IStateMachine</a> sm)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Abstract state construction.  <a href="#a71f03080ba8d708e14477b3353a999d"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">abstract void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#acc2ec2bf92d11c41b794e1caec258af">onEntry</a> ()</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">State entry method.  <a href="#acc2ec2bf92d11c41b794e1caec258af"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">abstract void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#02c8dc11b02611f6ec52794e06ce72a3">onExit</a> ()</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">State exit method.  <a href="#02c8dc11b02611f6ec52794e06ce72a3"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#e12be11b69fac9d2dce3db870b5a0917">noReplyTimerExpired</a> (int sessionId)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Handler for Reply timer timeout. Reply timer is started on incoming call if Call Forward No Reply is active.  <a href="#e12be11b69fac9d2dce3db870b5a0917"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#46435b27d91fab9d904b84e8247d0913">releasedTimerExpired</a> (int sessionId)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Handle Release timer timeout. Release timer is usualy started when other party releases the call.  <a href="#46435b27d91fab9d904b84e8247d0913"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">virtual bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#94478dc2f9a25fd88ec83b0b592bb609">noResponseTimerExpired</a> (int sessionId)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Handler no response on incoming call. Trigerred by ENORESPONSE timer.  <a href="#94478dc2f9a25fd88ec83b0b592bb609"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#19c7faf0d864c79c0d1fcbe097990b5e">makeCall</a> (string dialedNo, int accountId)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Make call request.  <a href="#19c7faf0d864c79c0d1fcbe097990b5e"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#9f55563fd619b15262d895d622edff0a">endCall</a> ()</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">End call.  <a href="#9f55563fd619b15262d895d622edff0a"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#78d52e61ca2762592991f0eb838e4664">acceptCall</a> ()</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Report that call is accepted/answered.  <a href="#78d52e61ca2762592991f0eb838e4664"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#cded011e153a5ea19e7d356acf056775">alerted</a> ()</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Report that device is alerted.  <a href="#cded011e153a5ea19e7d356acf056775"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#c96b9875167701312a273987101e3ea2">holdCall</a> ()</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Request call hold.  <a href="#c96b9875167701312a273987101e3ea2"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#084fd1b4604546efcc78faffb434aca9">retrieveCall</a> ()</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Request retrieve call.  <a href="#084fd1b4604546efcc78faffb434aca9"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#a2f2c4252577e82e319267e3b78e13bb">xferCall</a> (string number)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Tranfer call to a given number.  <a href="#a2f2c4252577e82e319267e3b78e13bb"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#c88c66b10fa9ab8944a92eb66aaed39c">xferCallSession</a> (int partnersession)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Transfer call to partner session.  <a href="#c88c66b10fa9ab8944a92eb66aaed39c"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#a8c1eab8bc5ec3b64ab7536828301bb4">threePtyCall</a> (int partnersession)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Request three party conference.  <a href="#a8c1eab8bc5ec3b64ab7536828301bb4"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#de2210722b0d6dd2ea87860a1d9d0291">serviceRequest</a> (int code, string dest)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Request service (TODO).  <a href="#de2210722b0d6dd2ea87860a1d9d0291"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#87d6ee1da97ee10f7ec5ddca500a7f76">dialDtmf</a> (string digits, EDtmfMode mode)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Dial digit by DTMF.  <a href="#87d6ee1da97ee10f7ec5ddca500a7f76"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override string&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#3a55bbaf2994fc8ee06cd6561b91b106">getCurrentCodec</a> ()</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Retrieve codec information for this call.  <a href="#3a55bbaf2994fc8ee06cd6561b91b106"></a><br></td></tr>
 <tr><td colspan="2"><br><h2>Properties</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">EStateId&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#64cd7fe947045936cc6d8f0f31f23e6e">Id</a><code> [get, set]</code></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">State identification property.  <a href="#64cd7fe947045936cc6d8f0f31f23e6e"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_sipek_1_1_common_1_1_i_call_proxy_interface.html">ICallProxyInterface</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#56cb1693623f69bc155eab52c3f2c9a8">CallProxy</a><code> [get]</code></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Signaling proxy instance for communication with VoIP stack.  <a href="#56cb1693623f69bc155eab52c3f2c9a8"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="interface_sipek_1_1_common_1_1_i_media_proxy_interface.html">IMediaProxyInterface</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#9d6f78a4e4e057150f259947fefe0586">MediaProxy</a><code> [get]</code></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Media proxy instance for handling tones.  <a href="#9d6f78a4e4e057150f259947fefe0586"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#bff282066ddea2f89710f7795173c4ff">SessionId</a><code> [get, set]</code></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Call/Session identification.  <a href="#bff282066ddea2f89710f7795173c4ff"></a><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 CAbstractState implements <a class="el" href="class_sipek_1_1_common_1_1_i_call_proxy_interface.html" title="Call oriented interface. Offers basic session control API and events called from...">ICallProxyInterface</a> interface. Sends requests to call server. It's a base for all call states classes (<a class="el" href="class_sipek_1_1_common_1_1_i_state_machine.html" title="General state machine interface.">IStateMachine</a>). 
@@ -793,7 +801,7 @@ Call/Session identification.
 <li>IAbstractState.cs</ul>
 </div>
 <hr><center>
-<font face="Arial,Helvetica" size="1">SipekSDK - Open Source VoIP Software Development Kit<br>
+<font face="Arial,Helvetica" size="1">SipekSdk - Open Source VoIP Software Development Kit<br>
 <i>(c)2007-2008 Sasa Coh </i><a href="mailto:sasacoh@gmail.com">sasacoh@gmail.com</a></font>
 </center>
 
@@ -810,8 +818,7 @@ var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "htt
 document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
 </script>
 <script type="text/javascript">
-var pageTracker = _gat._getTracker("UA-2163858-8");
-pageTracker._initData();
+var pageTracker = _gat._getTracker("UA-2163858-11");
 pageTracker._trackPageview();
 </script>
 

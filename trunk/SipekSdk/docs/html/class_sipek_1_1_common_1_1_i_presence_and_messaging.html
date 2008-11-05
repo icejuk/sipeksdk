@@ -19,7 +19,7 @@
 		<td vAlign="middle" width="46"><A href="/"><img alt="sipek logo" src="sipeklogo.jpg" border="0"></A>
 		</td>
 		<td vAlign="top">
-		<font face="Verdana,Arial,Helvetica" size="5"><b><A style="color: black; text-decoration: none" HREF="/">Sipek SDK - voipengine.googlepages.org</A></b></FONT><br>
+		<font face="Verdana,Arial,Helvetica" size="5"><b><A style="color: black; text-decoration: none" HREF="/">Sipek Software Development Kit</A></b></FONT><br>
 
 		<FONT face="Arial,Helvetica" size="1"><A style="color: black; text-decoration: none" HREF="/">Open source SIP Software Development Kit - SipekSDK</A></FONT><br>
 		<br>
@@ -55,33 +55,19 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 	     <TR valign="top">
 		    <TD valign="top" width="160" style="background-image: url(/images/bg2.jpg);">
 
-<h3>Content </h3>
+<h3>Links </h3>
 
-<p><a href="home">Home</a></p>
+<p><a href="http://sites.google.com/site/sipekvoip">Sipek Projects Home</a></p>
 
-<p><a href="generalprinciples">General Principles</a></p>
+<p><a href="http://sites.google.com/site/sipekvoip/sipeksdk">SipekSdk</a></p>
 
-<p><a href="modulesandinterfaces">Modules and Interfaces</a></p>
+<p><a href="http://sites.google.com/site/sipekvoip/Home/documentation/tutorial">SipekSdk Tutorial</a></p>
 
-<p><a href="modulesandinterfaces">SipekSdk</a></p>
-
-<p><a href="programmingguide">Programming Guide </a></p>
-
-<p>Examples </p>
-
-<p></p>
-
-<h3>Links<br></h3>
-
-<p><a href="http://sipekphone.googlepages.com/">Sipek Phone</a></p>
-
-<p><a href="http://code.google.com/p/sipek2/">Sipek Phone Project Home</a></p>
+<p><a href="http://code.google.com/p/sipek2/">Sipek Softphone Project Home</a></p>
 
 <p><a href="http://code.google.com/p/sipeksdk/">SipekSDK Project Home</a></p>
 
-<p>SipekSDK API <br></p>
-
-<p><a href="http://groups.google.com/group/sipek">Discussion Group</a></p>
+<p><a href="http://groups.google.com/group/sipek">Sipek Discussion Group</a></p>
 <hr size="2">
 <b>About:</b><FONT face="Arial, Verdana" size="1"> Sipek and SipekSDK are created by: Sasa Coh<br>
 <br>
@@ -136,26 +122,35 @@ Inherited by Sipek.Sip.pjsipPresenceAndMessaging.
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">abstract int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_presence_and_messaging.html#d54a867b548b83410c84144862855bd5">addBuddy</a> (string ident, bool presence, int accId)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Add buddy to buddy list and subscribe presence.  <a href="#d54a867b548b83410c84144862855bd5"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_presence_and_messaging.html#52a952bda699156ab7d8500c016428cc">addBuddy</a> (string ident, bool presence)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Add buddy to buddy list and subscribe presence.  <a href="#52a952bda699156ab7d8500c016428cc"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">abstract int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_presence_and_messaging.html#fe3a16a488e0080a0730d66cf6936779">delBuddy</a> (int buddyId)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Delete buddy with given identification.  <a href="#fe3a16a488e0080a0730d66cf6936779"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">abstract int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_presence_and_messaging.html#575642a7ab5f6189e89e09317fc45157">sendMessage</a> (string destAddress, string message)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Send Instant Message.  <a href="#575642a7ab5f6189e89e09317fc45157"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">abstract int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_presence_and_messaging.html#8a863f9293e7d7085de2dcff0f246e06">sendMessage</a> (string destAddress, string message, int accId)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">abstract int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_presence_and_messaging.html#fec55881326487dc7a0b505eb18bda4a">setStatus</a> (int accId, EUserStatus presence_state)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Set device status for default account.  <a href="#fec55881326487dc7a0b505eb18bda4a"></a><br></td></tr>
 <tr><td colspan="2"><br><h2>Protected Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_presence_and_messaging.html#a7cca830c78fcecc3d828602c83726e1">BaseMessageReceived</a> (string from, string text)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">MessageReceived event trigger by VoIP stack when instant message arrived.  <a href="#a7cca830c78fcecc3d828602c83726e1"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_presence_and_messaging.html#c60fbb1cd83f32f2630e375022e12e97">BaseBuddyStatusChanged</a> (int buddyId, int status, string text)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">BuddyStatusChanged event trigger by VoIP stack when buddy status changed.  <a href="#c60fbb1cd83f32f2630e375022e12e97"></a><br></td></tr>
 <tr><td colspan="2"><br><h2>Events</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DBuddyStatusChanged&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_presence_and_messaging.html#2f80b4319a414ffa787a64c5e42f9197">BuddyStatusChanged</a></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Buddy status changed notifier.  <a href="#2f80b4319a414ffa787a64c5e42f9197"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DMessageReceived&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_presence_and_messaging.html#f2fb6d664e95e45f70140ed1fc4bd4d7">MessageReceived</a></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Message received notifier.  <a href="#f2fb6d664e95e45f70140ed1fc4bd4d7"></a><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Abstract class for presence and instant messaging handling. 
@@ -496,7 +491,7 @@ Message received notifier.
 <li>IPresenceAndMessaging.cs</ul>
 </div>
 <hr><center>
-<font face="Arial,Helvetica" size="1">SipekSDK - Open Source VoIP Software Development Kit<br>
+<font face="Arial,Helvetica" size="1">SipekSdk - Open Source VoIP Software Development Kit<br>
 <i>(c)2007-2008 Sasa Coh </i><a href="mailto:sasacoh@gmail.com">sasacoh@gmail.com</a></font>
 </center>
 
@@ -513,8 +508,7 @@ var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "htt
 document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
 </script>
 <script type="text/javascript">
-var pageTracker = _gat._getTracker("UA-2163858-8");
-pageTracker._initData();
+var pageTracker = _gat._getTracker("UA-2163858-11");
 pageTracker._trackPageview();
 </script>
 

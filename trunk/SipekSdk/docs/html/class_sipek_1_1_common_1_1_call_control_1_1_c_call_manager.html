@@ -19,7 +19,7 @@
 		<td vAlign="middle" width="46"><A href="/"><img alt="sipek logo" src="sipeklogo.jpg" border="0"></A>
 		</td>
 		<td vAlign="top">
-		<font face="Verdana,Arial,Helvetica" size="5"><b><A style="color: black; text-decoration: none" HREF="/">Sipek SDK - voipengine.googlepages.org</A></b></FONT><br>
+		<font face="Verdana,Arial,Helvetica" size="5"><b><A style="color: black; text-decoration: none" HREF="/">Sipek Software Development Kit</A></b></FONT><br>
 
 		<FONT face="Arial,Helvetica" size="1"><A style="color: black; text-decoration: none" HREF="/">Open source SIP Software Development Kit - SipekSDK</A></FONT><br>
 		<br>
@@ -55,33 +55,19 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 	     <TR valign="top">
 		    <TD valign="top" width="160" style="background-image: url(/images/bg2.jpg);">
 
-<h3>Content </h3>
+<h3>Links </h3>
 
-<p><a href="home">Home</a></p>
+<p><a href="http://sites.google.com/site/sipekvoip">Sipek Projects Home</a></p>
 
-<p><a href="generalprinciples">General Principles</a></p>
+<p><a href="http://sites.google.com/site/sipekvoip/sipeksdk">SipekSdk</a></p>
 
-<p><a href="modulesandinterfaces">Modules and Interfaces</a></p>
+<p><a href="http://sites.google.com/site/sipekvoip/Home/documentation/tutorial">SipekSdk Tutorial</a></p>
 
-<p><a href="modulesandinterfaces">SipekSdk</a></p>
-
-<p><a href="programmingguide">Programming Guide </a></p>
-
-<p>Examples </p>
-
-<p></p>
-
-<h3>Links<br></h3>
-
-<p><a href="http://sipekphone.googlepages.com/">Sipek Phone</a></p>
-
-<p><a href="http://code.google.com/p/sipek2/">Sipek Phone Project Home</a></p>
+<p><a href="http://code.google.com/p/sipek2/">Sipek Softphone Project Home</a></p>
 
 <p><a href="http://code.google.com/p/sipeksdk/">SipekSDK Project Home</a></p>
 
-<p>SipekSDK API <br></p>
-
-<p><a href="http://groups.google.com/group/sipek">Discussion Group</a></p>
+<p><a href="http://groups.google.com/group/sipek">Sipek Discussion Group</a></p>
 <hr size="2">
 <b>About:</b><FONT face="Arial, Verdana" size="1"> Sipek and SipekSDK are created by: Sasa Coh<br>
 <br>
@@ -134,28 +120,38 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html#d93b06d8c12bed5d7dcb915b597de54f">updateGui</a> (int sessionId)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Inform GUI to be refreshed.  <a href="#d93b06d8c12bed5d7dcb915b597de54f"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html#e34cf755acb2e141504c2ae5e8cce2d5">Initialize</a> (<a class="el" href="class_sipek_1_1_common_1_1_i_voip_proxy.html">IVoipProxy</a> proxy)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Initialize telephony and VoIP stack. On success register accounts.  <a href="#e34cf755acb2e141504c2ae5e8cce2d5"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html#0713f7fa5e671206a390b31f81d8535f">Shutdown</a> ()</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Shutdown telephony and VoIP stack.  <a href="#0713f7fa5e671206a390b31f81d8535f"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_sipek_1_1_common_1_1_i_state_machine.html">IStateMachine</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html#2c9216795ef5819d4e58144e8b87e480">createOutboundCall</a> (string number)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Create outgoing call using default accountId.  <a href="#2c9216795ef5819d4e58144e8b87e480"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_sipek_1_1_common_1_1_i_state_machine.html">IStateMachine</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html#d4a278f36eba27ee03410385b4315b3b">createOutboundCall</a> (string number, int accountId)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Create outgoing call from a given account.  <a href="#d4a278f36eba27ee03410385b4315b3b"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_sipek_1_1_common_1_1_i_state_machine.html">IStateMachine</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html#a4b10ec4a959312f0c1e4ab29864af6c">getCall</a> (int session)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_sipek_1_1_common_1_1_i_state_machine.html">IStateMachine</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html#a79fe3c902d10b4c1804ecad369fa692">getCallInState</a> (EStateId stateId)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">ICollection&lt; <a class="el" href="class_sipek_1_1_common_1_1_i_state_machine.html">IStateMachine</a> &gt;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html#5bacddb1b3517297b06af52330e613d5">enumCallsInState</a> (EStateId stateId)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Collect state machines in a given state.  <a href="#5bacddb1b3517297b06af52330e613d5"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html#d8cd8e552edd61a9bf084a8de0773902">onUserRelease</a> (int session)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">User triggers a call release for a given session.  <a href="#d8cd8e552edd61a9bf084a8de0773902"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html#960e872962c5f2c26866a07ccf06cc2a">onUserAnswer</a> (int session)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">User accepts call for a given session In case of multi call put current active call to Hold.  <a href="#960e872962c5f2c26866a07ccf06cc2a"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html#22e2f273daa3af4879cf63a59fad6ef1">onUserHoldRetrieve</a> (int session)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">User put call on hold or retrieve.  <a href="#22e2f273daa3af4879cf63a59fad6ef1"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html#f63c0fedebee5a183a3345778cc8def5">onUserTransfer</a> (int session, string number)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">User starts a call transfer.  <a href="#f63c0fedebee5a183a3345778cc8def5"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html#22169a336b5dc7c530d52d23be75b644">onUserDialDigit</a> (int session, string digits, EDtmfMode mode)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html#3ddf1524c1b9617939b978b2bfb5fffc">onUserConference</a> (int session)</td></tr>
@@ -165,13 +161,17 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 <tr><td colspan="2"><br><h2>Properties</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_sipek_1_1_common_1_1_i_state_machine.html">IStateMachine</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html#c5b810a69009236b83d73448f8ea962d">this</a> [int index]<code> [get]</code></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Call indexer.  <a href="#c5b810a69009236b83d73448f8ea962d"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">Dictionary&lt; int, <a class="el" href="class_sipek_1_1_common_1_1_i_state_machine.html">IStateMachine</a> &gt;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html#3cb34ad8a6fa6b9af50e6c0e85b9fee1">CallList</a><code> [get]</code></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Retrieve a list of all calls (state machines).  <a href="#3cb34ad8a6fa6b9af50e6c0e85b9fee1"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">static <a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html">CCallManager</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html#4781b1b49c45ecd27f4a22d7d81ceecf">Instance</a><code> [get]</code></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html" title="CCallManager Main telephony class. Manages call instances. Handles user events and...">CCallManager</a> Singleton.  <a href="#4781b1b49c45ecd27f4a22d7d81ceecf"></a><br></td></tr>
 <tr><td colspan="2"><br><h2>Events</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">DCallStateRefresh&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html#74ebb15ae1a3180fa7ba22dc8999b5e8">CallStateRefresh</a></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Notify about call state changed in automaton with given sessionId.  <a href="#74ebb15ae1a3180fa7ba22dc8999b5e8"></a><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 <a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html" title="CCallManager Main telephony class. Manages call instances. Handles user events and...">CCallManager</a> Main telephony class. Manages call instances. Handles user events and dispatches to a proper call instance automaton. <hr><h2>Member Function Documentation</h2>
@@ -671,7 +671,7 @@ Notify about call state changed in automaton with given sessionId.
 <li>callManager.cs</ul>
 </div>
 <hr><center>
-<font face="Arial,Helvetica" size="1">SipekSDK - Open Source VoIP Software Development Kit<br>
+<font face="Arial,Helvetica" size="1">SipekSdk - Open Source VoIP Software Development Kit<br>
 <i>(c)2007-2008 Sasa Coh </i><a href="mailto:sasacoh@gmail.com">sasacoh@gmail.com</a></font>
 </center>
 
@@ -688,8 +688,7 @@ var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "htt
 document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
 </script>
 <script type="text/javascript">
-var pageTracker = _gat._getTracker("UA-2163858-8");
-pageTracker._initData();
+var pageTracker = _gat._getTracker("UA-2163858-11");
 pageTracker._trackPageview();
 </script>
 

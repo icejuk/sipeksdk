@@ -19,7 +19,7 @@
 		<td vAlign="middle" width="46"><A href="/"><img alt="sipek logo" src="sipeklogo.jpg" border="0"></A>
 		</td>
 		<td vAlign="top">
-		<font face="Verdana,Arial,Helvetica" size="5"><b><A style="color: black; text-decoration: none" HREF="/">Sipek SDK - voipengine.googlepages.org</A></b></FONT><br>
+		<font face="Verdana,Arial,Helvetica" size="5"><b><A style="color: black; text-decoration: none" HREF="/">Sipek Software Development Kit</A></b></FONT><br>
 
 		<FONT face="Arial,Helvetica" size="1"><A style="color: black; text-decoration: none" HREF="/">Open source SIP Software Development Kit - SipekSDK</A></FONT><br>
 		<br>
@@ -55,33 +55,19 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 	     <TR valign="top">
 		    <TD valign="top" width="160" style="background-image: url(/images/bg2.jpg);">
 
-<h3>Content </h3>
+<h3>Links </h3>
 
-<p><a href="home">Home</a></p>
+<p><a href="http://sites.google.com/site/sipekvoip">Sipek Projects Home</a></p>
 
-<p><a href="generalprinciples">General Principles</a></p>
+<p><a href="http://sites.google.com/site/sipekvoip/sipeksdk">SipekSdk</a></p>
 
-<p><a href="modulesandinterfaces">Modules and Interfaces</a></p>
+<p><a href="http://sites.google.com/site/sipekvoip/Home/documentation/tutorial">SipekSdk Tutorial</a></p>
 
-<p><a href="modulesandinterfaces">SipekSdk</a></p>
-
-<p><a href="programmingguide">Programming Guide </a></p>
-
-<p>Examples </p>
-
-<p></p>
-
-<h3>Links<br></h3>
-
-<p><a href="http://sipekphone.googlepages.com/">Sipek Phone</a></p>
-
-<p><a href="http://code.google.com/p/sipek2/">Sipek Phone Project Home</a></p>
+<p><a href="http://code.google.com/p/sipek2/">Sipek Softphone Project Home</a></p>
 
 <p><a href="http://code.google.com/p/sipeksdk/">SipekSDK Project Home</a></p>
 
-<p>SipekSDK API <br></p>
-
-<p><a href="http://groups.google.com/group/sipek">Discussion Group</a></p>
+<p><a href="http://groups.google.com/group/sipek">Sipek Discussion Group</a></p>
 <hr size="2">
 <b>About:</b><FONT face="Arial, Verdana" size="1"> Sipek and SipekSDK are created by: Sasa Coh<br>
 <br>
@@ -136,37 +122,52 @@ Inherits <a class="el" href="class_sipek_1_1_common_1_1_i_state_machine.html">Si
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_state_machine.html#a4b6e61a6b39e34175c57c2535ace46c">CStateMachine</a> ()</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Call/Session constructor. Initializes call states, creates signaling proxy, initialize time, initialize timers.  <a href="#a4b6e61a6b39e34175c57c2535ace46c"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_state_machine.html#90c7b718888d088f2d8a6371ba40d4fb">changeState</a> (EStateId stateId)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Change state by state id.  <a href="#90c7b718888d088f2d8a6371ba40d4fb"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_state_machine.html#aa88a73e23f75b6e85d96a2987d58339">destroy</a> ()</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Destroy call. Calculate call duraton time, edit call log, destroy session.  <a href="#aa88a73e23f75b6e85d96a2987d58339"></a><br></td></tr>
 <tr><td colspan="2"><br><h2>Properties</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html">CCallManager</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_state_machine.html#a20abf645989908a44a9caf59d2b14e7">Manager</a><code> [get]</code></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">A reference to <a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_call_manager.html" title="CCallManager Main telephony class. Manages call instances. Handles user events and...">CCallManager</a> instance.  <a href="#a20abf645989908a44a9caf59d2b14e7"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_state_machine.html#3fff3c1abd204d72f5d6e549be21e119">Session</a><code> [get, set]</code></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Call/Session identification.  <a href="#3fff3c1abd204d72f5d6e549be21e119"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override string&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_state_machine.html#4ae042ac24d185ebb650fdea28a0cad0">CallingNumber</a><code> [get, set]</code></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Calling number property.  <a href="#4ae042ac24d185ebb650fdea28a0cad0"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override string&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_state_machine.html#11dcdbf4872ff776f399e8c2ecf7cd9d">CallingName</a><code> [get, set]</code></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Calling name property.  <a href="#11dcdbf4872ff776f399e8c2ecf7cd9d"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_state_machine.html#22497ab11cb4d22d0652ad20504420ad">Incoming</a><code> [get, set]</code></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Incoming call flag.  <a href="#22497ab11cb4d22d0652ad20504420ad"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_state_machine.html#f46c44f2bbd4a01bac8792e86be35ae4">IsHeld</a><code> [get, set]</code></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Is call held by other side.  <a href="#f46c44f2bbd4a01bac8792e86be35ae4"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_state_machine.html#779360edf1290bd3a241c1b5f0a63533">Is3Pty</a><code> [get, set]</code></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Is this call 3pty (==2 active sessions).  <a href="#779360edf1290bd3a241c1b5f0a63533"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override EStateId&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_state_machine.html#3f1c40d9b7f0d70f21bf01255038eaf0">StateId</a><code> [get]</code></td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override TimeSpan&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_state_machine.html#647967536376ce88f0e986c38d66d401">Duration</a><code> [get, set]</code></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Duration of a call.  <a href="#647967536376ce88f0e986c38d66d401"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override TimeSpan&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_state_machine.html#809988f3b434859c43772713adb4b834">RuntimeDuration</a><code> [get]</code></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Calculate call duration.  <a href="#809988f3b434859c43772713adb4b834"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_state_machine.html#a1d622a1c63c005a94259d7a7aab3686">IsNull</a><code> [get]</code></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Check for null state machine.  <a href="#a1d622a1c63c005a94259d7a7aab3686"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top"><a class="el" href="interface_sipek_1_1_common_1_1_i_call_log_interface.html">ICallLogInterface</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_state_machine.html#7a028fd15ea8d11af88ccac1023fae15">CallLoger</a><code> [get]</code></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Call log instance.  <a href="#7a028fd15ea8d11af88ccac1023fae15"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override string&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_state_machine.html#05a97f6036bcb9090a6d13869e818345">Codec</a><code> [get]</code></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Get Current codec for this call.  <a href="#05a97f6036bcb9090a6d13869e818345"></a><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 <a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_state_machine.html" title="CStateMachine class is a telephony data container for signle call. It maintains call...">CStateMachine</a> class is a telephony data container for signle call. It maintains call state, communicates with signaling via proxy and informs about events from signaling. A Finite State Machine is implemented in State design pattern! 
@@ -498,7 +499,7 @@ Get Current codec for this call.
 <li>callStateMachine.cs</ul>
 </div>
 <hr><center>
-<font face="Arial,Helvetica" size="1">SipekSDK - Open Source VoIP Software Development Kit<br>
+<font face="Arial,Helvetica" size="1">SipekSdk - Open Source VoIP Software Development Kit<br>
 <i>(c)2007-2008 Sasa Coh </i><a href="mailto:sasacoh@gmail.com">sasacoh@gmail.com</a></font>
 </center>
 
@@ -515,8 +516,7 @@ var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "htt
 document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
 </script>
 <script type="text/javascript">
-var pageTracker = _gat._getTracker("UA-2163858-8");
-pageTracker._initData();
+var pageTracker = _gat._getTracker("UA-2163858-11");
 pageTracker._trackPageview();
 </script>
 
