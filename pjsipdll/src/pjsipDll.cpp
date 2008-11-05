@@ -185,7 +185,7 @@ static pj_bool_t on_rx_request(pjsip_rx_data *rdata)
 		{
 			if (cb_mwi != 0) cb_mwi(0, buf);
 		}
-
+		PJ_LOG(3,(THIS_FILE,"MWI message: %s", buf));
 	}
 
 	pjsip_endpt_respond_stateless(pjsip_ua_get_endpt(pjsip_ua_instance()),
@@ -1506,9 +1506,48 @@ int dll_getCurrentCodec(pjsua_call_id call_id, char* codec)
 }
 
 
-int dll_setSoundDevice(int playbackDeviceId, int recordingDeviceId)
+int dll_setSoundDevice(char* playbackDeviceName, char* recordingDeviceName)
 {
-pj_status_t status = pjsua_set_snd_dev(recordingDeviceId, playbackDeviceId);
+int capture_dev;
+int playback_dev;
+unsigned int counti;
+pjmedia_snd_dev_info 	info[255];
+int cnt = -1;
+
+
+    int i, count;
+    
+    count = pjmedia_snd_get_dev_count();
+    if (count == 0) {
+			//puts("No devices found");
+			return -1;
+    }
+
+    for (i=0; i<count; ++i) {
+			const pjmedia_snd_dev_info *info;
+
+			info = pjmedia_snd_get_dev_info(i);
+
+			PJ_LOG(1,(THIS_FILE, "Device %d, %s (capture=%d, playback=%d)",i, info->name, info->input_count, info->output_count));
+
+			// check names
+			if ((info->input_count > 0)&&( pj_strcmp2(&pj_str(recordingDeviceName), info->name)== 0 ))
+			{
+				// device found
+				capture_dev	= i;
+			}
+			else if ((info->output_count > 0)&&( pj_strcmp2(&pj_str(playbackDeviceName), info->name)== 0 ))
+			{
+				// device found
+				playback_dev	= i;
+			}
+
+			pj_assert(info != NULL);
+    }
+
+	pj_status_t status = pjsua_set_snd_dev(capture_dev, playback_dev);
+
+
 	return status;	
 }
 

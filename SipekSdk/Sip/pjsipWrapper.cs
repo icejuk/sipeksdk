@@ -93,6 +93,8 @@ namespace Sipek.Sip
     private static extern int dll_getNumOfCodecs();
     [DllImport(PJSIP_DLL, EntryPoint = "dll_setCodecPriority")]
     private static extern int dll_setCodecPriority(string name, int prio);
+    [DllImport(PJSIP_DLL, EntryPoint = "dll_setSoundDevice")]
+    private static extern int dll_setSoundDevice(string playbackDeviceId, string recordingDeviceId);
 
     #endregion Wrapper functions
 
@@ -225,6 +227,18 @@ namespace Sipek.Sip
     {
       return new pjsipCallProxy(Config);
     }
+
+
+    /// <summary>
+    /// Set sound device for playback and recording
+    /// </summary>
+    /// <param name="deviceId"></param>
+    public void setSoundDevice(string playbackDeviceId, string recordingDeviceId)
+    {
+      int status = dll_setSoundDevice(playbackDeviceId, recordingDeviceId);
+
+    }
+
 
     #endregion Methods
 
