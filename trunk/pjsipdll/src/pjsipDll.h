@@ -107,6 +107,6 @@ extern "C" PJSIPDLL_DLL_API int dll_removeBuddy(int buddyId);
 extern "C" PJSIPDLL_DLL_API int dll_sendMessage(int accId, char* uri, char* message);
 extern "C" PJSIPDLL_DLL_API int dll_setStatus(int accId, int presence_state);
 
-extern "C" PJSIPDLL_DLL_API int dll_setSoundDevice(int playbackDeviceId, int recordingDeviceId);
+extern "C" PJSIPDLL_DLL_API int dll_setSoundDevice(char* playbackDeviceId, char* recordingDeviceId);
 
 extern "C" PJSIPDLL_DLL_API int dll_pollForEvents(int timeout);
