@@ -19,7 +19,7 @@
 		<td vAlign="middle" width="46"><A href="/"><img alt="sipek logo" src="sipeklogo.jpg" border="0"></A>
 		</td>
 		<td vAlign="top">
-		<font face="Verdana,Arial,Helvetica" size="5"><b><A style="color: black; text-decoration: none" HREF="/">Sipek SDK - voipengine.googlepages.org</A></b></FONT><br>
+		<font face="Verdana,Arial,Helvetica" size="5"><b><A style="color: black; text-decoration: none" HREF="/">Sipek Software Development Kit</A></b></FONT><br>
 
 		<FONT face="Arial,Helvetica" size="1"><A style="color: black; text-decoration: none" HREF="/">Open source SIP Software Development Kit - SipekSDK</A></FONT><br>
 		<br>
@@ -55,33 +55,19 @@ src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
 	     <TR valign="top">
 		    <TD valign="top" width="160" style="background-image: url(/images/bg2.jpg);">
 
-<h3>Content </h3>
+<h3>Links </h3>
 
-<p><a href="home">Home</a></p>
+<p><a href="http://sites.google.com/site/sipekvoip">Sipek Projects Home</a></p>
 
-<p><a href="generalprinciples">General Principles</a></p>
+<p><a href="http://sites.google.com/site/sipekvoip/sipeksdk">SipekSdk</a></p>
 
-<p><a href="modulesandinterfaces">Modules and Interfaces</a></p>
+<p><a href="http://sites.google.com/site/sipekvoip/Home/documentation/tutorial">SipekSdk Tutorial</a></p>
 
-<p><a href="modulesandinterfaces">SipekSdk</a></p>
-
-<p><a href="programmingguide">Programming Guide </a></p>
-
-<p>Examples </p>
-
-<p></p>
-
-<h3>Links<br></h3>
-
-<p><a href="http://sipekphone.googlepages.com/">Sipek Phone</a></p>
-
-<p><a href="http://code.google.com/p/sipek2/">Sipek Phone Project Home</a></p>
+<p><a href="http://code.google.com/p/sipek2/">Sipek Softphone Project Home</a></p>
 
 <p><a href="http://code.google.com/p/sipeksdk/">SipekSDK Project Home</a></p>
 
-<p>SipekSDK API <br></p>
-
-<p><a href="http://groups.google.com/group/sipek">Discussion Group</a></p>
+<p><a href="http://groups.google.com/group/sipek">Sipek Discussion Group</a></p>
 <hr size="2">
 <b>About:</b><FONT face="Arial, Verdana" size="1"> Sipek and SipekSDK are created by: Sasa Coh<br>
 <br>
@@ -136,34 +122,46 @@ Inherits <a class="el" href="class_sipek_1_1_common_1_1_i_call_proxy_interface.h
 <tr><td colspan="2"><br><h2>Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_sip_1_1pjsip_call_proxy.html#aa5c2865db904ab9b7cf02f182136fe7">makeCall</a> (string dialedNo, int accountId)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Method makeCall creates call session. Checks the 1st parameter format is SIP URI, if not build one.  <a href="#aa5c2865db904ab9b7cf02f182136fe7"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_sip_1_1pjsip_call_proxy.html#b6374c03a49c1d666df2959c81a71329">endCall</a> ()</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">End call for a given session.  <a href="#b6374c03a49c1d666df2959c81a71329"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_sip_1_1pjsip_call_proxy.html#d67feadc1b75afee67f6e62ef7c17d37">alerted</a> ()</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Signals sip stack that device is alerted (ringing).  <a href="#d67feadc1b75afee67f6e62ef7c17d37"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_sip_1_1pjsip_call_proxy.html#2b27dbdbde8d85ca93cd629b277ac26f">acceptCall</a> ()</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Signals that user accepts the call (asnwer).  <a href="#2b27dbdbde8d85ca93cd629b277ac26f"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_sip_1_1pjsip_call_proxy.html#4a2c58d2d27e08bcee23e5d5a9d1043e">holdCall</a> ()</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Hold request for a given session.  <a href="#4a2c58d2d27e08bcee23e5d5a9d1043e"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_sip_1_1pjsip_call_proxy.html#97cb8cbe76b08e42380585224709906e">retrieveCall</a> ()</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Retrieve request for a given session.  <a href="#97cb8cbe76b08e42380585224709906e"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_sip_1_1pjsip_call_proxy.html#fc479c475484b3a210cdfa2bfae22b7e">xferCall</a> (string number)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Trasfer call to number.  <a href="#fc479c475484b3a210cdfa2bfae22b7e"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_sip_1_1pjsip_call_proxy.html#fdf186b1e24acc80737b13732293a39e">xferCallSession</a> (int session)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Transfer call to other session.  <a href="#fdf186b1e24acc80737b13732293a39e"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_sip_1_1pjsip_call_proxy.html#c75217e1c282fe7f35c91fc8d9ee3833">threePtyCall</a> (int session)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Make conference with given session.  <a href="#c75217e1c282fe7f35c91fc8d9ee3833"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_sip_1_1pjsip_call_proxy.html#1d2db635e129a8e13371d5d95e64c3b8">serviceRequest</a> (int code, string dest)</td></tr>
 
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_sip_1_1pjsip_call_proxy.html#764e04c935588ae86020e0c1e845a8ec">dialDtmf</a> (string digits, EDtmfMode mode)</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Send dtmf digit.  <a href="#764e04c935588ae86020e0c1e845a8ec"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override string&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_sip_1_1pjsip_call_proxy.html#e9dfb11d9406131a308f5305df490244">getCurrentCodec</a> ()</td></tr>
 
 <tr><td colspan="2"><br><h2>Static Public Member Functions</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">static void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_sip_1_1pjsip_call_proxy.html#fc8ec89c9b13bde32b0f69dd7e35469f">initialize</a> ()</td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Static initializer. Call this method to set callbacks from SIP stack.  <a href="#fc8ec89c9b13bde32b0f69dd7e35469f"></a><br></td></tr>
 <tr><td colspan="2"><br><h2>Properties</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_sip_1_1pjsip_call_proxy.html#e05d716848f6ed7b4521aee46ff8d254">SessionId</a><code> [get, set]</code></td></tr>
 
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Call/Session identification. All public methods refers to this identification.  <a href="#e05d716848f6ed7b4521aee46ff8d254"></a><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 Implementation of ICallProxyInterface interface use by call state machine. Each call (session) contains an instance of a call proxy. Current session is identified by SessionId property. <a class="el" href="class_sipek_1_1_sip_1_1pjsip_call_proxy.html" title="Implementation of ICallProxyInterface interface use by call state machine. Each call...">pjsipCallProxy</a> communicates with pjsip stack using API functions and callbacks. 
@@ -594,7 +592,7 @@ Call/Session identification. All public methods refers to this identification.
 <li>pjsipCallWrapper.cs</ul>
 </div>
 <hr><center>
-<font face="Arial,Helvetica" size="1">SipekSDK - Open Source VoIP Software Development Kit<br>
+<font face="Arial,Helvetica" size="1">SipekSdk - Open Source VoIP Software Development Kit<br>
 <i>(c)2007-2008 Sasa Coh </i><a href="mailto:sasacoh@gmail.com">sasacoh@gmail.com</a></font>
 </center>
 
@@ -611,8 +609,7 @@ var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "htt
 document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
 </script>
 <script type="text/javascript">
-var pageTracker = _gat._getTracker("UA-2163858-8");
-pageTracker._initData();
+var pageTracker = _gat._getTracker("UA-2163858-11");
 pageTracker._trackPageview();
 </script>
 
