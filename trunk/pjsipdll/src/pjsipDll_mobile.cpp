@@ -160,8 +160,6 @@ pj_status_t app_destroy(void);
 // Request handler to receive out-of-dialog NOTIFY (from Asterisk)
 static pj_bool_t on_rx_request(pjsip_rx_data *rdata)
 {
-	wchar_t tmsg[255] = {0};
-
 	if (strstr(pj_strbuf(&rdata->msg_info.msg->line.req.method.name),
 		"NOTIFY"))
 	{
@@ -175,19 +173,19 @@ static pj_bool_t on_rx_request(pjsip_rx_data *rdata)
 
 		pjsip_msg_body * body_p = rdata->msg_info.msg->body;
 
-		char* buf = (char*)pj_pool_alloc(app_config.pool, body_p->len);
-		memcpy(buf, body_p->data, body_p->len);
+		wchar_t* buf = (wchar_t*)pj_pool_alloc(app_config.pool, body_p->len);
+		buf = PJ_STRING_TO_NATIVE((char*)body_p->data, buf, body_p->len);
 
 		// Process body message as desired...
-		if (strstr(buf, "Messages-Waiting: yes") != 0)
+		if (strncmp((char*)body_p->data, "Messages-Waiting: yes", body_p->len) != 0)
 		{
-			if (cb_mwi != 0) cb_mwi(1, PJ_STRING_TO_NATIVE(buf, tmsg, sizeof(tmsg)));
+			if (cb_mwi != 0) cb_mwi(1, buf);
 		}
 		else
 		{
-			if (cb_mwi != 0) cb_mwi(0, PJ_STRING_TO_NATIVE(buf, tmsg, sizeof(tmsg)));
+			if (cb_mwi != 0) cb_mwi(0, buf);
 		}
-		PJ_LOG(3,(THIS_FILE,"MWI %s", buf));
+		PJ_LOG(3,(THIS_FILE,"MWI message: %s", buf));
 	}
 
 	pjsip_endpt_respond_stateless(pjsip_ua_get_endpt(pjsip_ua_instance()),
@@ -453,12 +451,21 @@ static void on_call_state(pjsua_call_id call_id, pjsip_event *e)
 static void on_incoming_call(pjsua_acc_id acc_id, pjsua_call_id call_id,
 														 pjsip_rx_data *rdata)
 {
-	wchar_t tremcontat[255];
 	pjsua_call_info call_info;
 
 	pjsua_call_get_info(call_id, &call_info);
 
-  if (cb_callincoming != 0) cb_callincoming(call_id, PJ_STRING_TO_NATIVE(call_info.remote_contact.ptr, tremcontat, sizeof(tremcontat)));
+	wchar_t* tremcontat = (wchar_t*)pj_pool_alloc(app_config.pool, 255);
+	tremcontat = PJ_STRING_TO_NATIVE(call_info.remote_contact.ptr, tremcontat, call_info.remote_contact.slen);
+
+	PJ_LOG(3,(THIS_FILE, "Incoming Call %d, Remote contact: %s",
+			  call_id,
+		    tremcontat));
+
+  if (cb_callincoming != 0) 
+	{
+		cb_callincoming(call_id, tremcontat);
+	}
 }
 
 
@@ -669,7 +676,6 @@ static void on_buddy_state(pjsua_buddy_id buddy_id)
 {
     pjsua_buddy_info info;
     pjsua_buddy_get_info(buddy_id, &info);
-		wchar_t tstatus[255] = {0};
 
     PJ_LOG(3,(THIS_FILE, "%.*s status is %.*s",
 	      (int)info.uri.slen,
@@ -677,11 +683,12 @@ static void on_buddy_state(pjsua_buddy_id buddy_id)
 	      (int)info.status_text.slen,
 	      info.status_text.ptr));
 
-		char text[255] = {0};
-		strncpy(text, info.status_text.ptr, (info.status_text.slen < 255) ? info.status_text.slen : 255);
+		wchar_t* text = (wchar_t*)pj_pool_alloc(app_config.pool, 255);
+		text = PJ_STRING_TO_NATIVE(info.status_text.ptr, text, info.status_text.slen);
 
-	// callback
-  if (cb_buddystatus != 0) cb_buddystatus(buddy_id, info.status, PJ_STRING_TO_NATIVE(text, tstatus, sizeof(tstatus)));
+		// callback
+		if (cb_buddystatus != 0) 
+			cb_buddystatus(buddy_id, info.status, text);
 }
 
 
@@ -692,8 +699,9 @@ static void on_pager(pjsua_call_id call_id, const pj_str_t *from,
 		     const pj_str_t *to, const pj_str_t *contact,
 		     const pj_str_t *mime_type, const pj_str_t *text)
 {
-wchar_t tfrom[255] = {0};
-wchar_t ttext[255] = {0};
+		// allocate buffer
+		wchar_t* tfrom = (wchar_t*)pj_pool_alloc(app_config.pool, 255);
+		wchar_t* ttext = (wchar_t*)pj_pool_alloc(app_config.pool, 255);
 
     /* Note: call index may be -1 */
     PJ_UNUSED_ARG(call_id);
@@ -1540,6 +1548,55 @@ int dll_getCurrentCodec(pjsua_call_id call_id, wchar_t* codec)
 	codec = PJ_STRING_TO_NATIVE(tcodec, codec, 255);
 
 	return 0;
+}
+
+
+int dll_setSoundDevice(wchar_t* playbackDeviceName, wchar_t* recordingDeviceName)
+{
+int capture_dev;
+int playback_dev;
+unsigned int counti;
+pjmedia_snd_dev_info 	info[255];
+int i, count;
+
+	// convert unicode to native
+	char strPlaybackDeviceName[255] = {0};
+	char strRecordingDeviceName[255] = {0};
+
+	PJ_NATIVE_TO_STRING(playbackDeviceName, strPlaybackDeviceName, 255);
+	PJ_NATIVE_TO_STRING(playbackDeviceName, strRecordingDeviceName, 255);
+    
+    count = pjmedia_snd_get_dev_count();
+    if (count == 0) {
+			return -1;
+    }
+
+    for (i=0; i<count; ++i) {
+			const pjmedia_snd_dev_info *info;
+
+			info = pjmedia_snd_get_dev_info(i);
+
+			PJ_LOG(1,(THIS_FILE, "Device %d, %s (capture=%d, playback=%d)",i, info->name, info->input_count, info->output_count));
+
+			// check names
+			if ((info->input_count > 0)&&( pj_strcmp2(&pj_str(strRecordingDeviceName), info->name)== 0 ))
+			{
+				// device found
+				capture_dev	= i;
+			}
+			else if ((info->output_count > 0)&&( pj_strcmp2(&pj_str(strPlaybackDeviceName), info->name)== 0 ))
+			{
+				// device found
+				playback_dev	= i;
+			}
+
+			pj_assert(info != NULL);
+    }
+
+	pj_status_t status = pjsua_set_snd_dev(capture_dev, playback_dev);
+
+
+	return status;	
 }
 
 /////////////////////////////////////////////////////////////////////////
