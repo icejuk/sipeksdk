@@ -64,6 +64,7 @@ namespace Sipek.Common.CallControl
     private bool _counting = false; // if duration counter is started
     private bool _holdRequested = false;
     private bool _retrieveRequested = false;
+    private bool _disableStateNotifications = false;
 
     #endregion Variables
 
@@ -270,6 +271,11 @@ namespace Sipek.Common.CallControl
       get { return _sigProxy.getCurrentCodec(); }
     }
 
+    internal override bool DisableStateNotifications
+    {
+      get { return _disableStateNotifications; }
+      set { _disableStateNotifications = value; }
+    }
 
     #endregion
 
@@ -451,7 +457,7 @@ namespace Sipek.Common.CallControl
         case EStateId.TERMINATED: changeState(_stateTerminated); break;
       }
       // inform manager 
-      if ((null != _manager)&&(Session != -1)) _manager.updateGui(this.Session);
+      if ((null != _manager)&&(Session != -1) && (DisableStateNotifications==false)) _manager.updateGui(this.Session);
     }
 
     /// <summary>
@@ -459,8 +465,11 @@ namespace Sipek.Common.CallControl
     /// </summary>
     public override void destroy()
     {
-      // stop tones
+      // stop tones & timers
+      stopAllTimers(); 
+      
       MediaProxy.stopTone();
+
       // Calculate timing
       if (true == Counting)
       {

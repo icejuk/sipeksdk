@@ -57,6 +57,7 @@ namespace Sipek.Common
     public abstract TimeSpan Duration { get; set; }
     public abstract EStateId StateId { get; }
     public abstract string Codec { get; }
+    internal abstract bool DisableStateNotifications { get; set; }
     #endregion
 
     #region Internal Methods
@@ -95,11 +96,11 @@ namespace Sipek.Common
     {
       get
       {
-        throw new Exception("The method or operation is not implemented.");
+        return "";
       }
       set
       {
-        throw new Exception("The method or operation is not implemented.");
+        ;
       }
     }
 
@@ -107,11 +108,11 @@ namespace Sipek.Common
     {
       get
       {
-        throw new Exception("The method or operation is not implemented.");
+        return "";
       }
       set
       {
-        throw new Exception("The method or operation is not implemented.");
+        ;
       }
     }
 
@@ -119,11 +120,11 @@ namespace Sipek.Common
     {
       get
       {
-        throw new Exception("The method or operation is not implemented.");
+        return false;
       }
       set
       {
-        throw new Exception("The method or operation is not implemented.");
+        ;
       }
     }
 
@@ -131,11 +132,11 @@ namespace Sipek.Common
     {
       get
       {
-        throw new Exception("The method or operation is not implemented.");
+        return false;
       }
       set
       {
-        throw new Exception("The method or operation is not implemented.");
+        ;
       }
     }
 
@@ -143,11 +144,11 @@ namespace Sipek.Common
     {
       get
       {
-        throw new Exception("The method or operation is not implemented.");
+        return false;
       }
       set
       {
-        throw new Exception("The method or operation is not implemented.");
+        ;
       }
     }
 
@@ -159,7 +160,7 @@ namespace Sipek.Common
       }
       set
       {
-        throw new Exception("The method or operation is not implemented.");
+        ;
       }
     }
 
@@ -171,12 +172,12 @@ namespace Sipek.Common
 
     public override void changeState(EStateId stateId)
     {
-      throw new Exception("The method or operation is not implemented.");
+      ;
     }
 
     public override void destroy()
     {
-      throw new Exception("The method or operation is not implemented.");
+      ;
     }
 
     public override bool IsNull
@@ -191,11 +192,11 @@ namespace Sipek.Common
     {
       get
       {
-        throw new Exception("The method or operation is not implemented.");
+        return false;
       }
       set
       {
-        throw new Exception("The method or operation is not implemented.");
+        ;
       }
     }
 
@@ -203,11 +204,11 @@ namespace Sipek.Common
     {
       get
       {
-        throw new Exception("The method or operation is not implemented.");
+        return false;
       }
       set
       {
-        throw new Exception("The method or operation is not implemented.");
+        ;
       }
     }
 
@@ -215,7 +216,7 @@ namespace Sipek.Common
     {
       get
       {
-        throw new Exception("The method or operation is not implemented.");
+        return new NullCallProxy();
       }
     }
 
@@ -223,51 +224,51 @@ namespace Sipek.Common
     {
       get
       {
-        throw new Exception("The method or operation is not implemented.");
+        return new NullConfigurator();
       }
     }
 
     internal override IMediaProxyInterface MediaProxy
     {
-      get { throw new Exception("The method or operation is not implemented."); }
+      get { return new NullMediaProxy(); }
     }
 
     internal override ECallType Type
     {
       get
       {
-        throw new Exception("The method or operation is not implemented.");
+        return ECallType.EDialed;
       }
       set
       {
-        throw new Exception("The method or operation is not implemented.");
+        ;
       }
     }
 
     internal override bool startTimer(ETimerType ttype)
     {
-      throw new Exception("The method or operation is not implemented.");
+      return false;
     }
 
     internal override bool stopTimer(ETimerType ttype)
     {
-      throw new Exception("The method or operation is not implemented.");
+      return false;
     }
 
     internal override void stopAllTimers()
     {
-      throw new Exception("The method or operation is not implemented.");
+      ;
     }
 
     internal override DateTime Time
     {
       get
       {
-        throw new Exception("The method or operation is not implemented.");
+        return new DateTime();
       }
       set
       {
-        throw new Exception("The method or operation is not implemented.");
+        ;
       }
     }
 
@@ -275,39 +276,51 @@ namespace Sipek.Common
     {
       get
       {
-        throw new Exception("The method or operation is not implemented.");
+        return new TimeSpan();
       }
       set
       {
-        throw new Exception("The method or operation is not implemented.");
+        ;
       }
     }
 
     public override TimeSpan RuntimeDuration
     {
-      get { throw new Exception("The method or operation is not implemented."); }
+      get { return new TimeSpan(); }
     }
 
     internal override void activatePendingAction()
     {
-      throw new Exception("The method or operation is not implemented.");
+      ;
     }
 
     internal override bool Counting
     {
       get
       {
-        throw new Exception("The method or operation is not implemented.");
+        return false;
       }
       set
       {
-        throw new Exception("The method or operation is not implemented.");
+        ;
       }
     }
 
     public override string Codec
     {
-      get { throw new Exception("The method or operation is not implemented."); }
+      get { return "PCMA"; }
+    }
+
+    internal override bool DisableStateNotifications
+    {
+      get
+      {
+        return true;
+      }
+      set
+      {
+        ;
+      }
     }
   }
   #endregion

@@ -45,8 +45,8 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using System;
 using Sipek.Common;
+using System;
 
 namespace Sipek.Common.CallControl
 {
@@ -294,7 +294,13 @@ namespace Sipek.Common.CallControl
     /// </summary>
     public void Shutdown()
     {
+      foreach (KeyValuePair<int, IStateMachine> call in CallList)
+      {
+        call.Value.destroy();
+      }
+
       this.CallList.Clear();
+
       StackProxy.shutdown();
       _initialized = false;
       
@@ -305,10 +311,6 @@ namespace Sipek.Common.CallControl
       ICallProxyInterface.CallIncoming -= OnIncomingCall;
       ICallProxyInterface.CallNotification -= OnCallNotification;
     }
-
-
-    static System.Threading.Mutex mutex = new System.Threading.Mutex();
-
 
     /// <summary>
     /// Create outgoing call using default accountId. 
@@ -387,9 +389,14 @@ namespace Sipek.Common.CallControl
     /// <param name="session">session identification</param>
     internal void destroySession(int session)
     {
+      bool notify = true;
+      if (getCall(session).DisableStateNotifications)
+      {
+        notify = false;
+      }
       _calls.Remove(session);
       // Warning: this call no longer exists
-      updateGui(session);
+      if (notify) updateGui(session);
     }
 
     /// <summary>
@@ -610,6 +617,15 @@ namespace Sipek.Common.CallControl
         }
         // save session parameters
         incall.Session = callId;
+
+        // check if callID already exists!!!
+        if (CallList.ContainsKey(callId))
+        {
+          // shouldn't be here
+          // release the call
+          CallList[callId].State.endCall();
+          return;
+        }
         // add call to call table
         _calls.Add(callId, incall);
 
@@ -652,7 +668,7 @@ namespace Sipek.Common.CallControl
       call.State.incomingCall(number, info);
 
       // call callback 
-      if (IncomingCallNotification != null) IncomingCallNotification(sessionId, number, info);
+      if ((IncomingCallNotification != null)&&(call.DisableStateNotifications == false)) IncomingCallNotification(sessionId, number, info);
     }
 
     private void OnCallNotification(int callId, ECallNotification notFlag, string text)

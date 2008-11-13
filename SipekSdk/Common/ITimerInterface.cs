@@ -49,7 +49,7 @@ namespace Sipek.Common
     bool Stop();
 
     /// <summary>
-    /// Set tiemr interval
+    /// Set timer interval
     /// </summary>
     int Interval { get; set;}
 
