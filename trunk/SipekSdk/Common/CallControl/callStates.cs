@@ -45,6 +45,13 @@ namespace Sipek.Common.CallControl
     {
     }
 
+    public override bool endCall()
+    {
+      _smref.destroy();
+      CallProxy.endCall();
+      return base.endCall();
+    }
+
     /// <summary>
     /// Make call to a given number and accountId. Assign sessionId to call state machine got from VoIP part.
     /// </summary>
@@ -60,8 +67,31 @@ namespace Sipek.Common.CallControl
       return _smref.Session;
     }
 
+    /// <summary>
+    /// Handle incoming call requests. Check for supplementary services flags.
+    /// </summary>
+    /// <param name="callingNo"></param>
+    /// <param name="display"></param>
     public override void incomingCall(string callingNo, string display)
     {
+      // check supplementary services flags
+      if ((_smref.Config.CFUFlag == true) && (_smref.Config.CFUNumber.Length > 0))
+      {
+        // do NOT notify about state changes 
+        _smref.DisableStateNotifications = true;
+        CallProxy.serviceRequest((int)EServiceCodes.SC_CFU, _smref.Config.CFUNumber);
+        this.endCall();
+        return;
+      }
+      else if (_smref.Config.DNDFlag == true)
+      {
+        // do NOT notify about state changes 
+        _smref.DisableStateNotifications = true;
+        CallProxy.serviceRequest((int)EServiceCodes.SC_DND, "");
+        this.endCall();
+        return;
+      }
+
       _smref.CallingNumber = callingNo;
       _smref.CallingName = display;
       _smref.changeState(EStateId.INCOMING);
@@ -174,6 +204,7 @@ namespace Sipek.Common.CallControl
     public override void onEntry()
     {
       _smref.Counting = true;
+      MediaProxy.stopTone();
     }
 
     public override void onExit()
@@ -355,6 +386,7 @@ namespace Sipek.Common.CallControl
 
     public override void onEntry()
     {
+      // set incoming call flags
       _smref.Incoming = true;
 
       int sessionId = SessionId;
@@ -362,25 +394,6 @@ namespace Sipek.Common.CallControl
       // Start no response timer
       _smref.startTimer(ETimerType.ENORESPONSE);
 
-      // Check for Supplementary services
-      if ((_smref.Config.CFUFlag == true) && (_smref.Config.CFUNumber.Length > 0))
-      {
-        CallProxy.serviceRequest((int)EServiceCodes.SC_CFU, _smref.Config.CFUNumber);
-        CallProxy.endCall();
-        return;
-      }
-      else if (_smref.Config.DNDFlag == true)
-      {
-        CallProxy.serviceRequest((int)EServiceCodes.SC_DND, "");
-        CallProxy.endCall();
-        return;
-      }
-      else if (_smref.Config.AAFlag == true)
-      {
-        this.acceptCall();
-      }
-
-      // normal incoming call handling
       CallProxy.alerted();
       _smref.Type = ECallType.EMissed;
       MediaProxy.playTone(ETones.EToneRing);
@@ -389,6 +402,11 @@ namespace Sipek.Common.CallControl
       if (_smref.Config.CFNRFlag)
       {
         _smref.startTimer(ETimerType.ENOREPLY);
+      }
+      // auto answer call
+      if (_smref.Config.AAFlag == true)
+      {
+        this.acceptCall();
       }
     }
 

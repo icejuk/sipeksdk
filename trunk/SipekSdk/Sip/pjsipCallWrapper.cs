@@ -325,36 +325,39 @@ namespace Sipek.Sip
       string display = "";
       string number = "";
 
-      // get indices
-      int startNum = uri.IndexOf("<sip:");
-      int atPos = uri.IndexOf('@');
-      // search for number
-      if ((startNum >= 0) && (atPos > startNum))
+      if (null != uri)
       {
-        number = uri.Substring(startNum + 5, atPos - startNum - 5);
-      }
-
-      // extract display name if exists
-      if (startNum >= 0)
-      {
-        display = uri.Remove(startNum, uri.Length - startNum).Trim();
-      }
-      else
-      {
-        int semiPos = display.IndexOf(';');
-        if (semiPos >= 0)
+        // get indices
+        int startNum = uri.IndexOf("<sip:");
+        int atPos = uri.IndexOf('@');
+        // search for number
+        if ((startNum >= 0) && (atPos > startNum))
         {
-          display = display.Remove(semiPos, display.Length - semiPos);
+          number = uri.Substring(startNum + 5, atPos - startNum - 5);
+        }
+
+        // extract display name if exists
+        if (startNum >= 0)
+        {
+          display = uri.Remove(startNum, uri.Length - startNum).Trim();
         }
         else
         {
-          int colPos = display.IndexOf(':');
-          if (colPos >= 0)
+          int semiPos = display.IndexOf(';');
+          if (semiPos >= 0)
           {
-            display = display.Remove(colPos, display.Length - colPos);
+            display = display.Remove(semiPos, display.Length - semiPos);
           }
-        }
+          else
+          {
+            int colPos = display.IndexOf(':');
+            if (colPos >= 0)
+            {
+              display = display.Remove(colPos, display.Length - colPos);
+            }
+          }
 
+        }
       }
       // invoke callback
       ICallProxyInterface.BaseIncomingCall(callId, number, display);
