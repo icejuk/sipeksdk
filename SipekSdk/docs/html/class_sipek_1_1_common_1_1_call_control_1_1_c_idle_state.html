@@ -126,9 +126,15 @@ Inherits <a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html">S
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_idle_state.html#fde3d594c447580cd4546d2662f08469">onExit</a> ()</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">State exit method.  <a href="#fde3d594c447580cd4546d2662f08469"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">override bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_idle_state.html#c440de3746457fe13cca3db3c152db49">endCall</a> ()</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">End call.  <a href="#c440de3746457fe13cca3db3c152db49"></a><br></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">override int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_idle_state.html#2c63da67c6b575d9198b017cc30a73ec">makeCall</a> (string dialedNo, int accountId)</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Make call to a given number and accountId. Assign sessionId to call state machine got from VoIP part.  <a href="#2c63da67c6b575d9198b017cc30a73ec"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">override void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_idle_state.html#ab2d8c46d45cf510c8e95ebd4293f78f">incomingCall</a> (string callingNo, string display)</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Handle incoming call requests. Check for supplementary services flags.  <a href="#ab2d8c46d45cf510c8e95ebd4293f78f"></a><br></td></tr>
 </table>
 <hr><a name="_details"></a><h2>Detailed Description</h2>
 State Idle indicates the call is inactive. 
@@ -180,6 +186,30 @@ State exit method.
 
 </div>
 </div><p>
+<a class="anchor" name="c440de3746457fe13cca3db3c152db49"></a><!-- doxytag: member="Sipek::Common::CallControl::CIdleState::endCall" ref="c440de3746457fe13cca3db3c152db49" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">override bool Sipek.Common.CallControl.CIdleState.endCall           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td width="100%"><code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+End call. 
+<p>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd></dd></dl>
+
+<p>Reimplemented from <a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#9f55563fd619b15262d895d622edff0a">Sipek.Common.IAbstractState</a>.</p>
+
+</div>
+</div><p>
 <a class="anchor" name="2c63da67c6b575d9198b017cc30a73ec"></a><!-- doxytag: member="Sipek::Common::CallControl::CIdleState::makeCall" ref="2c63da67c6b575d9198b017cc30a73ec" args="(string dialedNo, int accountId)" -->
 <div class="memitem">
 <div class="memproto">
@@ -217,6 +247,45 @@ Make call to a given number and accountId. Assign sessionId to call state machin
 <dl class="return" compact><dt><b>Returns:</b></dt><dd></dd></dl>
 
 <p>Reimplemented from <a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#19c7faf0d864c79c0d1fcbe097990b5e">Sipek.Common.IAbstractState</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="ab2d8c46d45cf510c8e95ebd4293f78f"></a><!-- doxytag: member="Sipek::Common::CallControl::CIdleState::incomingCall" ref="ab2d8c46d45cf510c8e95ebd4293f78f" args="(string callingNo, string display)" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">override void Sipek.Common.CallControl.CIdleState.incomingCall           </td>
+          <td>(</td>
+          <td class="paramtype">string&nbsp;</td>
+          <td class="paramname"> <em>callingNo</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string&nbsp;</td>
+          <td class="paramname"> <em>display</em></td><td>&nbsp;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td><td width="100%"><code> [virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Handle incoming call requests. Check for supplementary services flags. 
+<p>
+<dl compact><dt><b>Parameters:</b></dt><dd>
+  <table border="0" cellspacing="2" cellpadding="0">
+    <tr><td valign="top"></td><td valign="top"><em>callingNo</em>&nbsp;</td><td></td></tr>
+    <tr><td valign="top"></td><td valign="top"><em>display</em>&nbsp;</td><td></td></tr>
+  </table>
+</dl>
+
+<p>Reimplemented from <a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html">Sipek.Common.IAbstractState</a>.</p>
 
 </div>
 </div><p>
