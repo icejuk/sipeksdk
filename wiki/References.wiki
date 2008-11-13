@@ -1,6 +1,6 @@
-#summary References
+#summary References and Links
 
-= References =
+== References ==
 
 SipekSdk is an open source project written in C#. The VoIP interface is based on pjsip.org SIP protocol stack.
 
@@ -11,7 +11,7 @@ SipekSdk is an open source project written in C#. The VoIP interface is based on
 ----
 
 
-== SipekSdk based projects ==
+== Links - SipekSdk based projects ==
 
  * [http://sites.google.com/site/sipekvoip/sipek-softphone Sipek Softphone]
  * Sipek Windows Mobile Example
@@ -21,4 +21,4 @@ SipekSdk is an open source project written in C#. The VoIP interface is based on
 
 
 
-Are you using SipekSdk in your project?
+Are you using SipekSdk in your project? Contact me [mailto:sasacoh@gmail.com].
