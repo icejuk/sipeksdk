@@ -38,6 +38,8 @@ namespace Sipek.Sip
 		internal const string PJSIP_DLL = "libpjsipDll.so"; 
 #elif MOBILE
 		internal const string PJSIP_DLL = "pjsipdll_mobile.dll"; 
+#elif TLS
+		internal const string PJSIP_DLL = "pjsipdll_tls.dll"; 
 #else
     internal const string PJSIP_DLL = "pjsipDll.dll";
 #endif

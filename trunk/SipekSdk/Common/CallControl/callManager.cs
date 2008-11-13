@@ -294,9 +294,11 @@ namespace Sipek.Common.CallControl
     /// </summary>
     public void Shutdown()
     {
-      foreach (KeyValuePair<int, IStateMachine> call in CallList)
+      IStateMachine [] callarr = new IStateMachine[CallList.Count];
+      CallList.Values.CopyTo(callarr, 0);
+      for (int i = 0; i < callarr.Length; i++)
       {
-        call.Value.destroy();
+        callarr[i].destroy();
       }
 
       this.CallList.Clear();
