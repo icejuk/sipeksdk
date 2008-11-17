@@ -6,6 +6,8 @@
   * Developer's Manual
     * [GettingStarted Getting Started with SipekSdk]
     * [UsingLibrary How to use SipekSdk in VoIP applications?]
+    * [Configuration Configuration Settings]
+      * [ConfAccounts Set SIP Accounts]
     * ...
   * Technical background
     * [HowItWorks How does Sipek work?]
