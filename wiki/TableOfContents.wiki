@@ -11,5 +11,6 @@
     * ...
   * Technical background
     * [HowItWorks How does Sipek work?]
+    * [dnssrv DNS SRV overview]
     * [Design Design Patterns]
   * [FAQ FAQ]
