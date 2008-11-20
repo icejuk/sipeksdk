@@ -19,7 +19,6 @@ Example: Get your instance of IConfigurationInterface, set the appropriate trans
 
 {{{
 Just set the nameServer member variable of SipConfigStruct class in pjsipConfig.cs. 
-
-See a short description of how pjsip handles [dnssrv DNS SRV mechanism].
 }}}
+   See a short description of how pjsip handles [dnssrv DNS SRV mechanism].
    
