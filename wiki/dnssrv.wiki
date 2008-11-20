@@ -1,5 +1,7 @@
 #summary DNS SRV overview.
 
+== DNS SRV overview ==
+
 pjsip do it this way: the first query is for SRV record and if a result is another domain name the second query is sent (this time for A record) with the received domain name. In case no SRV record is found, an A record query is sent with the same domain name. 
 {{{
 Registration example (it's similar for STUN):
