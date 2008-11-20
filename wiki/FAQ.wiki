@@ -20,7 +20,9 @@ Example: Get your instance of IConfigurationInterface, set the appropriate trans
 {{{
 DNS SRV is supported by pjsip.org stack. See below for short explanation.
 
-pjsip do it this way: the first query is for SRV record and if a result is another domain name the second query is sent (this time for A record) with the received domain name. In case no SRV record is found, an A record query is sent with the same domain name.
+pjsip do it this way: the first query is for SRV record and if a result is another 
+domain name the second query is sent (this time for A record) with the received domain 
+name. In case no SRV record is found, an A record query is sent with the same domain name.
 
 
 
@@ -51,4 +53,3 @@ Example 2: No SRV records found!
 |   DNS response (ip address)                             |
 |<----------------------------------------------------    |
 }}}
-
