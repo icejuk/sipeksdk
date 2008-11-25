@@ -29,6 +29,7 @@ namespace Sipek.Sip
 {
   delegate int OnDtmfDigitCallback(int callId, int digit);
   delegate int OnMessageWaitingCallback(int mwi, string info);
+  delegate int OnCallReplacedCallback(int oldid, int newid);
 
   /// <summary>
   /// Implementation of SIP interface using pjsip.org SIP stack.
@@ -106,10 +107,13 @@ namespace Sipek.Sip
     private static extern int onDtmfDigitCallback(OnDtmfDigitCallback cb);
         [DllImport(PJSIP_DLL, EntryPoint = "onMessageWaitingCallback")]
     private static extern int onMessageWaitingCallback(OnMessageWaitingCallback cb);
+    [DllImport(PJSIP_DLL, EntryPoint = "onCallReplaced")]
+    private static extern int onCallReplacedCallback(OnCallReplacedCallback cb);
 
     static OnDtmfDigitCallback dtdel = new OnDtmfDigitCallback(onDtmfDigitCallback);
     static OnMessageWaitingCallback mwidel = new OnMessageWaitingCallback(onMessageWaitingCallback);
-    
+    static OnCallReplacedCallback crepdel = new OnCallReplacedCallback(onCallReplacedCallback);
+        
     #endregion
 
     #region Variables
@@ -159,7 +163,8 @@ namespace Sipek.Sip
 
       // register callbacks (delegates)
       onDtmfDigitCallback(dtdel);
-      onMessageWaitingCallback(mwidel);      
+      onMessageWaitingCallback(mwidel);
+      onCallReplacedCallback(crepdel);
 
       // init call proxy (callbacks)
       pjsipCallProxy.initialize();
@@ -259,6 +264,12 @@ namespace Sipek.Sip
     {
 			if (null == info) return -1;
       Instance.BaseMessageWaitingIndication(mwi, info.ToString());
+      return 1;
+    }
+
+    private static int onCallReplacedCallback(int oldid, int newid)
+    {
+      Instance.BaseCallReplacedCallback(oldid, newid);
       return 1;
     }
 

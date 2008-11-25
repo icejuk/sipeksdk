@@ -75,6 +75,8 @@ namespace Sipek.Sip
     private static extern int dll_dialDtmf(int callId, string digits, int mode);
     [DllImport(PJSIP_DLL, EntryPoint = "dll_getCurrentCodec")]
     private static extern int dll_getCurrentCodec(int callId, StringBuilder codec);
+    [DllImport(PJSIP_DLL, EntryPoint = "dll_makeConference")]
+    private static extern int dll_makeConference(int callId);
 
     #endregion
 
@@ -297,6 +299,16 @@ namespace Sipek.Sip
       StringBuilder codec = new StringBuilder(256);
       int status = dll_getCurrentCodec(SessionId, codec);
       return codec.ToString();
+    }
+
+    /// <summary>
+    /// Make a conference call
+    /// </summary>
+    /// <returns></returns>
+    public override bool conferenceCall()
+    {
+      int status = dll_makeConference(SessionId);
+      return status == 1? true : false;
     }
 
     #endregion Methods

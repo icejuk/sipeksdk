@@ -87,6 +87,11 @@ namespace UnitTest
     {
       throw new Exception("The method or operation is not implemented.");
     }
+
+    public override bool conferenceCall()
+    {
+      throw new Exception("The method or operation is not implemented.");
+    }
   }
 
   public class MockCommonProxy : IVoipProxy

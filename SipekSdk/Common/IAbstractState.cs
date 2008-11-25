@@ -212,6 +212,12 @@ namespace Sipek.Common
       // not used!
       return "";
     }
+
+    public override bool conferenceCall()
+    {
+      return false;
+    }
+
     #endregion Methods
 
     #region Callbacks
@@ -248,12 +254,15 @@ namespace Sipek.Common
 
     public override void onEntry()
     {
-      throw new Exception("The method or operation is not implemented.");
     }
 
     public override void onExit()
     {
-      throw new Exception("The method or operation is not implemented.");
+    }
+
+    public override bool conferenceCall()
+    {
+      return false;
     }
   }
   #endregion
