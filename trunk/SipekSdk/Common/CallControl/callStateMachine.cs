@@ -277,6 +277,11 @@ namespace Sipek.Common.CallControl
       set { _disableStateNotifications = value; }
     }
 
+    internal override int NumberOfCalls
+    {
+      get { return Manager.Count; }
+    }
+
     #endregion
 
     #region Constructor

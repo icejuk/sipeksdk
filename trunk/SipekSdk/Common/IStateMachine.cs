@@ -58,6 +58,7 @@ namespace Sipek.Common
     public abstract EStateId StateId { get; }
     public abstract string Codec { get; }
     internal abstract bool DisableStateNotifications { get; set; }
+    internal abstract int NumberOfCalls { get; }
     #endregion
 
     #region Internal Methods
@@ -321,6 +322,11 @@ namespace Sipek.Common
       {
         ;
       }
+    }
+
+    internal override int NumberOfCalls
+    {
+      get { return 0; }
     }
   }
   #endregion

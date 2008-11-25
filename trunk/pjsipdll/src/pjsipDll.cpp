@@ -37,6 +37,7 @@ static fptr_buddystatus* cb_buddystatus = 0;
 static fptr_msgrec* cb_messagereceived = 0;
 static fptr_dtmfdigit* cb_dtmfdigit = 0;
 static fptr_mwi* cb_mwi = 0;
+static fptr_crep* cb_crep = 0;
 
 
 enum {
@@ -86,6 +87,8 @@ struct presence_status {
 struct call_data
 {
 	pj_timer_entry	    timer;
+    pj_bool_t		    ringback_on;
+    pj_bool_t		    ring_on;
 };
 
 
@@ -115,6 +118,8 @@ static struct app_config
 
 	unsigned		    codec_cnt;
 	pj_str_t		    codec_arg[32];
+    unsigned		    codec_dis_cnt;
+    pj_str_t                codec_dis[32];
 	pj_bool_t		    null_audio;
 	unsigned		    wav_count;
 	pj_str_t		    wav_files[32];
@@ -124,6 +129,8 @@ static struct app_config
 	pjsua_player_id	    wav_id;
 	pjsua_conf_port_id	    wav_port;
 	pj_bool_t		    auto_play;
+    pj_bool_t		    auto_play_hangup;
+    pj_timer_entry	    auto_hangup_timer;
 	pj_bool_t		    auto_loop;
 	pj_bool_t		    auto_conf;
 	pj_str_t		    rec_file;
@@ -141,13 +148,29 @@ static struct app_config
 		speaker_level;
 
     int			    capture_dev, playback_dev;
+    unsigned		    capture_lat, playback_lat;
+
+    pj_bool_t		    no_tones;
+    int			    ringback_slot;
+    int			    ringback_cnt;
+    pjmedia_port	   *ringback_port;
+    int			    ring_slot;
+    int			    ring_cnt;
+    pjmedia_port	   *ring_port;
+
 } app_config;
 
 
 //static pjsua_acc_id	current_acc;
 #define current_acc	pjsua_acc_get_default()
 static pjsua_call_id	current_call = PJSUA_INVALID_ID;
+static pj_bool_t	cmd_echo;
+static int		stdout_refresh = -1;
+static const char      *stdout_refresh_text = "STDOUT_REFRESH";
+static pj_bool_t	stdout_refresh_quit = PJ_FALSE;
 static pj_str_t		uri_arg;
+
+static char some_buf[1024 * 3];
 
 #ifdef STEREO_DEMO
 static void stereo_demo();
@@ -205,7 +228,7 @@ static void default_config(struct app_config *cfg)
     unsigned i;
 
 	pjsua_config_default(&cfg->cfg);
-	pj_ansi_sprintf(tmp, "SIPek on PJSUA v%s/%s", PJ_VERSION, PJ_OS_NAME);
+	pj_ansi_sprintf(tmp, "Sipek on PJSUA v%s/%s", pj_get_version(), PJ_OS_NAME);
 	pj_strdup2_with_null(app_config.pool, &cfg->cfg.user_agent, tmp);
 
 	pjsua_logging_config_default(&cfg->log_cfg);
@@ -222,6 +245,10 @@ static void default_config(struct app_config *cfg)
 	cfg->mic_level = cfg->speaker_level = 1.0;
         cfg->capture_dev = PJSUA_INVALID_ID;
         cfg->playback_dev = PJSUA_INVALID_ID;
+    cfg->capture_lat = PJMEDIA_SND_DEFAULT_REC_LATENCY;
+    cfg->playback_lat = PJMEDIA_SND_DEFAULT_PLAY_LATENCY;
+    cfg->ringback_slot = PJSUA_INVALID_ID;
+    cfg->ring_slot = PJSUA_INVALID_ID;
 
         for (i=0; i<PJ_ARRAY_SIZE(cfg->acc_cfg); ++i)
 	  pjsua_acc_config_default(&cfg->acc_cfg[i]);
@@ -259,41 +286,44 @@ static pj_bool_t find_next_call(void)
     return PJ_FALSE;
 }
 
-//////////////////////////////////////////////////////////////////////////
-// Callbacks
-//////////////////////////////////////////////////////////////////////////
 
-/* Callback from timer when the maximum call duration has been
- * exceeded.
+/*
+ * Print log of call states. Since call states may be too long for logger,
+ * printing it is a bit tricky, it should be printed part by part as long 
+ * as the logger can accept.
  */
-static void call_timeout_callback(pj_timer_heap_t *timer_heap,
-				  struct pj_timer_entry *entry)
-{
-    pjsua_call_id call_id = entry->id;
-    pjsua_msg_data msg_data;
-    pjsip_generic_string_hdr warn;
-    pj_str_t hname = pj_str("Warning");
-    pj_str_t hvalue = pj_str("399 pjsua \"Call duration exceeded\"");
+static void log_call_dump(int call_id) {
+    unsigned call_dump_len;
+    unsigned part_len;
+    unsigned part_idx;
+    unsigned log_decor;
 
-    PJ_UNUSED_ARG(timer_heap);
+    pjsua_call_dump(call_id, PJ_TRUE, some_buf, 
+		    sizeof(some_buf), "  ");
+    call_dump_len = strlen(some_buf);
 
-    if (call_id == PJSUA_INVALID_ID) {
-	PJ_LOG(1,(THIS_FILE, "Invalid call ID in timer callback"));
-	return;
+    log_decor = pj_log_get_decor();
+    pj_log_set_decor(log_decor & ~(PJ_LOG_HAS_NEWLINE | PJ_LOG_HAS_CR));
+    PJ_LOG(3,(THIS_FILE, "\n"));
+    pj_log_set_decor(0);
+
+    part_idx = 0;
+    part_len = PJ_LOG_MAX_SIZE-80;
+    while (part_idx < call_dump_len) {
+	char p_orig, *p;
+
+	p = &some_buf[part_idx];
+	if (part_idx + part_len > call_dump_len)
+	    part_len = call_dump_len - part_idx;
+	p_orig = p[part_len];
+	p[part_len] = '\0';
+	PJ_LOG(3,(THIS_FILE, "%s", p));
+	p[part_len] = p_orig;
+	part_idx += part_len;
     }
-    
-    /* Add warning header */
-    pjsua_msg_data_init(&msg_data);
-    pjsip_generic_string_hdr_init2(&warn, &hname, &hvalue);
-    pj_list_push_back(&msg_data.hdr_list, &warn);
-
-    /* Call duration has been exceeded; disconnect the call */
-    PJ_LOG(3,(THIS_FILE, "Duration (%d seconds) has been exceeded "
-			 "for call %d, disconnecting the call",
-			 app_config.duration, call_id));
-    entry->id = PJSUA_INVALID_ID;
-    pjsua_call_hangup(call_id, 200, NULL, &msg_data);
+    pj_log_set_decor(log_decor);
 }
+
 
 //////////////////////////////////////////////////////////////////////////
 
@@ -351,7 +381,50 @@ PJSIPDLL_DLL_API int onMessageWaitingCallback(fptr_mwi cb)
 	return 1;
 }
 
+PJSIPDLL_DLL_API int onCallReplaced(fptr_crep cb)
+{
+	cb_crep = cb;
+	return 1;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////////////////////////////////////
+// Callbacks
+//////////////////////////////////////////////////////////////////////////
+
+/* Callback from timer when the maximum call duration has been
+ * exceeded.
+ */
+static void call_timeout_callback(pj_timer_heap_t *timer_heap,
+				  struct pj_timer_entry *entry)
+{
+    pjsua_call_id call_id = entry->id;
+    pjsua_msg_data msg_data;
+    pjsip_generic_string_hdr warn;
+    pj_str_t hname = pj_str("Warning");
+    pj_str_t hvalue = pj_str("399 pjsua \"Call duration exceeded\"");
+
+    PJ_UNUSED_ARG(timer_heap);
+
+    if (call_id == PJSUA_INVALID_ID) {
+	PJ_LOG(1,(THIS_FILE, "Invalid call ID in timer callback"));
+	return;
+    }
+    
+    /* Add warning header */
+    pjsua_msg_data_init(&msg_data);
+    pjsip_generic_string_hdr_init2(&warn, &hname, &hvalue);
+    pj_list_push_back(&msg_data.hdr_list, &warn);
+
+    /* Call duration has been exceeded; disconnect the call */
+    PJ_LOG(3,(THIS_FILE, "Duration (%d seconds) has been exceeded "
+			 "for call %d, disconnecting the call",
+			 app_config.duration, call_id));
+    entry->id = PJSUA_INVALID_ID;
+    pjsua_call_hangup(call_id, 200, NULL, &msg_data);
+}
+
 
 /*
  * Handler when invite state has changed.
@@ -386,12 +459,10 @@ static void on_call_state(pjsua_call_id call_id, pjsip_event *e)
 
 		/* Dump media state upon disconnected */
 		if (1) {
-				char buf[1024];
-				pjsua_call_dump(call_id, PJ_TRUE, buf, 
-						sizeof(buf), "  ");
 				PJ_LOG(5,(THIS_FILE, 
-						"Call %d disconnected, dumping media stats\n%s", 
-						call_id, buf));
+		      "Call %d disconnected, dumping media stats..", 
+		      call_id));
+	    log_call_dump(call_id);
 		}
 
   } else {
@@ -453,7 +524,10 @@ static void on_incoming_call(pjsua_acc_id acc_id, pjsua_call_id call_id,
 {
 	pjsua_call_info call_info;
 
-	pjsua_call_get_info(call_id, &call_info);
+    PJ_UNUSED_ARG(acc_id);
+    PJ_UNUSED_ARG(rdata);	
+
+  pjsua_call_get_info(call_id, &call_info);
 
   if (cb_callincoming != 0) cb_callincoming(call_id, call_info.remote_contact.ptr);
 }
@@ -536,22 +610,29 @@ static void on_call_media_state(pjsua_call_id call_id)
 
     pjsua_call_get_info(call_id, &call_info);
 
-    if (call_info.media_status == PJSUA_CALL_MEDIA_ACTIVE) {
+    /* Connect ports appropriately when media status is ACTIVE or REMOTE HOLD,
+     * otherwise we should NOT connect the ports.
+     */
+    if (call_info.media_status == PJSUA_CALL_MEDIA_ACTIVE ||
+	call_info.media_status == PJSUA_CALL_MEDIA_REMOTE_HOLD)
+    {
 	pj_bool_t connect_sound = PJ_TRUE;
 
 	/* Loopback sound, if desired */
 	if (app_config.auto_loop) {
 	    pjsua_conf_connect(call_info.conf_slot, call_info.conf_slot);
 	    connect_sound = PJ_FALSE;
+	}
 
 	    /* Automatically record conversation, if desired */
 	    if (app_config.auto_rec && app_config.rec_port != PJSUA_INVALID_ID) {
 		pjsua_conf_connect(call_info.conf_slot, app_config.rec_port);
 	    }
-	}
 
 	/* Stream a file, if desired */
-	if (app_config.auto_play && app_config.wav_port != PJSUA_INVALID_ID) {
+	if ((app_config.auto_play || app_config.auto_play_hangup) && 
+	    app_config.wav_port != PJSUA_INVALID_ID)
+	{
 	    pjsua_conf_connect(app_config.wav_port, call_info.conf_slot);
 	    connect_sound = PJ_FALSE;
 	}
@@ -602,33 +683,47 @@ static void on_call_media_state(pjsua_call_id call_id)
 		pjsua_conf_connect(0, app_config.rec_port);
 	    }
 	}
+    }
 
 	PJ_LOG(3,(THIS_FILE, "Media for call %d is active", call_id));
 
-    } else if (call_info.media_status == PJSUA_CALL_MEDIA_LOCAL_HOLD) {
+    /* Handle media status */
+    switch (call_info.media_status) {
+    case PJSUA_CALL_MEDIA_ACTIVE:
+	PJ_LOG(3,(THIS_FILE, "Media for call %d is active", call_id));
+	break;
+
+    case PJSUA_CALL_MEDIA_LOCAL_HOLD:
 	PJ_LOG(3,(THIS_FILE, "Media for call %d is suspended (hold) by local",
 		  call_id));
+      // call on call hold handler
+      cb_callholdconf(call_id);
+	break;
 
-  // call on call hold handler
-  cb_callholdconf(call_id);
-
-
-    } else if (call_info.media_status == PJSUA_CALL_MEDIA_REMOTE_HOLD) {
+    case PJSUA_CALL_MEDIA_REMOTE_HOLD:
 	PJ_LOG(3,(THIS_FILE, 
 		  "Media for call %d is suspended (hold) by remote",
 		  call_id));
-    } else if (call_info.media_status == PJSUA_CALL_MEDIA_ERROR) {
-	pj_str_t reason = pj_str("ICE negotiation failed");
+	break;
 
-	PJ_LOG(1,(THIS_FILE,
+    case PJSUA_CALL_MEDIA_ERROR:
+	PJ_LOG(3,(THIS_FILE,
 		  "Media has reported error, disconnecting call"));
-
+	{
+	    pj_str_t reason = pj_str("ICE negotiation failed");
 	pjsua_call_hangup(call_id, 500, &reason, NULL);
+	}
+	break;
 
-    } else {
+    case PJSUA_CALL_MEDIA_NONE:
 	PJ_LOG(3,(THIS_FILE, 
 		  "Media for call %d is inactive",
 		  call_id));
+	break;
+
+    default:
+	pj_assert(!"Unhandled media status");
+	break;
     }
 }
 
@@ -647,6 +742,8 @@ static void call_on_dtmf_callback(pjsua_call_id call_id, int dtmf)
  */
 static void on_reg_state(pjsua_acc_id acc_id)
 {
+    PJ_UNUSED_ARG(acc_id);
+
   pjsua_acc_info accinfo;
 
   pjsua_acc_get_info(acc_id, &accinfo);
@@ -760,6 +857,8 @@ static void on_call_replaced(pjsua_call_id old_call_id,
 			 (int)old_ci.remote_info.slen, old_ci.remote_info.ptr,
 			 new_call_id,
 			 (int)new_ci.remote_info.slen, new_ci.remote_info.ptr));
+
+		if (cb_crep != 0) (*cb_crep)(old_call_id, new_call_id);
 }
 
 
@@ -773,6 +872,17 @@ static void on_nat_detect(const pj_stun_nat_detect_result *res)
     } else {
 	PJ_LOG(3, (THIS_FILE, "NAT detected as %s", res->nat_type_name));
     }
+}
+
+/*
+ * Notify application on call being transfered (i.e. REFER is received). 
+ * Application can decide to accept/reject transfer request by setting the code (default is 202). 
+ */
+static void on_call_transfer_request(pjsua_call_id call_id,
+				     const pj_str_t *dst,
+				     pjsip_status_code *code)
+{
+	PJ_LOG(3, (THIS_FILE, "Call %d is being transfered", call_id));
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -862,6 +972,7 @@ pj_status_t status;
     app_config.cfg.cb.on_call_transfer_status = &on_call_transfer_status;
     app_config.cfg.cb.on_call_replaced = &on_call_replaced;
     app_config.cfg.cb.on_nat_detect = &on_nat_detect;
+		app_config.cfg.cb.on_call_transfer_request = &on_call_transfer_request;
 
 	/* Initialize pjsua */
     status = pjsua_init(&app_config.cfg, &app_config.log_cfg,
@@ -1075,6 +1186,24 @@ pj_status_t app_destroy(void)
     }
 #endif
 
+    /* Close ringback port */
+    if (app_config.ringback_port && 
+	app_config.ringback_slot != PJSUA_INVALID_ID) 
+    {
+	pjsua_conf_remove_port(app_config.ringback_slot);
+	app_config.ringback_slot = PJSUA_INVALID_ID;
+	pjmedia_port_destroy(app_config.ringback_port);
+	app_config.ringback_port = NULL;
+    }
+
+    /* Close ring port */
+    if (app_config.ring_port && app_config.ring_slot != PJSUA_INVALID_ID) {
+	pjsua_conf_remove_port(app_config.ring_slot);
+	app_config.ring_slot = PJSUA_INVALID_ID;
+	pjmedia_port_destroy(app_config.ring_port);
+	app_config.ring_port = NULL;
+    }
+
     /* Close tone generators */
     for (i=0; i<app_config.tone_count; ++i) {
 	pjsua_conf_remove_port(app_config.tone_slots[i]);
@@ -1186,9 +1315,9 @@ int dll_releaseCall(int callId)
 {
 	pj_status_t status = -1;
 
-	status = pjsua_call_hangup(callId, 0, NULL, NULL);
-
 	PJ_LOG(3, (THIS_FILE, "Releasing call %d", callId));
+
+	status = pjsua_call_hangup(callId, 0, NULL, NULL);
 
 	return status;
 }
@@ -1208,6 +1337,10 @@ int dll_holdCall(int callId)
 
 int dll_retrieveCall(int callId)
 {
+	unsigned int call_cnt; 
+	pjsua_call_id call_ids[PJSUA_MAX_CALLS];
+	pjsua_call_info call_info;
+
   pjsua_call_reinvite(callId, PJ_TRUE, NULL);
   return 1;
 }
@@ -1551,6 +1684,45 @@ int cnt = -1;
 	return status;	
 }
 
+///
+int dll_makeConference(int callId)
+{
+pjsua_call_info call_info;
+pjsua_call_id call_ids[PJSUA_MAX_CALLS];
+unsigned call_cnt=PJ_ARRAY_SIZE(call_ids);
+unsigned i;
+
+    pjsua_call_get_info(callId, &call_info);
+
+	/* Put call in conference with other calls */
+
+	    /* Get all calls, and establish media connection between
+	     * this call and other calls.
+	     */
+	    pjsua_enum_calls(call_ids, &call_cnt);
+
+	    for (i=0; i<call_cnt; ++i) {
+		if (call_ids[i] == callId)
+		    continue;
+		
+		if (!pjsua_call_has_media(call_ids[i]))
+		    continue;
+
+		pjsua_conf_connect(call_info.conf_slot,
+				   pjsua_call_get_conf_port(call_ids[i]));
+		pjsua_conf_connect(pjsua_call_get_conf_port(call_ids[i]),
+				   call_info.conf_slot);
+
+		/* Automatically record conversation, if desired */
+		if (app_config.auto_rec && app_config.rec_port != PJSUA_INVALID_ID) {
+		    pjsua_conf_connect(pjsua_call_get_conf_port(call_ids[i]), 
+				       app_config.rec_port);
+		}
+
+	    }
+			return 1;
+}
+
 /////////////////////////////////////////////////////////////////////////
 // SipConfig
 void dll_setSipConfig(SipConfigStruct* config)
@@ -1572,3 +1744,4 @@ int dll_pollForEvents(int timeout)
 	}
 	return status;
 }
+

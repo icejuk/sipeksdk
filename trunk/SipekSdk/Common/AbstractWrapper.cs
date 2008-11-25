@@ -39,7 +39,7 @@ namespace Sipek.Common
   // event methods prototypes
   public delegate void DDtmfDigitReceived(int callId, int digit);
   public delegate void DMessageWaitingNotification(int mwi, string text);
-
+  public delegate void DCallReplaced(int oldid, int newid);
    
   /// <summary>
   /// VoIP protocol stack interface. Defines some common events invoked by VoIP stack and 
@@ -68,6 +68,15 @@ namespace Sipek.Common
     protected void BaseMessageWaitingIndication(int mwi, string text)
     {
       if (null != MessageWaitingIndication) MessageWaitingIndication(mwi, text);
+    }
+
+    /// <summary>
+    /// Notification that call is being replaced.
+    /// </summary>
+    public event DCallReplaced CallReplaced;
+    protected void BaseCallReplacedCallback(int oldid, int newid)
+    {
+      if (null != CallReplaced) CallReplaced(oldid, newid);
     }
 
     #endregion events
@@ -186,7 +195,7 @@ namespace Sipek.Common
     {
       if (null != CallNotification) CallNotification(callId, notifFlag, text);
     }
-    
+
     #endregion
 
     #region Public Methods
@@ -271,6 +280,12 @@ namespace Sipek.Common
     /// <returns>codec name</returns>
     public abstract string getCurrentCodec();
 
+    /// <summary>
+    /// Make a conference 
+    /// </summary>
+    /// <returns></returns>
+    public abstract bool conferenceCall();
+
     #endregion
   }
 
@@ -346,13 +361,18 @@ namespace Sipek.Common
     
     public override string getCurrentCodec()
     {
-      throw new Exception("The method or operation is not implemented.");
+      return "PCMA";
     }
 
     public override int SessionId
     {
       get { return 0; }
       set { ; }
+    }
+
+    public override bool conferenceCall()
+    {
+      return false;
     }
 
     #endregion

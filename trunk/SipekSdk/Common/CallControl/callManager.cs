@@ -281,6 +281,8 @@ namespace Sipek.Common.CallControl
         
         // initialize voip proxy
         status = StackProxy.initialize();
+        StackProxy.CallReplaced += new DCallReplaced(OnCallReplaced);
+
         if (status != 0) return status;
       }
 
@@ -312,6 +314,7 @@ namespace Sipek.Common.CallControl
       ICallProxyInterface.CallStateChanged -= OnCallStateChanged;
       ICallProxyInterface.CallIncoming -= OnIncomingCall;
       ICallProxyInterface.CallNotification -= OnCallNotification;
+      StackProxy.CallReplaced -= OnCallReplaced;
     }
 
     /// <summary>
@@ -575,6 +578,7 @@ namespace Sipek.Common.CallControl
         IStateMachine call = getCallInState(EStateId.HOLDING);
         call.State.retrieveCall();
         // set conference flag
+        call.State.conferenceCall();
         return;
       }
     }
@@ -681,6 +685,20 @@ namespace Sipek.Common.CallControl
         if (!sm.IsNull) sm.State.onHoldConfirm();
       }
     }
+
+    /// <summary>
+    /// Replace call ids
+    /// </summary>
+    /// <param name="newid"></param>
+    /// <param name="oldid"></param>
+    private void OnCallReplaced(int oldid, int newid)
+    {
+      IStateMachine call = CallList[oldid];
+      _calls.Remove(oldid);
+      call.Session = newid;
+      CallList.Add(newid, call);
+    }
+
 
     #endregion Methods
 

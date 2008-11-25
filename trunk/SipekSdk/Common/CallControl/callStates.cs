@@ -254,6 +254,11 @@ namespace Sipek.Common.CallControl
     {
       _smref.changeState(EStateId.RELEASED);
     }
+
+    public override bool conferenceCall()
+    {
+      return CallProxy.conferenceCall();
+    }
   }
   #endregion
 
@@ -403,8 +408,8 @@ namespace Sipek.Common.CallControl
       {
         _smref.startTimer(ETimerType.ENOREPLY);
       }
-      // auto answer call
-      if (_smref.Config.AAFlag == true)
+      // auto answer call (if single call)
+      if ((_smref.Config.AAFlag == true) && (_smref.NumberOfCalls == 1))
       {
         this.acceptCall();
       }
