@@ -16,7 +16,7 @@
 	<!-- Logo section -->
 	<table border="0" class="pj">
 		<tr>
-		<td vAlign="middle" width="46"><A href="/"><img alt="sipek logo" src="sipeklogo.jpg" border="0"></A>
+		<td vAlign="middle" width="46"><A href="http://sites.google.com/site/sipekvoip"><img alt="sipek logo" src="http://sites.google.com/site/sipekvoip/files/Sipek64x64.png" border="0"></A>
 		</td>
 		<td vAlign="top">
 		<font face="Verdana,Arial,Helvetica" size="5"><b><A style="color: black; text-decoration: none" HREF="/">Sipek Software Development Kit</A></b></FONT><br>
@@ -156,6 +156,9 @@ Inherited by <a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.htm
 <tr><td class="memItemLeft" nowrap align="right" valign="top">abstract string&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_call_proxy_interface.html#8356db33c0af7f5d82f3aa14fb6fdf34">getCurrentCodec</a> ()</td></tr>
 
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Retrieve codec information for this call.  <a href="#8356db33c0af7f5d82f3aa14fb6fdf34"></a><br></td></tr>
+<tr><td class="memItemLeft" nowrap align="right" valign="top">abstract bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_call_proxy_interface.html#c51f0ba19d25db39460c8c38cb33c4b8">conferenceCall</a> ()</td></tr>
+
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Make a conference.  <a href="#c51f0ba19d25db39460c8c38cb33c4b8"></a><br></td></tr>
 <tr><td colspan="2"><br><h2>Properties</h2></td></tr>
 <tr><td class="memItemLeft" nowrap align="right" valign="top">abstract int&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_sipek_1_1_common_1_1_i_call_proxy_interface.html#2dca010324210bd022a8422046cc9689">SessionId</a><code> [get, set]</code></td></tr>
 
@@ -524,6 +527,30 @@ Retrieve codec information for this call.
 <dl class="return" compact><dt><b>Returns:</b></dt><dd>codec name</dd></dl>
 
 <p>Implemented in <a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#3a55bbaf2994fc8ee06cd6561b91b106">Sipek.Common.IAbstractState</a>, and <a class="el" href="class_sipek_1_1_sip_1_1pjsip_call_proxy.html#e9dfb11d9406131a308f5305df490244">Sipek.Sip.pjsipCallProxy</a>.</p>
+
+</div>
+</div><p>
+<a class="anchor" name="c51f0ba19d25db39460c8c38cb33c4b8"></a><!-- doxytag: member="Sipek::Common::ICallProxyInterface::conferenceCall" ref="c51f0ba19d25db39460c8c38cb33c4b8" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">abstract bool Sipek.Common.ICallProxyInterface.conferenceCall           </td>
+          <td>(</td>
+          <td class="paramname">          </td>
+          <td>&nbsp;)&nbsp;</td>
+          <td width="100%"><code> [pure virtual]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>
+Make a conference. 
+<p>
+<dl class="return" compact><dt><b>Returns:</b></dt><dd></dd></dl>
+
+<p>Implemented in <a class="el" href="class_sipek_1_1_common_1_1_call_control_1_1_c_active_state.html#89161e611cf1a0b87187b98a016d520e">Sipek.Common.CallControl.CActiveState</a>, <a class="el" href="class_sipek_1_1_common_1_1_i_abstract_state.html#5942c0dd4ae804c93bb15cc05d2a0f30">Sipek.Common.IAbstractState</a>, and <a class="el" href="class_sipek_1_1_sip_1_1pjsip_call_proxy.html#68a3f56a9173ae50412d8e4e93575714">Sipek.Sip.pjsipCallProxy</a>.</p>
 
 </div>
 </div><p>
