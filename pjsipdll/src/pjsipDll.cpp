@@ -1337,10 +1337,6 @@ int dll_holdCall(int callId)
 
 int dll_retrieveCall(int callId)
 {
-	unsigned int call_cnt; 
-	pjsua_call_id call_ids[PJSUA_MAX_CALLS];
-	pjsua_call_info call_info;
-
   pjsua_call_reinvite(callId, PJ_TRUE, NULL);
   return 1;
 }
@@ -1652,7 +1648,6 @@ int cnt = -1;
     
     count = pjmedia_snd_get_dev_count();
     if (count == 0) {
-			//puts("No devices found");
 			return -1;
     }
 
