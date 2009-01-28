@@ -161,7 +161,7 @@ namespace Sipek.Sip
         // prepare URI
         sipuri = "sip:" + dialedNo + "@" + Config.Accounts[accountId].HostName;
       }
-      // Select configured trnasport for this account: udp, tcp, tls 
+      // Select configured transport for this account: udp, tcp, tls 
       sipuri = pjsipStackProxy.Instance.SetTransport(accountId, sipuri);
 
       // Don't forget to convert accontId here!!!

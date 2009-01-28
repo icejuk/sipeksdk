@@ -257,6 +257,8 @@ static void default_config(struct app_config *cfg)
 	  pjsua_buddy_config_default(&cfg->buddy_cfg[i]);
 
 	cfg->log_cfg.log_filename = pj_str("pjsip.log");
+	// Lower the log file size
+	cfg->log_cfg.level = 3;
 }
 
 /*
@@ -949,6 +951,8 @@ pj_status_t status;
 		app_config.media_cfg.no_vad = !sipek_config.VADEnabled;
 		// Set EC tail length in ms
 		app_config.media_cfg.ec_tail_len = sipek_config.ECTail;
+		// 16k is too CPU expensive!!!
+		app_config.media_cfg.clock_rate = 8000;
 
 #ifdef PJSIP_HAS_TLS_TRANSPORT
 		app_config.use_tls = PJ_TRUE; //(sipek_config.useTLS == true ? PJ_TRUE : PJ_FALSE);
