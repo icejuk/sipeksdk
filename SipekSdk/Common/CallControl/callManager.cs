@@ -45,8 +45,8 @@
 
 using System.Collections;
 using System.Collections.Generic;
-using Sipek.Common;
 using System;
+using Sipek.Common;
 
 namespace Sipek.Common.CallControl
 {
@@ -277,14 +277,12 @@ namespace Sipek.Common.CallControl
         ICallProxyInterface.CallNotification += OnCallNotification;
 
         // Initialize call table
-        _calls = new Dictionary<int, IStateMachine>(); 
-        
-        // initialize voip proxy
-        status = StackProxy.initialize();
-        StackProxy.CallReplaced += new DCallReplaced(OnCallReplaced);
-
-        if (status != 0) return status;
+        _calls = new Dictionary<int, IStateMachine>();         
       }
+
+      // (re)initialize voip proxy
+      status = StackProxy.initialize();
+      if (status != 0) return status;
 
       // (re)register 
       _initialized = true;
