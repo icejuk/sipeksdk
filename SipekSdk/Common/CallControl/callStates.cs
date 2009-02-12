@@ -213,8 +213,6 @@ namespace Sipek.Common.CallControl
 
     public override bool endCall()
     {
-      _smref.Duration = System.DateTime.Now.Subtract(_smref.Time);
-
       _smref.changeState(EStateId.TERMINATED);
       CallProxy.endCall();
       return base.endCall();

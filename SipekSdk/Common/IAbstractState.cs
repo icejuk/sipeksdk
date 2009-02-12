@@ -218,6 +218,11 @@ namespace Sipek.Common
       return false;
     }
 
+    public override bool sendCallMessage(string message)
+    {
+      return CallProxy.sendCallMessage(message);
+    }
+
     #endregion Methods
 
     #region Callbacks

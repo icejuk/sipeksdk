@@ -23,7 +23,7 @@
 #include <pjsua-lib/pjsua.h>
 #include <pjsua-lib/pjsua_internal.h>
 
-#define THIS_FILE	"pjsipDll_mobile.cpp"
+#define THIS_FILE	"pjsipDll_mobile.cpp" 
 #define NO_LIMIT	(int)0x7FFFFFFF
 
 // global function pointers
@@ -257,8 +257,6 @@ static void default_config(struct app_config *cfg)
 	  pjsua_buddy_config_default(&cfg->buddy_cfg[i]);
 
 	cfg->log_cfg.log_filename = pj_str("pjsip.log");
-	// Lower the log file size
-	cfg->log_cfg.level = 3;
 }
 
 /*
@@ -937,6 +935,9 @@ pj_status_t status;
 	// check sipek config
 	if (sipekConfigEnabled == true)
 	{ 
+		// Lower the log file size
+		app_config.log_cfg.level = sipek_config.logLevel;
+
 		if (true == sipek_config.pollingEventsEnabled)
 		{
 			// set num of worker threads to 0		
@@ -1527,6 +1528,14 @@ char tmessage[256] = {0};
   pj_str_t tmp_uri = pj_str( PJ_NATIVE_TO_STRING(uri, turi, sizeof(turi)));
 	pj_str_t tmp = pj_str(PJ_NATIVE_TO_STRING(message,tmessage, sizeof(tmessage)));
 	return pjsua_im_send(accId, &tmp_uri, NULL, &tmp, NULL, NULL);
+}
+
+int dll_sendCallMessage(int callId, wchar_t* message)
+{
+	char tmessage[256] = {0};
+
+	pj_str_t tmp = pj_str(PJ_NATIVE_TO_STRING(message,tmessage, sizeof(tmessage)));
+	return pjsua_call_send_im( callId, NULL, &tmp, NULL, NULL);
 }
 
 int dll_setStatus(int accId, int presence_state)
