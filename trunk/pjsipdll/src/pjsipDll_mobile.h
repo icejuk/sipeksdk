@@ -49,6 +49,8 @@ struct SipConfigStruct
 
 	bool pollingEventsEnabled;
 
+	int logLevel;
+
 	// IMS specifics
 	bool imsEnabled;
 	bool imsIPSecHeaders;
@@ -87,7 +89,7 @@ extern "C" PJSIPDLL_DLL_API int dll_shutdown();
 extern "C" PJSIPDLL_DLL_API int dll_main(void);
 extern "C" PJSIPDLL_DLL_API int dll_getNumOfCodecs();
 extern "C" PJSIPDLL_DLL_API int dll_getCodec(int index, wchar_t* codec);
-extern "C" PJSIPDLL_DLL_API int dll_setCodecPriority(char* name, int index);
+extern "C" PJSIPDLL_DLL_API int dll_setCodecPriority(wchar_t* name, int index);
 // pjsip call API
 extern "C" PJSIPDLL_DLL_API int dll_registerAccount(wchar_t* uri, wchar_t* reguri, wchar_t* name, wchar_t* username, 
 																										wchar_t* password, wchar_t* proxy, bool isdefault);
@@ -105,6 +107,7 @@ extern "C" PJSIPDLL_DLL_API int dll_removeAccounts();
 extern "C" PJSIPDLL_DLL_API int dll_sendInfo(int callid, wchar_t* content);
 extern "C" PJSIPDLL_DLL_API int dll_getCurrentCodec(int callId, wchar_t* codec);
 extern "C" PJSIPDLL_DLL_API int dll_makeConference(int callId);
+extern "C" PJSIPDLL_DLL_API int dll_sendCallMessage(int callId, wchar_t* message);
 // IM & Presence api
 extern "C" PJSIPDLL_DLL_API int dll_addBuddy(wchar_t* uri, bool subscribe);
 extern "C" PJSIPDLL_DLL_API int dll_removeBuddy(int buddyId);

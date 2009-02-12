@@ -174,6 +174,10 @@ namespace Sipek.Common.CallControl
         {
           return DateTime.Now.Subtract(Time);
         }
+        else
+        {
+          return Duration;
+        }
         return TimeSpan.Zero;
       }
     }
@@ -195,7 +199,7 @@ namespace Sipek.Common.CallControl
     }
 
     /// <summary>
-    /// Signaling proxy instance (seperately created for each call)
+    /// Signaling proxy instance (separatelly created for each call)
     /// </summary>
     internal override ICallProxyInterface CallProxy
     {
@@ -466,7 +470,7 @@ namespace Sipek.Common.CallControl
     }
 
     /// <summary>
-    /// Destroy call. Calculate call duraton time, edit call log, destroy session.
+    /// Destroy call. Calculate call duration time, edit call log, destroy session.
     /// </summary>
     public override void destroy()
     {
@@ -480,6 +484,7 @@ namespace Sipek.Common.CallControl
       {
         Duration = DateTime.Now.Subtract(Time);
       }
+      Counting = false;
 
       // update call log
       if (((Type != ECallType.EDialed) || (CallingNumber.Length > 0)) && (Type != ECallType.EUndefined))

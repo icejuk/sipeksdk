@@ -77,6 +77,8 @@ namespace Sipek.Sip
     private static extern int dll_getCurrentCodec(int callId, StringBuilder codec);
     [DllImport(PJSIP_DLL, EntryPoint = "dll_makeConference")]
     private static extern int dll_makeConference(int callId);
+    [DllImport(PJSIP_DLL, EntryPoint = "dll_sendCallMessage")]
+    private static extern int dll_sendCallMessage(int callId, string message);
 
     #endregion
 
@@ -309,6 +311,17 @@ namespace Sipek.Sip
     {
       int status = dll_makeConference(SessionId);
       return status == 1? true : false;
+    }
+
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns></returns>
+    public override bool sendCallMessage(string message)
+    {
+      int status = dll_sendCallMessage(SessionId, message);
+      return (status == 1)? true : false;
     }
 
     #endregion Methods

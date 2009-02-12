@@ -4,6 +4,7 @@
 	Version="8,00"
 	Name="pjsipDll_mobile"
 	ProjectGUID="{62C93F1E-3D7B-4CB0-9503-ED19E24A7471}"
+	RootNamespace="pjsipDll_mobile"
 	Keyword="Win32Proj"
 	>
 	<Platforms>
@@ -219,7 +220,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../include&quot;;&quot;$(SolutionDir)../../../pjsip/include&quot;;&quot;$(SolutionDir)../../../pjlib-util/include&quot;;&quot;$(SolutionDir)../../../pjlib/include&quot;;&quot;$(SolutionDir)../../../pjmedia/include&quot;;&quot;$(SolutionDir)../../../pjnath/include&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../../pjsip/include&quot;;&quot;$(SolutionDir)../../../pjlib-util/include&quot;;&quot;$(SolutionDir)../../../pjlib/include&quot;;&quot;$(SolutionDir)../../../pjmedia/include&quot;;&quot;$(SolutionDir)../../../pjnath/include&quot;"
 				PreprocessorDefinitions="DEBUG;THUMB;_THUMB_;ARMV4T;UNDER_CE=$(CEVER);_WIN32_WCE=$(CEVER);ARM;_ARM_;$(CePlatform);UNICODE;PJSIPDLL_EXPORTS"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
@@ -561,7 +562,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="2"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../include&quot;;&quot;$(SolutionDir)../../../pjsip/include&quot;;&quot;$(SolutionDir)../../../pjlib-util/include&quot;;&quot;$(SolutionDir)../../../pjlib/include&quot;;&quot;$(SolutionDir)../../../pjmedia/include&quot;;&quot;$(SolutionDir)../../../pjnath/include&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)../../../pjsip/include&quot;;&quot;$(SolutionDir)../../../pjlib-util/include&quot;;&quot;$(SolutionDir)../../../pjlib/include&quot;;&quot;$(SolutionDir)../../../pjmedia/include&quot;;&quot;$(SolutionDir)../../../pjnath/include&quot;"
 				PreprocessorDefinitions="NDEBUG;THUMB;_THUMB_;ARMV4T;UNDER_CE=$(CEVER);_WIN32_WCE=$(CEVER);ARM;_ARM_;$(CePlatform);UNICODE;PJSIPDLL_EXPORTS"
 				RuntimeLibrary="0"
 				UsePrecompiledHeader="0"

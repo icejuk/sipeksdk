@@ -340,7 +340,7 @@ namespace Sipek.Common.CallControl
         // new call not allowed!
         return new NullStateMachine();
       }
-      // if at least 1 connected try to put it on hold
+      // if at least 1 call connected try to put it on hold first
       if (this.getNoCallsInState(EStateId.ACTIVE) == 0)
       {
         // create state machine
@@ -348,7 +348,7 @@ namespace Sipek.Common.CallControl
         // couldn't create new call instance (max calls?)
         if (call == null)
         {
-          return null;
+          return new NullStateMachine();
         }
 
         // make call request (stack provides new sessionId)
@@ -378,7 +378,6 @@ namespace Sipek.Common.CallControl
       else // we have at least one ACTIVE call
       {
         // put connected call on hold
-        // TODO pending action
         _pendingAction = new PendingAction(EPendingActions.ECreateSession, number, accountId);
         IStateMachine call = getCallInState(EStateId.ACTIVE); 
         call.State.holdCall();
@@ -500,7 +499,6 @@ namespace Sipek.Common.CallControl
         if (!sm.IsNull) sm.State.holdCall();
 
         // set ANSWER event pending for HoldConfirm
-        // TODO
         _pendingAction = new PendingAction(EPendingActions.EUserAnswer, session);
         return;
       }
@@ -579,6 +577,16 @@ namespace Sipek.Common.CallControl
         call.State.conferenceCall();
         return;
       }
+    }
+
+    /// <summary>
+    /// Send message inside call dialog
+    /// </summary>
+    /// <param name="sessionId"></param>
+    /// <returns></returns>
+    public bool onUserSendCallMessage(int sessionId, string message)
+    {
+      return this[sessionId].State.sendCallMessage(message);
     }
 
     /// <summary>

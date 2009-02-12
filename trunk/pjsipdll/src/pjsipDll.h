@@ -49,6 +49,8 @@ struct SipConfigStruct
 
 	bool pollingEventsEnabled;
 
+	int logLevel;
+
 	// IMS specifics
 	bool imsEnabled;
 	bool imsIPSecHeaders;
@@ -104,6 +106,7 @@ extern "C" PJSIPDLL_DLL_API int dll_removeAccounts();
 extern "C" PJSIPDLL_DLL_API int dll_sendInfo(int callid, char* content);
 extern "C" PJSIPDLL_DLL_API int dll_getCurrentCodec(int callId, char* codec);
 extern "C" PJSIPDLL_DLL_API int dll_makeConference(int callId);
+extern "C" PJSIPDLL_DLL_API int dll_sendCallMessage(int callId, char* message);
 // IM & Presence api
 extern "C" PJSIPDLL_DLL_API int dll_addBuddy(char* uri, bool subscribe);
 extern "C" PJSIPDLL_DLL_API int dll_removeBuddy(int buddyId);

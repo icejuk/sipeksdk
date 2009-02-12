@@ -921,6 +921,9 @@ pj_status_t status;
 	// check sipek config
 	if (sipekConfigEnabled == true)
 	{ 
+		// Lower the log file size
+		app_config.log_cfg.level = sipek_config.logLevel;
+
 		if (true == sipek_config.pollingEventsEnabled)
 		{
 			// set num of worker threads to 0		
@@ -1492,6 +1495,12 @@ int dll_sendMessage(int accId, char* uri, char* message)
   pj_str_t tmp_uri = pj_str(uri);
   pj_str_t tmp = pj_str(message);
 	return pjsua_im_send(accId, &tmp_uri, NULL, &tmp, NULL, NULL);
+}
+
+int dll_sendCallMessage(int callId, char* message)
+{
+  pj_str_t tmp = pj_str(message);
+	return pjsua_call_send_im( callId, NULL, &tmp, NULL, NULL);
 }
 
 int dll_setStatus(int accId, int presence_state)

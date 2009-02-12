@@ -286,6 +286,12 @@ namespace Sipek.Common
     /// <returns></returns>
     public abstract bool conferenceCall();
 
+    /// <summary>
+    /// Send a message inside a call
+    /// </summary>
+    /// <returns></returns>
+    public abstract bool sendCallMessage(string message);
+
     #endregion
   }
 
@@ -374,7 +380,10 @@ namespace Sipek.Common
     {
       return false;
     }
-
+    public override bool sendCallMessage(string message)
+    {
+      return false;
+    }
     #endregion
   }
 
