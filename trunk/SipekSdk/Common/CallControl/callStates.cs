@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  * 
- * @see http://voipengine.googlepages.com/
+ * @see http://sites.google.com/site/sipekvoip
  * 
  */
 
@@ -37,17 +37,17 @@ namespace Sipek.Common.CallControl
       Id = EStateId.IDLE;
     }
 
-    public override void onEntry()
+    internal override void OnEntry()
     {
     }
 
-    public override void onExit()
+    internal override void OnExit()
     {
     }
 
     public override bool endCall()
     {
-      _smref.destroy();
+      _smref.Destroy();
       CallProxy.endCall();
       return base.endCall();
     }
@@ -62,7 +62,7 @@ namespace Sipek.Common.CallControl
     {
       _smref.CallingNumber = dialedNo;
       // make call and save sessionId
-      _smref.changeState(EStateId.CONNECTING);
+      _smref.ChangeState(EStateId.CONNECTING);
       _smref.Session = CallProxy.makeCall(dialedNo, accountId);
       return _smref.Session;
     }
@@ -94,7 +94,7 @@ namespace Sipek.Common.CallControl
 
       _smref.CallingNumber = callingNo;
       _smref.CallingName = display;
-      _smref.changeState(EStateId.INCOMING);
+      _smref.ChangeState(EStateId.INCOMING);
     }
 
   }
@@ -112,34 +112,34 @@ namespace Sipek.Common.CallControl
       Id = EStateId.CONNECTING;
     }
 
-    public override void onEntry()
+    internal override void OnEntry()
     {
       _smref.Type = ECallType.EDialed;
     }
 
-    public override void onExit()
+    internal override void OnExit()
     {
     }
 
     public override void onReleased()
     {
-      _smref.changeState(EStateId.RELEASED);
+      _smref.ChangeState(EStateId.RELEASED);
     }
 
     public override void onAlerting()
     {
-      _smref.changeState(EStateId.ALERTING);
+      _smref.ChangeState(EStateId.ALERTING);
     }
 
 
     public override void onConnect()
     {
-      _smref.changeState(EStateId.ACTIVE);
+      _smref.ChangeState(EStateId.ACTIVE);
     }
 
     public override bool endCall()
     {
-      _smref.changeState(EStateId.TERMINATED);
+      _smref.ChangeState(EStateId.TERMINATED);
       CallProxy.endCall();
       return base.endCall();
     }
@@ -159,12 +159,12 @@ namespace Sipek.Common.CallControl
       Id = EStateId.ALERTING;
     }
 
-    public override void onEntry()
+    internal override void OnEntry()
     {
       MediaProxy.playTone(ETones.EToneRingback);
     }
 
-    public override void onExit()
+    internal override void OnExit()
     {
       MediaProxy.stopTone();
     }
@@ -172,17 +172,17 @@ namespace Sipek.Common.CallControl
     public override void onConnect()
     {
       _smref.Time = System.DateTime.Now;
-      _smref.changeState(EStateId.ACTIVE);
+      _smref.ChangeState(EStateId.ACTIVE);
     }
 
     public override void onReleased()
     {
-      _smref.changeState(EStateId.RELEASED);
+      _smref.ChangeState(EStateId.RELEASED);
     }
 
     public override bool endCall()
     {
-      _smref.changeState(EStateId.TERMINATED);
+      _smref.ChangeState(EStateId.TERMINATED);
       CallProxy.endCall();
       return base.endCall();
     }
@@ -191,7 +191,7 @@ namespace Sipek.Common.CallControl
 
   #region ActiveState
   /// <summary>
-  /// Active state indicates converstation. 
+  /// Active state indicates conversation. 
   /// </summary>
   internal class CActiveState : IAbstractState
   {
@@ -201,19 +201,19 @@ namespace Sipek.Common.CallControl
       Id = EStateId.ACTIVE;
     }
 
-    public override void onEntry()
+    internal override void OnEntry()
     {
       _smref.Counting = true;
       MediaProxy.stopTone();
     }
 
-    public override void onExit()
+    internal override void OnExit()
     {
     }
 
     public override bool endCall()
     {
-      _smref.changeState(EStateId.TERMINATED);
+      _smref.ChangeState(EStateId.TERMINATED);
       CallProxy.endCall();
       return base.endCall();
     }
@@ -238,9 +238,9 @@ namespace Sipek.Common.CallControl
       // check if Hold requested
       if (_smref.HoldRequested)
       {
-        _smref.changeState(EStateId.HOLDING);
+        _smref.ChangeState(EStateId.HOLDING);
         // activate pending action if any
-        _smref.activatePendingAction();
+        _smref.ActivatePendingAction();
       }
       _smref.HoldRequested = false;
     }
@@ -250,7 +250,7 @@ namespace Sipek.Common.CallControl
     /// </summary>
     public override void onReleased()
     {
-      _smref.changeState(EStateId.RELEASED);
+      _smref.ChangeState(EStateId.RELEASED);
     }
 
     public override bool conferenceCall()
@@ -277,17 +277,17 @@ namespace Sipek.Common.CallControl
     /// <summary>
     /// Enter release state. If release timer not implemented release call imediately
     /// </summary>
-    public override void onEntry()
+    internal override void OnEntry()
     {
       MediaProxy.playTone(ETones.EToneCongestion);
-      bool success = _smref.startTimer(ETimerType.ERELEASED);
-      if (!success) _smref.destroy();
+      bool success = _smref.StartTimer(ETimerType.ERELEASED);
+      if (!success) _smref.Destroy();
     }
 
-    public override void onExit()
+    internal override void OnExit()
     {
       MediaProxy.stopTone();
-      _smref.stopAllTimers();
+      _smref.StopAllTimers();
     }
 
     public override bool endCall()
@@ -295,13 +295,13 @@ namespace Sipek.Common.CallControl
       // try once more (might not be needed)!
       CallProxy.endCall();
       // destroy it!
-      _smref.destroy();
+      _smref.Destroy();
       return true;
     }
 
     public override bool releasedTimerExpired(int sessionId)
     {
-      _smref.destroy();
+      _smref.Destroy();
       return true;
     }
 
@@ -310,7 +310,7 @@ namespace Sipek.Common.CallControl
     /// </summary>
     public override void onReleased()
     {
-      _smref.destroy();
+      _smref.Destroy();
     }
   }
   #endregion
@@ -332,15 +332,15 @@ namespace Sipek.Common.CallControl
     /// <summary>
     /// Enter release state. If release timer not implemented release call imediately
     /// </summary>
-    public override void onEntry()
+    internal override void OnEntry()
     {
-      bool success = _smref.startTimer(ETimerType.ERELEASED);
-      if (!success) _smref.destroy();
+      bool success = _smref.StartTimer(ETimerType.ERELEASED);
+      if (!success) _smref.Destroy();
     }
 
-    public override void onExit()
+    internal override void OnExit()
     {
-      _smref.stopAllTimers();
+      _smref.StopAllTimers();
     }
 
     public override bool endCall()
@@ -351,7 +351,7 @@ namespace Sipek.Common.CallControl
 
     public override bool releasedTimerExpired(int sessionId)
     {
-      _smref.destroy();
+      _smref.Destroy();
       return true;
     }
 
@@ -370,7 +370,7 @@ namespace Sipek.Common.CallControl
     /// </summary>
     public override void onReleased()
     {
-      _smref.destroy();
+      _smref.Destroy();
     }
   }
   #endregion
@@ -387,7 +387,7 @@ namespace Sipek.Common.CallControl
       Id = EStateId.INCOMING;
     }
 
-    public override void onEntry()
+    internal override void OnEntry()
     {
       // set incoming call flags
       _smref.Incoming = true;
@@ -395,7 +395,7 @@ namespace Sipek.Common.CallControl
       int sessionId = SessionId;
 
       // Start no response timer
-      _smref.startTimer(ETimerType.ENORESPONSE);
+      _smref.StartTimer(ETimerType.ENORESPONSE);
 
       CallProxy.alerted();
       _smref.Type = ECallType.EMissed;
@@ -404,7 +404,7 @@ namespace Sipek.Common.CallControl
       // if CFNR active start timer
       if (_smref.Config.CFNRFlag)
       {
-        _smref.startTimer(ETimerType.ENOREPLY);
+        _smref.StartTimer(ETimerType.ENOREPLY);
       }
       // auto answer call (if single call)
       if ((_smref.Config.AAFlag == true) && (_smref.NumberOfCalls == 1))
@@ -413,10 +413,10 @@ namespace Sipek.Common.CallControl
       }
     }
 
-    public override void onExit()
+    internal override void OnExit()
     {
       MediaProxy.stopTone();
-      _smref.stopAllTimers();
+      _smref.StopAllTimers();
     }
 
     public override bool acceptCall()
@@ -425,13 +425,13 @@ namespace Sipek.Common.CallControl
       _smref.Time = System.DateTime.Now;
 
       CallProxy.acceptCall();
-      _smref.changeState(EStateId.ACTIVE);
+      _smref.ChangeState(EStateId.ACTIVE);
       return true;
     }
 
     public override void onReleased()
     {
-      _smref.changeState(EStateId.RELEASED);
+      _smref.ChangeState(EStateId.RELEASED);
     }
 
     public override bool xferCall(string number)
@@ -442,7 +442,7 @@ namespace Sipek.Common.CallControl
 
     public override bool endCall()
     {
-      _smref.changeState(EStateId.TERMINATED);
+      _smref.ChangeState(EStateId.TERMINATED);
       CallProxy.endCall();
       return base.endCall();
     }
@@ -465,7 +465,7 @@ namespace Sipek.Common.CallControl
     /// <returns></returns>
     public override bool noResponseTimerExpired(int sessionId)
     {
-      _smref.changeState(EStateId.TERMINATED);
+      _smref.ChangeState(EStateId.TERMINATED);
       CallProxy.endCall();
       return true;
     }
@@ -484,11 +484,11 @@ namespace Sipek.Common.CallControl
       Id = EStateId.HOLDING;
     }
 
-    public override void onEntry()
+    internal override void OnEntry()
     {
     }
 
-    public override void onExit()
+    internal override void OnExit()
     {
     }
 
@@ -496,7 +496,7 @@ namespace Sipek.Common.CallControl
     {
       _smref.RetrieveRequested = true;
       CallProxy.retrieveCall();
-      _smref.changeState(EStateId.ACTIVE);
+      _smref.ChangeState(EStateId.ACTIVE);
       return true;
     }
 
@@ -512,13 +512,13 @@ namespace Sipek.Common.CallControl
 
     public override void onReleased()
     {
-      _smref.changeState(EStateId.RELEASED);
+      _smref.ChangeState(EStateId.RELEASED);
     }
 
     public override bool endCall()
     {
       CallProxy.endCall();
-      _smref.changeState(EStateId.TERMINATED);
+      _smref.ChangeState(EStateId.TERMINATED);
       return base.endCall();
     }
   }
