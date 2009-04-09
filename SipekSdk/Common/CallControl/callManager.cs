@@ -29,10 +29,7 @@
  * The SIPek's simple software design enables efficient development, easy upgrading and 
  * user menus customizations.
  * 
- * Visit SipekSDK page at http://voipengine.googlepages.com/
- * 
- * Visit SIPek's home page at http://sipekphone.googlepages.com/ 
- * 
+ * Visit Sipek projects site at  http://sites.google.com/site/sipekvoip 
  *
  */
 
@@ -74,7 +71,6 @@ namespace Sipek.Common.CallControl
  
     #endregion
 
-
     #region Properties
 
     public AbstractFactory Factory
@@ -112,21 +108,25 @@ namespace Sipek.Common.CallControl
     }
 
     /// <summary>
-    /// Call indexer 
+    /// Call indexer. 
+    /// Retrieve a call instance (IStateMachine) from a call list. 
     /// </summary>
-    /// <param name="index">a sessionId</param>
-    /// <returns>an instance of call state with provided sessionId</returns>
-    public IStateMachine this[int index]
+    /// <param name="sessionId">call/session identification</param>
+    /// <returns>an instance of a call with a given sessionId</returns>
+    public IStateMachine this[int sessionId]
     {
       get
       {
-        if (!_calls.ContainsKey(index)) return new NullStateMachine();
-        return _calls[index];
+        if ((_calls.Count == 0) || (!_calls.ContainsKey(sessionId)))
+        { 
+          return new NullStateMachine(); 
+        }
+        return _calls[sessionId];
       }
     }
 
     /// <summary>
-    /// Retrieve a list of all calls (state machines)
+    /// Retrieve a complete list of calls (IStateMachines)
     /// </summary>
     public Dictionary<int, IStateMachine> CallList
     {
@@ -142,7 +142,7 @@ namespace Sipek.Common.CallControl
     {
       get 
       {
-        return (getNoCallsInState(EStateId.ACTIVE) == 2) ? true : false;
+        return (this[EStateId.ACTIVE].Count == 2) ? true : false;
       }
     }
 
@@ -150,6 +150,20 @@ namespace Sipek.Common.CallControl
     public bool IsInitialized
     {
       get { return _initialized; }
+    }
+
+    public List<IStateMachine> this[EStateId stateId]
+    {
+      get {
+        List<IStateMachine> calls = new List<IStateMachine>();
+        foreach (KeyValuePair<int, IStateMachine> call in _calls)
+        {
+          if (call.Value.State.Id == stateId) {
+            calls.Add( call.Value );
+          }
+        }
+        return calls;
+      }
     }
 
     #endregion Properties
@@ -224,13 +238,13 @@ namespace Sipek.Common.CallControl
         switch (_actionType)
         {
           case EPendingActions.EUserAnswer:
-            CCallManager.Instance.onUserAnswer(_sessionId);
+            CCallManager.Instance.OnUserAnswer(_sessionId);
             break;
           case EPendingActions.ECreateSession:
-            CCallManager.Instance.createOutboundCall(_number, _accountId);
+            CCallManager.Instance.CreateSmartOutboundCall(_number, _accountId);
         	  break;
           case EPendingActions.EUserHold:
-            CCallManager.Instance.onUserHoldRetrieve(_sessionId);
+            CCallManager.Instance.OnUserHoldRetrieve(_sessionId);
             break;
         }
       }
@@ -253,11 +267,6 @@ namespace Sipek.Common.CallControl
     #endregion Events
 
     #region Public methods
-
-    public int Initialize()
-    {
-      return this.Initialize(_stack);
-    }
 
     /// <summary>
     /// Initialize telephony and VoIP stack. On success register accounts.
@@ -298,7 +307,7 @@ namespace Sipek.Common.CallControl
       CallList.Values.CopyTo(callarr, 0);
       for (int i = 0; i < callarr.Length; i++)
       {
-        callarr[i].destroy();
+        callarr[i].Destroy();
       }
 
       this.CallList.Clear();
@@ -319,43 +328,40 @@ namespace Sipek.Common.CallControl
     /// Create outgoing call using default accountId. 
     /// </summary>
     /// <param name="number">Number to call</param>
-    public IStateMachine createOutboundCall(string number)
+    public int CreateSimpleOutboundCall(string number)
     {
       int accId = Config.DefaultAccountIndex;
-      return this.createOutboundCall(number, accId);
+      return this.CreateSimpleOutboundCall(number, accId);
     }
 
     /// <summary>
-    /// Create outgoing call from a given account.
+    /// Try to create an outbound call. No automatics: make call only if no other call exists
     /// </summary>
-    /// <param name="number">Number to call</param>
-    /// <param name="accountId">Specified account Id </param>
-    public IStateMachine createOutboundCall(string number, int accountId)
+    /// <param name="number"></param>
+    /// <param name="accountId"></param>
+    /// <returns>SessionId or -1 on error</returns>
+    public int CreateSimpleOutboundCall(string number, int accountId)
     {
-      if (!IsInitialized) return new NullStateMachine(); 
-
-      // check if current call automatons allow session creation.
-      if (this.getNoCallsInStates((int)(EStateId.CONNECTING | EStateId.ALERTING)) > 0)
+      // if no calls in list
+      if ((this.Count > 0) || (!IsInitialized))
       {
-        // new call not allowed!
-        return new NullStateMachine();
+        return -1;
       }
-      // if at least 1 call connected try to put it on hold first
-      if (this.getNoCallsInState(EStateId.ACTIVE) == 0)
+      else
       {
         // create state machine
         IStateMachine call = Factory.createStateMachine();
         // couldn't create new call instance (max calls?)
         if (call == null)
         {
-          return new NullStateMachine();
+          return -1;
         }
 
         // make call request (stack provides new sessionId)
         int newsession = call.State.makeCall(number, accountId);
         if (newsession == -1)
         {
-          return new NullStateMachine();
+          return -1;
         }
         // update call table
         // catch argument exception (same key)!!!!
@@ -368,109 +374,89 @@ namespace Sipek.Common.CallControl
         {
           // previous call not released ()
           // first release old one
-          _calls[newsession].destroy();
+          _calls[newsession].Destroy();
           // and then add new one
           _calls.Add(newsession, call);
         }
 
-        return call;
+        return call.Session;
+      }
+    }
+
+    /// <summary>
+    /// Create outgoing call to a number and from a given account.
+    /// 
+    /// If the other calls exist check if it is possible to create a new one.
+    /// The logic below will automatically put the active call on hold, 
+    /// return -2 and store a new call creation request. When hold confirmation 
+    /// received create a call. 
+    /// 
+    /// Be aware: This is done asynchronously. 
+    /// 
+    /// </summary>
+    /// <param name="number">Number to call</param>
+    /// <param name="accountId">Specified account Id </param>
+    public int CreateSmartOutboundCall(string number, int accountId)
+    {
+      if (!IsInitialized) return -1; 
+
+      // check if current call automatons allow session creation.
+      if (this.GetNoCallsInStates((int)(EStateId.CONNECTING | EStateId.ALERTING)) > 0)
+      {
+        // new call not allowed!
+        return -1;
+      }
+      // if at least 1 call connected try to put it on hold first
+      if (this[EStateId.ACTIVE].Count == 0)
+      {
+        // create state machine
+        IStateMachine call = Factory.createStateMachine();
+        // couldn't create new call instance (max calls?)
+        if (call == null)
+        {
+          return -1;
+        }
+
+        // make call request (stack provides new sessionId)
+        int newsession = call.State.makeCall(number, accountId);
+        if (newsession == -1)
+        {
+          return -1;
+        }
+        // update call table
+        // catch argument exception (same key)!!!!
+        try
+        {
+          call.Session = newsession;
+          _calls.Add(newsession, call);
+        }
+        catch (ArgumentException e)
+        {
+          // previous call not released ()
+          // first release old one
+          _calls[newsession].Destroy();
+          // and then add new one
+          _calls.Add(newsession, call);
+        }
+
+        return call.Session;
       }
       else // we have at least one ACTIVE call
       {
         // put connected call on hold
         _pendingAction = new PendingAction(EPendingActions.ECreateSession, number, accountId);
-        IStateMachine call = getCallInState(EStateId.ACTIVE); 
-        call.State.holdCall();
-      }
-      return new NullStateMachine();
-    }
 
-    /// <summary>
-    /// Destroy call 
-    /// </summary>
-    /// <param name="session">session identification</param>
-    internal void destroySession(int session)
-    {
-      bool notify = true;
-      if (getCall(session).DisableStateNotifications)
-      {
-        notify = false;
-      }
-      _calls.Remove(session);
-      // Warning: this call no longer exists
-      if (notify) updateGui(session);
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="session"></param>
-    /// <returns></returns>
-    public IStateMachine getCall(int session)
-    {
-      if ((_calls.Count == 0) || (!_calls.ContainsKey(session))) return new NullStateMachine();
-      return _calls[session];
-    }
-
-    /// <summary>
-    /// 
-    /// </summary>
-    /// <param name="session"></param>
-    /// <param name="stateId"></param>
-    /// <returns></returns>
-    public IStateMachine getCallInState(EStateId stateId)
-    {
-      if (_calls.Count == 0) return new NullStateMachine();
-      foreach (KeyValuePair<int, IStateMachine> call in _calls)
-      {
-        if (call.Value.State.Id == stateId) return call.Value;
-      }
-      return new NullStateMachine();
-    }
-
-    public int getNoCallsInState(EStateId stateId)
-    {
-      int cnt = 0;
-      foreach (KeyValuePair<int, IStateMachine> kvp in _calls)
-      {
-        if (stateId == kvp.Value.State.Id)
+        List<IStateMachine> calls = this[EStateId.ACTIVE]; 
+        if (calls.Count > 0)
         {
-          cnt++;
+          calls[0].State.holdCall();       
         }
+        // indicates that new call is pending...
+        // At this point we don't know yet if the call will be created or not
+        // The call will be created when current call is put on hold (confirmation)!
+        return -2;
       }
-      return cnt;
-    }
 
-    private int getNoCallsInStates(int states)
-    {
-      int cnt = 0;
-      foreach (KeyValuePair<int, IStateMachine> kvp in _calls)
-      {
-        if ((states & (int)kvp.Value.State.Id) == (int)kvp.Value.State.Id)
-        {
-          cnt++;
-        }
-      }
-      return cnt;
-    }
-
-    /// <summary>
-    /// Collect state machines in a given state
-    /// </summary>
-    /// <param name="stateId">state machine state</param>
-    /// <returns>List of state machines</returns>
-    public ICollection<IStateMachine> enumCallsInState(EStateId stateId)
-    {
-      List<IStateMachine> list = new List<IStateMachine>();
-
-      foreach (KeyValuePair<int, IStateMachine> kvp in _calls)
-      {
-        if (stateId == kvp.Value.State.Id)
-        {
-          list.Add(kvp.Value);
-        }
-      }
-      return list;
     }
 
 
@@ -478,7 +464,7 @@ namespace Sipek.Common.CallControl
     /// User triggers a call release for a given session
     /// </summary>
     /// <param name="session">session identification</param>
-    public void onUserRelease(int session)
+    public void OnUserRelease(int session)
     {
       this[session].State.endCall();
     }
@@ -488,9 +474,9 @@ namespace Sipek.Common.CallControl
     /// In case of multi call put current active call to Hold
     /// </summary>
     /// <param name="session">session identification</param>
-    public void onUserAnswer(int session)
+    public void OnUserAnswer(int session)
     {
-      List<IStateMachine> list = (List<IStateMachine>)this.enumCallsInState(EStateId.ACTIVE);
+      List<IStateMachine> list = this[EStateId.ACTIVE];
       // should not be more than 1 call active
       if (list.Count > 0)
       {
@@ -509,22 +495,22 @@ namespace Sipek.Common.CallControl
     /// User put call on hold or retrieve 
     /// </summary>
     /// <param name="session">session identification</param>
-    public void onUserHoldRetrieve(int session)
+    public void OnUserHoldRetrieve(int session)
     {
       // check Hold or Retrieve
       IAbstractState state = this[session].State;
       if (state.Id == EStateId.ACTIVE)
       {
-        this.getCall(session).State.holdCall();
+        this[session].State.holdCall();
       }
       else if (state.Id == EStateId.HOLDING)
       {
         // execute retrieve
         // check if any ACTIVE calls
-        if (this.getNoCallsInState(EStateId.ACTIVE) > 0)
+        if (this[EStateId.ACTIVE].Count > 0)
         {
           // get 1st and put it on hold
-          IStateMachine sm = ((List<IStateMachine>)enumCallsInState(EStateId.ACTIVE))[0];
+          IStateMachine sm = this[EStateId.ACTIVE][0];
           if (!sm.IsNull) sm.State.holdCall();
 
           // set Retrieve event pending for HoldConfirm
@@ -545,7 +531,7 @@ namespace Sipek.Common.CallControl
     /// </summary>
     /// <param name="session">session identification</param>
     /// <param name="number">number to transfer</param>
-    public void onUserTransfer(int session, string number)
+    public void OnUserTransfer(int session, string number)
     {
       this[session].State.xferCall(number);
     }
@@ -556,7 +542,7 @@ namespace Sipek.Common.CallControl
     /// <param name="session"></param>
     /// <param name="digits"></param>
     /// <param name="mode"></param>
-    public void onUserDialDigit(int session, string digits, EDtmfMode mode)
+    public void OnUserDialDigit(int session, string digits, EDtmfMode mode)
     {
       this[session].State.dialDtmf(digits, mode);
     }
@@ -565,16 +551,19 @@ namespace Sipek.Common.CallControl
     /// 
     /// </summary>
     /// <param name="session"></param>
-    public void onUserConference(int session)
+    public void OnUserConference(int session)
     {
       // check preconditions: 1 call active, other held
       // 1st if current call is held -> search if any active -> execute retrieve
-      if ((getNoCallsInState(EStateId.ACTIVE) == 1)&&(getNoCallsInState(EStateId.HOLDING) >= 1))
+      if ((this[EStateId.ACTIVE].Count == 1) && (this[EStateId.HOLDING].Count >= 1))
       {
-        IStateMachine call = getCallInState(EStateId.HOLDING);
-        call.State.retrieveCall();
-        // set conference flag
-        call.State.conferenceCall();
+        List<IStateMachine> calls = this[EStateId.HOLDING];
+        if (calls.Count > 0)
+        {
+          calls[0].State.retrieveCall();
+          // set conference flag
+          calls[0].State.conferenceCall();
+        }
         return;
       }
     }
@@ -584,25 +573,40 @@ namespace Sipek.Common.CallControl
     /// </summary>
     /// <param name="sessionId"></param>
     /// <returns></returns>
-    public bool onUserSendCallMessage(int sessionId, string message)
+    public bool OnUserSendCallMessage(int sessionId, string message)
     {
       return this[sessionId].State.sendCallMessage(message);
+    }
+    
+    #endregion  // public methods
+
+    #region Internal & Private Methods
+
+    /// <summary>
+    /// Destroy call 
+    /// </summary>
+    /// <param name="session">session identification</param>
+    internal void DestroySession(int session)
+    {
+      bool notify = true;
+      if (this[session].DisableStateNotifications)
+      {
+        notify = false;
+      }
+      _calls.Remove(session);
+      // Warning: this call no longer exists
+      if (notify) updateGui(session);
     }
 
     /// <summary>
     /// 
     /// </summary>
-    public void activatePendingAction()
+    internal void activatePendingAction()
     {
       if (null != _pendingAction) _pendingAction.Activate();
       _pendingAction = null;
     }
-    
-    #endregion  // public methods
 
-    #region Private Methods
-
-    ////////////////////////////////////////////////////////////////////////////////////////
     /// <summary>
     /// 
     /// </summary>
@@ -644,7 +648,7 @@ namespace Sipek.Common.CallControl
         return;
       }
 
-      IStateMachine call = getCall(callId);
+      IStateMachine call = this[callId];
       if (call.IsNull) return;
 
       switch (callState)
@@ -672,7 +676,7 @@ namespace Sipek.Common.CallControl
     /// <param name="info">additional info of calling party</param>
     private void OnIncomingCall(int sessionId, string number, string info)
     {
-      IStateMachine call = getCall(sessionId);
+      IStateMachine call = this[sessionId];
 
       if (call.IsNull) return;
 
@@ -687,7 +691,7 @@ namespace Sipek.Common.CallControl
     {
       if (notFlag == ECallNotification.CN_HOLDCONFIRM)
       {
-        IStateMachine sm = this.getCall(callId);
+        IStateMachine sm = this[callId];
         if (!sm.IsNull) sm.State.onHoldConfirm();
       }
     }
@@ -705,9 +709,124 @@ namespace Sipek.Common.CallControl
       CallList.Add(newid, call);
     }
 
+    /// <summary>
+    /// Gets the number of calls in given states (bitmask)
+    /// 
+    /// example: 
+    ///   getNoCallsInStates(EStateId.CONNECTING | EStateId.ALERTING)
+    /// 
+    /// </summary>
+    /// <param name="states">a bit mask of states</param>
+    /// <returns></returns>
+    private int GetNoCallsInStates(int states)
+    {
+      int cnt = 0;
+      foreach (KeyValuePair<int, IStateMachine> kvp in _calls)
+      {
+        if ((states & (int)kvp.Value.State.Id) == (int)kvp.Value.State.Id)
+        {
+          cnt++;
+        }
+      }
+      return cnt;
+    }
 
     #endregion Methods
 
+    #region Obsolete Methods 
+    // Thanks to Ian Kemp
+
+    [Obsolete("Use the CreateSmartOutboundCall(string number) method instead.")]
+    public IStateMachine createOutboundCall(string number)
+    {
+      return this[CreateSmartOutboundCall(number, Config.DefaultAccountIndex)];
+    }
+
+    [Obsolete("Use the CreateSmartOutboundCall(string number, int accountId) method instead")]
+    public IStateMachine createOutboundCall(string number, int accountId)
+    {
+      return this[CreateSmartOutboundCall(number, accountId)];
+    }
+
+    [Obsolete("Use the CallManager call indexer property instead")]
+    public IStateMachine getCall(int session)
+    {
+      return this[session];
+    }
+
+    [Obsolete("Use the CallManager StateId indexer property instead")]
+    public IStateMachine getCallInState(EStateId stateId)
+    {
+      List<IStateMachine> calls = this[stateId];
+      if (calls.Count == 0)
+      {
+        return new NullStateMachine();
+      }
+      return calls[0];
+    }
+
+    [Obsolete("Use the CallManager StateId indexer property instead")]
+    public ICollection<IStateMachine> enumCallsInState(EStateId stateId)
+    {
+      return this[stateId];
+    }
+
+    [Obsolete("Use the CallManager StateId indexer property instead")]
+    public int getNoCallsInState(EStateId stateId)
+    {
+      return this[stateId].Count;
+    }
+
+    [Obsolete("Use the OnUserRelease(int session) method instead")]
+    public void onUserRelease(int session)
+    {
+      this.OnUserRelease(session);
+    }
+
+    [Obsolete("Use the OnUserAnswer(int session) method instead")]
+    public void onUserAnswer(int session)
+    {
+      this.OnUserAnswer(session);
+    }
+
+    [Obsolete("Use the OnUserHoldRetrieve(int session) method instead")]
+    public void onUserHoldRetrieve(int session)
+    {
+      this.OnUserHoldRetrieve(session);
+    }
+
+    [Obsolete("Use the onUserTransfer(int session, string number) method instead")]
+    public void onUserTransfer(int session, string number)
+    {
+      this.OnUserTransfer(session, number);
+    }
+
+    [Obsolete("Use the OnUserDialDigit(int session, string digits, EDtmfMode mode) method instead")]
+    public void onUserDialDigit(int session, string digits, EDtmfMode mode)
+    {
+      this.OnUserDialDigit(session, digits, mode);
+    }
+
+    [Obsolete("Use the OnUserConference(int session) method instead")]
+    public void onUserConference(int session)
+    {
+      this.OnUserConference(session);
+    }
+
+    [Obsolete("Use the OnUserSendCallMessage(int session, string message) method instead")]
+    public bool onUserSendCallMessage(int sessionId, string message)
+    {
+      return this.OnUserSendCallMessage(sessionId, message);
+    }
+
+    [Obsolete("Use the Initialize(IVoipProxy stack) method")]
+    public int Initialize()
+    {
+      return this.Initialize(_stack);
+    }
+
+
+    #endregion
   }
 
 } // namespace Sipek

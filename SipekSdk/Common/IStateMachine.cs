@@ -15,8 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  * 
- * @see http://sipekphone.googlepages.com/pjsipwrapper
- * @see http://voipengine.googlepages.com/
+ * @see http://sites.google.com/site/sipekvoip
  * 
  */
 
@@ -41,8 +40,7 @@ namespace Sipek.Common
   public abstract class IStateMachine
   {
     #region Public Methods
-    public abstract void changeState(EStateId stateId);
-    public abstract void destroy();
+    public abstract void Destroy();
     public abstract bool IsNull { get; }
     #endregion
 
@@ -62,10 +60,13 @@ namespace Sipek.Common
     #endregion
 
     #region Internal Methods
-    internal abstract bool startTimer(ETimerType ttype);
-    internal abstract bool stopTimer(ETimerType ttype);
-    internal abstract void stopAllTimers();
-    internal abstract void activatePendingAction();
+    
+    internal abstract void ChangeState(EStateId stateId);
+    internal abstract bool StartTimer(ETimerType ttype);
+    internal abstract bool StopTimer(ETimerType ttype);
+    internal abstract void StopAllTimers();
+    internal abstract void ActivatePendingAction();
+
     #endregion
 
     #region Internal Properties
@@ -80,6 +81,10 @@ namespace Sipek.Common
     internal abstract bool Counting { get; set; }
     #endregion
 
+    #region Obsolete Methods
+    [Obsolete("Use Destroy() method instead")]
+    public abstract void destroy();
+    #endregion
   }
 
 
@@ -171,15 +176,15 @@ namespace Sipek.Common
     }
 
 
-    public override void changeState(EStateId stateId)
+    internal override void ChangeState(EStateId stateId)
     {
       ;
     }
 
-    public override void destroy()
-    {
-      ;
-    }
+    [Obsolete("Use Destroy() method instead")]
+    public override void destroy() { }
+
+    public override void Destroy() { }
 
     public override bool IsNull
     {
@@ -246,17 +251,17 @@ namespace Sipek.Common
       }
     }
 
-    internal override bool startTimer(ETimerType ttype)
+    internal override bool StartTimer(ETimerType ttype)
     {
       return false;
     }
 
-    internal override bool stopTimer(ETimerType ttype)
+    internal override bool StopTimer(ETimerType ttype)
     {
       return false;
     }
 
-    internal override void stopAllTimers()
+    internal override void StopAllTimers()
     {
       ;
     }
@@ -290,7 +295,7 @@ namespace Sipek.Common
       get { return new TimeSpan(); }
     }
 
-    internal override void activatePendingAction()
+    internal override void ActivatePendingAction()
     {
       ;
     }

@@ -15,8 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  * 
- * @see http://sipekphone.googlepages.com/pjsipwrapper
- * @see http://voipengine.googlepages.com/
+ * @see http://sites.google.com/site/sipekvoip
  * 
  */
 
@@ -119,11 +118,11 @@ namespace Sipek.Common
     /// <summary>
     /// State entry method
     /// </summary>
-    public abstract void onEntry();
+    internal abstract void OnEntry();
     /// <summary>
     /// State exit method
     /// </summary>
-    public abstract void onExit();
+    internal abstract void OnExit();
 
     /// <summary>
     /// Handler for Reply timer timeout. Reply timer is started on incoming call if 
@@ -257,17 +256,12 @@ namespace Sipek.Common
       : base(new NullStateMachine())
     { }
 
-    public override void onEntry()
+    internal override void OnEntry()
     {
     }
 
-    public override void onExit()
+    internal override void OnExit()
     {
-    }
-
-    public override bool conferenceCall()
-    {
-      return false;
     }
   }
   #endregion

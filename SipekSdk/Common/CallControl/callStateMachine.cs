@@ -15,7 +15,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA 
  * 
- * @see http://voipengine.googlepages.com/
+ * @see http://sites.google.com/site/sipekvoip
  *  
  */
 
@@ -178,7 +178,6 @@ namespace Sipek.Common.CallControl
         {
           return Duration;
         }
-        return TimeSpan.Zero;
       }
     }
 
@@ -344,11 +343,11 @@ namespace Sipek.Common.CallControl
     /// Change state
     /// </summary>
     /// <param name="state">instance of state to change to</param>
-    private  void changeState(IAbstractState state)
+    private void ChangeState(IAbstractState state)
     {
-      _state.onExit();
+      _state.OnExit();
       _state = state;
-      _state.onEntry();
+      _state.OnEntry();
     }
 
     /// <summary>
@@ -387,7 +386,7 @@ namespace Sipek.Common.CallControl
     /// Start timer by timer type
     /// </summary>
     /// <param name="ttype">timer type</param>
-    internal override bool startTimer(ETimerType ttype)
+    internal override bool StartTimer(ETimerType ttype)
     {
       bool success = false;
       switch (ttype)
@@ -409,7 +408,7 @@ namespace Sipek.Common.CallControl
     /// Stop timer by timer type
     /// </summary>
     /// <param name="ttype">timer type</param>
-    internal override bool stopTimer(ETimerType ttype)
+    internal override bool StopTimer(ETimerType ttype)
     {
       bool success = false;
       switch (ttype)
@@ -430,7 +429,7 @@ namespace Sipek.Common.CallControl
     /// <summary>
     /// Stop all timers...
     /// </summary>
-    internal override void stopAllTimers()
+    internal override void StopAllTimers()
     {
       _noreplyTimer.Stop();
       _releasedTimer.Stop();
@@ -440,42 +439,42 @@ namespace Sipek.Common.CallControl
     /// <summary>
     /// Run queued requests
     /// </summary>
-    internal override void activatePendingAction()
+    internal override void ActivatePendingAction()
     {
       Manager.activatePendingAction();
+    }
+
+    /// <summary>
+    /// Change state by state id
+    /// </summary>
+    /// <param name="stateId">state id</param>
+    internal override void ChangeState(EStateId stateId)
+    {
+      switch (stateId)
+      {
+        case EStateId.IDLE: ChangeState(_stateIdle); break;
+        case EStateId.CONNECTING: ChangeState(_stateCalling); break;
+        case EStateId.ALERTING: ChangeState(_stateAlerting); break;
+        case EStateId.ACTIVE: ChangeState(_stateActive); break;
+        case EStateId.RELEASED: ChangeState(_stateReleased); break;
+        case EStateId.INCOMING: ChangeState(_stateIncoming); break;
+        case EStateId.HOLDING: ChangeState(_stateHolding); break;
+        case EStateId.TERMINATED: ChangeState(_stateTerminated); break;
+      }
+      // inform manager 
+      if ((null != _manager) && (Session != -1) && (DisableStateNotifications == false)) _manager.updateGui(this.Session);
     }
     #endregion
 
     #region Public Methods
 
     /// <summary>
-    /// Change state by state id
-    /// </summary>
-    /// <param name="stateId">state id</param>
-    public override void changeState(EStateId stateId)
-    {
-      switch (stateId) 
-      {
-        case EStateId.IDLE:  changeState(_stateIdle); break;
-        case EStateId.CONNECTING: changeState(_stateCalling); break;
-        case EStateId.ALERTING: changeState(_stateAlerting); break;
-        case EStateId.ACTIVE: changeState(_stateActive); break;
-        case EStateId.RELEASED: changeState(_stateReleased); break;
-        case EStateId.INCOMING: changeState(_stateIncoming); break;
-        case EStateId.HOLDING: changeState(_stateHolding); break;
-        case EStateId.TERMINATED: changeState(_stateTerminated); break;
-      }
-      // inform manager 
-      if ((null != _manager)&&(Session != -1) && (DisableStateNotifications==false)) _manager.updateGui(this.Session);
-    }
-
-    /// <summary>
     /// Destroy call. Calculate call duration time, edit call log, destroy session.
     /// </summary>
-    public override void destroy()
+    public override void Destroy()
     {
       // stop tones & timers
-      stopAllTimers(); 
+      StopAllTimers(); 
       
       MediaProxy.stopTone();
 
@@ -495,11 +494,21 @@ namespace Sipek.Common.CallControl
       // reset data
       CallingNumber = "";
       Incoming = false;
-      changeState(EStateId.IDLE);
-      if (null != _manager) _manager.destroySession(Session);
+      ChangeState(EStateId.IDLE);
+      if (null != _manager) _manager.DestroySession(Session);
     }
 
     #endregion Methods
+
+    #region Obsolete Methods
+
+    [Obsolete("Use Destroy() method instead")]
+    public override void destroy()
+    {
+      this.Destroy();
+    }
+    #endregion
+
   }
 
 } // namespace Sipek.Common.CallControl

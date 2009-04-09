@@ -364,7 +364,7 @@ namespace Sipek.Common
     {
       return false;
     }
-    
+
     public override string getCurrentCodec()
     {
       return "PCMA";
