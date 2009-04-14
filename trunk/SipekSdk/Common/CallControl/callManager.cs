@@ -537,6 +537,17 @@ namespace Sipek.Common.CallControl
     }
 
     /// <summary>
+    /// Attendant transfer
+    /// </summary>
+    /// <param name="session"></param>
+    /// <param name="number"></param>
+    public void OnUserTransferAttendant(int session, int partnerSession)
+    {
+      this[session].State.xferCallSession(partnerSession);
+    }
+
+
+    /// <summary>
     /// 
     /// </summary>
     /// <param name="session"></param>
