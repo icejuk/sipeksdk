@@ -35,7 +35,7 @@ namespace Sipek.Common
 {
 
   /// <summary>
-  /// AbstractFactory is an abstract interace providing interfaces for CallControl module. 
+  /// AbstractFactory is an abstract interface providing interfaces for CallControl module. 
   /// It consists of two parts: factory methods and getter methods. First creates instances, 
   /// later returns instances. 
   /// </summary>

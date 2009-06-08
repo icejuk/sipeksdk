@@ -98,7 +98,11 @@ namespace Sipek.Common
   public interface IAccount
   {
     /// <summary>
-    /// Represent value assigned to an account by sip stack.   
+    /// Account enabled/disabled flag
+    /// </summary>
+    bool Enabled { get; set; }
+    /// <summary>
+    /// Represents a value assigned to an account by a sip stack.   
     /// </summary>
     int Index { get; set;}
     /// <summary>
@@ -158,6 +162,8 @@ namespace Sipek.Common
 
     public class NullAccount : IAccount
     {
+      public bool Enabled { get { return false; } set {} }
+
       public int Index
       {
         get { return 0; }
