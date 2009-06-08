@@ -100,11 +100,10 @@ namespace Sipek.Sip
 
         // reset account Index field
         Config.Accounts[i].Index = -1;
-
         // reset account state
-        BaseAccountStateChanged(i, 0);
+        Config.Accounts[i].RegState = -1;
 
-        if ((acc.Id.Length > 0)&&(acc.HostName.Length > 0))
+        if (acc.Enabled && (acc.Id.Length > 0)&&(acc.HostName.Length > 0))
         {
 
           string displayName = acc.DisplayName;
@@ -132,6 +131,11 @@ namespace Sipek.Sip
 
           // store account Id to Index field
           Config.Accounts[i].Index = accId;
+        }
+        else
+        {
+          // trigger callback
+          BaseAccountStateChanged(i, -1);
         }
       }
       return 1;
