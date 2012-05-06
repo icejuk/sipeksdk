@@ -529,7 +529,7 @@ static void on_incoming_call(pjsua_acc_id acc_id, pjsua_call_id call_id,
 
   pjsua_call_get_info(call_id, &call_info);
 
-  if (cb_callincoming != 0) cb_callincoming(call_id, call_info.remote_contact.ptr);
+  if (cb_callincoming != 0) cb_callincoming(call_id, call_info.remote_info.ptr);
 }
 
 
