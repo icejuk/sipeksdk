@@ -386,8 +386,9 @@ namespace Sipek.Sip
         }
       }
       // invoke callback
+      ICallProxyInterface.BaseCallStateChanged(callId,ESessionState.SESSION_STATE_INCOMING, "");
       ICallProxyInterface.BaseIncomingCall(callId, number, display);
-      return 1;
+      return 1; 
     }
 
     /// <summary>
